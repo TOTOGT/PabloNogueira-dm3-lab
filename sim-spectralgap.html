@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spectral Gap — Transfer Operator Lᵏ · AXLE SIM</title>
+<style>
+  :root {
+    --bg:      #090c10;
+    --panel:   #0d1117;
+    --border:  #30363d;
+    --text:    #c9d1d9;
+    --gold:    #c9a84c;
+    --dim:     #8b949e;
+    --navy:    #1a2744;
+    --accent:  #58a6ff;
+    --green:   #3fb950;
+    --red:     #f85149;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Georgia', serif; height: 100vh; display: flex; flex-direction: column; }
+
+  nav {
+    background: var(--navy);
+    padding: 0.7rem 2rem;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-shrink: 0;
+  }
+  .nav-logo { color: var(--gold); font-weight: bold; font-size: 0.95rem; letter-spacing: 0.1em; text-decoration: none; font-family: sans-serif; }
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+  .nav-links a { color: #ccc; text-decoration: none; font-size: 0.85rem; font-family: sans-serif; }
+  .nav-links a:hover { color: var(--gold); }
+
+  .workspace {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* ── Side panel ── */
+  .panel {
+    width: 290px;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 1.2rem 1rem;
+    overflow-y: auto;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .panel-title {
+    font-family: sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.2rem;
+  }
+  .panel-section {
+    border-top: 1px solid var(--border);
+    padding-top: 0.6rem;
+    margin-top: 0.2rem;
+  }
+  label {
+    display: block;
+    font-family: sans-serif;
+    font-size: 0.78rem;
+    color: var(--dim);
+    margin-bottom: 0.2rem;
+  }
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--gold);
+    cursor: pointer;
+  }
+  .val-display {
+    font-family: monospace;
+    font-size: 0.9rem;
+    color: var(--gold);
+    float: right;
+  }
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: monospace;
+    font-size: 0.78rem;
+    padding: 0.15rem 0;
+    border-bottom: 1px solid #1c2128;
+  }
+  .metric-key { color: var(--dim); }
+  .metric-val { color: var(--accent); }
+  .metric-val.good { color: var(--green); }
+  .metric-val.warn { color: var(--gold); }
+  .metric-val.info { color: var(--text); }
+
+  .btn {
+    width: 100%;
+    margin-top: 0.3rem;
+    padding: 0.5rem;
+    background: #0f141a;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: sans-serif;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn:hover { background: var(--gold); color: var(--navy); }
+  .btn.active { background: var(--accent); color: #000; }
+
+  /* ── Main canvas area ── */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .tabs {
+    display: flex;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .tab {
+    padding: 0.55rem 1.2rem;
+    font-family: sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: var(--dim);
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s;
+  }
+  .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .tab:hover { color: var(--text); }
+
+  .view {
+    flex: 1;
+    display: none;
+    padding: 1rem;
+    overflow: auto;
+  }
+  .view.active { display: flex; flex-direction: column; gap: 0.8rem; }
+
+  canvas.chart {
+    width: 100%;
+    background: #0a0e14;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  /* ── Spectrum table ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: monospace;
+    font-size: 0.8rem;
+  }
+  th {
+    text-align: left;
+    padding: 0.4rem 0.6rem;
+    background: #0d1117;
+    color: var(--gold);
+    font-weight: normal;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 0.3rem 0.6rem;
+    border-bottom: 1px solid #1c2128;
+  }
+  tr:hover td { background: #161b22; }
+  .ev-leading { color: var(--green); }
+  .ev-second  { color: var(--accent); }
+  .ev-zero    { color: var(--dim); }
+
+  /* ── Seed sentence + bridge ── */
+  .info-block {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    padding: 0.8rem 1rem;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    border-radius: 2px;
+  }
+  .info-block em { color: var(--gold); font-style: normal; }
+
+  footer {
+    background: var(--navy);
+    color: var(--dim);
+    padding: 0.55rem 1.5rem;
+    font-size: 0.72rem;
+    font-family: sans-serif;
+    text-align: center;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+  <a href="index.html" class="nav-logo">PRINCIPIA ORTHOGONA</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sim.html">AXLE Simulator</a></li>
+    <li><a href="sim-spectralgap.html" style="color:var(--gold);font-weight:bold;">Spectral Gap</a></li>
+    <li><a href="portal.html">Student Portal</a></li>
+    <li><a href="https://github.com/TOTOGT/DM3-lab" target="_blank">GitHub</a></li>
+  </ul>
+</nav>
+
+<div class="workspace">
+
+  <!-- ── CONTROL PANEL ── -->
+  <div class="panel">
+    <div class="panel-title">Spectral Gap — Lᵏ</div>
+
+    <div>
+      <label>Iterate order k &nbsp;<span class="val-display" id="kVal">1</span></label>
+      <input type="range" id="kSlider" min="1" max="12" step="1" value="1">
+    </div>
+
+    <div>
+      <label>Modulus exponent M &nbsp;<span class="val-display" id="mVal">5</span></label>
+      <input type="range" id="mSlider" min="2" max="10" step="1" value="5">
+    </div>
+
+    <div>
+      <label>Second eigenvalue ratio r = |λ₂/ρ| &nbsp;<span class="val-display" id="rVal">0.50</span></label>
+      <input type="range" id="rSlider" min="0" max="0.999" step="0.001" value="0.5">
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-title">Computed Values</div>
+      <div class="metric-row"><span class="metric-key">ρ(L) = 1/2^(M−1)</span><span class="metric-val" id="rho1">—</span></div>
+      <div class="metric-row"><span class="metric-key">ρ(Lᵏ) = ρ^k</span><span class="metric-val" id="rhok">—</span></div>
+      <div class="metric-row"><span class="metric-key">|λ₂(k)| = |λ₂|^k</span><span class="metric-val" id="lam2k">—</span></div>
+      <div class="metric-row"><span class="metric-key">gap_k = ρᵏ − |λ₂|ᵏ</span><span class="metric-val good" id="gapk">—</span></div>
+      <div class="metric-row"><span class="metric-key">gap_k / ρᵏ (rel.)</span><span class="metric-val" id="relgap">—</span></div>
+      <div class="metric-row"><span class="metric-key">λ_k (Lyapunov)</span><span class="metric-val warn" id="lyap">—</span></div>
+      <div class="metric-row"><span class="metric-key">gap_k^(M) finite</span><span class="metric-val info" id="finitegap">—</span></div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-title">Plot Mode</div>
+      <button class="btn" id="btnLogScale">Toggle Log Scale</button>
+      <button class="btn" id="btnAnimate">▶ Animate k</button>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-title">Links</div>
+      <button class="btn" onclick="window.location='sim-stormmanifold.html'">→ StormManifold</button>
+      <button class="btn" onclick="window.location='sim.html'">→ Operator Sim</button>
+    </div>
+  </div>
+
+  <!-- ── MAIN VIEW ── -->
+  <div class="main">
+    <div class="tabs">
+      <div class="tab active" data-tab="gap">Gap vs k</div>
+      <div class="tab" data-tab="spectrum">Eigenvalue Spectrum</div>
+      <div class="tab" data-tab="scaling">Scaling Table</div>
+      <div class="tab" data-tab="info">Theory</div>
+    </div>
+
+    <!-- TAB: Gap vs k -->
+    <div class="view active" id="tab-gap">
+      <canvas class="chart" id="gapChart" height="320"></canvas>
+      <div class="info-block">
+        <em>Gap_k = ρᵏ − |λ₂|ᵏ = ρᵏ(1 − rᵏ)</em> where r = |λ₂/ρ| &lt; 1.<br>
+        Blue bars = spectral gap; gold line = leading eigenvalue ρᵏ.<br>
+        The vertical red marker shows the current k. Adjust sliders to explore.
+      </div>
+    </div>
+
+    <!-- TAB: Eigenvalue Spectrum -->
+    <div class="view" id="tab-spectrum">
+      <canvas class="chart" id="spectrumChart" height="260"></canvas>
+      <div style="overflow:auto; flex:1;">
+        <table id="specTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Eigenvalue λᵢ</th>
+              <th>|λᵢ|</th>
+              <th>|λᵢ|ᵏ</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tbody id="specBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB: Scaling Table -->
+    <div class="view" id="tab-scaling">
+      <div style="overflow:auto; flex:1;">
+        <table id="scalingTable">
+          <thead>
+            <tr>
+              <th>k</th>
+              <th>ρᵏ</th>
+              <th>|λ₂|ᵏ</th>
+              <th>gap_k</th>
+              <th>gap_k / ρᵏ</th>
+              <th>λ_k (Lyapunov)</th>
+              <th>gap_k^(M) finite</th>
+            </tr>
+          </thead>
+          <tbody id="scalingBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB: Theory -->
+    <div class="view" id="tab-info">
+      <div class="info-block">
+        <em>Definition.</em> For the k-fold transfer operator Lᵏ acting on a function space,
+        the spectral gap is<br><br>
+        &nbsp;&nbsp;gap_k = ρ(Lᵏ) − |λ₂^(k)| = ρᵏ − |λ₂|ᵏ<br><br>
+        where ρ = ρ(L) is the Perron–Frobenius leading eigenvalue and λ₂ is the
+        second-largest in modulus.
+      </div>
+      <div class="info-block">
+        <em>Scaling law.</em> Since |λ₂/ρ| = r &lt; 1, we have<br><br>
+        &nbsp;&nbsp;gap_k = ρᵏ (1 − rᵏ) → ρᵏ &nbsp;exponentially fast in k.<br><br>
+        Every additional iterate multiplies both the leading eigenvalue and the gap by ρ,
+        while the correction term rᵏ → 0 double-exponentially.
+      </div>
+      <div class="info-block">
+        <em>Finite-matrix case (mod 2^M).</em> On the 2^(M−1) odd residues mod 2^M,<br><br>
+        &nbsp;&nbsp;ρ(P_M) = 1 / 2^(M−1) &nbsp;and&nbsp; all other eigenvalues = 0.<br><br>
+        Therefore: gap_k^(M) = ρ(P_M^k) − 0 = 1 / 2^(k(M−1)).<br><br>
+        The gap is <em>maximal</em>: the matrix is a scaled permutation matrix and the
+        spectral gap equals the entire leading eigenvalue.
+      </div>
+      <div class="info-block">
+        <em>Lyapunov exponent.</em> λ_k = k × λ where λ ≈ −0.286288 (log-average
+        contraction per step of the Syracuse map). The negative Lyapunov exponent
+        and the positive spectral gap together give double-exponential control:
+        orbits contract in k while correlations decay in k.<br><br>
+        <em>Seed sentence (CEFR A2):</em> "After more steps the map forgets the starting
+        number faster and faster. The spectral gap grows with each extra step."
+      </div>
+      <div class="info-block">
+        <em>dm³ + Crystal-Geometry bridge.</em> The maximal finite-matrix gap proves
+        contraction at every finite resolution. The spectral gap for Lᵏ quantifies how
+        quickly the local 2-adic dissipation (v₂) erases memory of the starting residue
+        after k steps. Higher iterates make the gap arbitrarily large relative to the
+        leading term, corresponding to triad stabilisation (c = 3) becoming globally
+        self-sustaining once the monster threshold g₆ = 33 is crossed.
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  AXLE — Spectral Gap Simulator · Lᵏ Transfer Operator · G6 LLC · Newark, New Jersey · 2026
+</footer>
+
+<script>
+// ── Constants ──────────────────────────────────────────────────────────────────
+const LAMBDA_SINGLE = -0.286288;   // single-step Lyapunov exponent (log-average)
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function fmt(x, digits = 6) {
+  if (x === 0) return "0";
+  if (Math.abs(x) < 1e-15) return "0";
+  if (Math.abs(x) < 0.001 || Math.abs(x) > 1e6) return x.toExponential(3);
+  return x.toPrecision(digits);
+}
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let state = {
+  k: 1,
+  M: 5,
+  r: 0.5,
+  logScale: false,
+  animating: false,
+  animId: null,
+};
+
+// ── Derived quantities ─────────────────────────────────────────────────────────
+function compute(k, M, r) {
+  const rho1     = Math.pow(2, -(M - 1));           // ρ(L) = 1/2^(M-1)
+  const rhok     = Math.pow(rho1, k);               // ρ(Lᵏ) = ρ^k
+  const lam2     = r * rho1;                        // |λ₂| = r · ρ
+  const lam2k    = Math.pow(lam2, k);               // |λ₂|^k
+  const gapk     = rhok - lam2k;                    // spectral gap
+  const relgap   = rhok > 0 ? gapk / rhok : 0;     // gap / ρᵏ
+  const lyap     = k * LAMBDA_SINGLE;               // λ_k
+  const finitegap = Math.pow(2, -k * (M - 1));      // 1/2^(k(M-1))
+  return { rho1, rhok, lam2, lam2k, gapk, relgap, lyap, finitegap };
+}
+
+// ── Update sidebar metrics ────────────────────────────────────────────────────
+function updateMetrics() {
+  const { k, M, r } = state;
+  const c = compute(k, M, r);
+  document.getElementById("rho1").textContent     = fmt(c.rho1);
+  document.getElementById("rhok").textContent     = fmt(c.rhok);
+  document.getElementById("lam2k").textContent    = fmt(c.lam2k);
+  document.getElementById("gapk").textContent     = fmt(c.gapk);
+  document.getElementById("relgap").textContent   = (c.relgap * 100).toFixed(3) + "%";
+  document.getElementById("lyap").textContent     = c.lyap.toFixed(6);
+  document.getElementById("finitegap").textContent = fmt(c.finitegap);
+}
+
+// ── Gap-vs-k chart ────────────────────────────────────────────────────────────
+function drawGapChart() {
+  const canvas = document.getElementById("gapChart");
+  canvas.width = canvas.clientWidth;
+  // height is set by attribute
+  const W = canvas.width, H = canvas.height;
+  const ctx = canvas.getContext("2d");
+  const { k, M, r, logScale } = state;
+
+  const K_MAX = 12;
+  const data = [];
+  for (let ki = 1; ki <= K_MAX; ki++) {
+    const c = compute(ki, M, r);
+    data.push({ ki, rhok: c.rhok, gapk: c.gapk, lam2k: c.lam2k });
+  }
+
+  // Value range
+  let maxVal = Math.max(...data.map(d => d.rhok));
+  let minVal = logScale
+    ? Math.min(...data.map(d => Math.max(d.gapk, 1e-20)))
+    : 0;
+
+  const PAD = { top: 24, right: 20, bottom: 40, left: 72 };
+  const cw = W - PAD.left - PAD.right;
+  const ch = H - PAD.top  - PAD.bottom;
+
+  function yPos(v) {
+    if (logScale) {
+      const lo = Math.log10(Math.max(minVal, 1e-20));
+      const hi = Math.log10(Math.max(maxVal, 1e-18));
+      return PAD.top + ch - ((Math.log10(Math.max(v, 1e-20)) - lo) / (hi - lo)) * ch;
+    }
+    return PAD.top + ch - (v / (maxVal || 1)) * ch;
+  }
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = "#0a0e14";
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = "#1c2128";
+  ctx.lineWidth = 1;
+  const N_GRIDLINES = 5;
+  for (let g = 0; g <= N_GRIDLINES; g++) {
+    const frac = g / N_GRIDLINES;
+    let gVal;
+    if (logScale) {
+      const lo = Math.log10(Math.max(minVal, 1e-20));
+      const hi = Math.log10(Math.max(maxVal, 1e-18));
+      gVal = Math.pow(10, lo + frac * (hi - lo));
+    } else {
+      gVal = maxVal * frac;
+    }
+    const y = yPos(gVal);
+    ctx.beginPath();
+    ctx.moveTo(PAD.left, y);
+    ctx.lineTo(W - PAD.right, y);
+    ctx.stroke();
+    ctx.fillStyle = "#8b949e";
+    ctx.font = "10px monospace";
+    ctx.textAlign = "right";
+    ctx.fillText(fmt(gVal, 3), PAD.left - 4, y + 3);
+  }
+
+  // Bar width
+  const barW = (cw / K_MAX) * 0.55;
+  const step  = cw / K_MAX;
+
+  data.forEach(({ ki, rhok, gapk, lam2k }) => {
+    const cx = PAD.left + (ki - 0.5) * step;
+
+    // ρᵏ (gold outline)
+    const yRho = yPos(rhok);
+    ctx.strokeStyle = "#c9a84c";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(cx - barW / 2, yRho, barW, yPos(0) - yRho);
+
+    // gap bar (blue fill)
+    if (gapk > 0) {
+      const yGap = yPos(gapk);
+      ctx.fillStyle = ki === k ? "#58a6ff" : "#1f4068";
+      ctx.fillRect(cx - barW / 2, yGap, barW, yPos(0) - yGap);
+    }
+
+    // x-axis label
+    ctx.fillStyle = ki === k ? "#c9a84c" : "#8b949e";
+    ctx.font = ki === k ? "bold 11px monospace" : "10px monospace";
+    ctx.textAlign = "center";
+    ctx.fillText(ki, cx, H - PAD.bottom + 14);
+  });
+
+  // Current k marker
+  const xMark = PAD.left + (k - 0.5) * step;
+  ctx.strokeStyle = "#f85149";
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([4, 3]);
+  ctx.beginPath();
+  ctx.moveTo(xMark, PAD.top);
+  ctx.lineTo(xMark, H - PAD.bottom);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Gold ρᵏ line
+  ctx.strokeStyle = "#c9a84c";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  data.forEach(({ ki, rhok }, i) => {
+    const cx = PAD.left + (ki - 0.5) * step;
+    if (i === 0) ctx.moveTo(cx, yPos(rhok));
+    else         ctx.lineTo(cx, yPos(rhok));
+  });
+  ctx.stroke();
+
+  // Axes
+  ctx.strokeStyle = "#30363d";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PAD.left, PAD.top);
+  ctx.lineTo(PAD.left, H - PAD.bottom);
+  ctx.lineTo(W - PAD.right, H - PAD.bottom);
+  ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle = "#c9a84c";
+  ctx.font = "11px monospace";
+  ctx.textAlign = "center";
+  ctx.fillText("Iterate k", W / 2, H - 4);
+  ctx.save();
+  ctx.translate(12, H / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText(logScale ? "log(value)" : "value", 0, 0);
+  ctx.restore();
+
+  // Legend
+  ctx.fillStyle = "#1f4068";
+  ctx.fillRect(PAD.left + 4, PAD.top + 4, 12, 10);
+  ctx.fillStyle = "#8b949e";
+  ctx.font = "10px monospace";
+  ctx.textAlign = "left";
+  ctx.fillText("gap_k", PAD.left + 20, PAD.top + 13);
+  ctx.strokeStyle = "#c9a84c";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(PAD.left + 60, PAD.top + 9);
+  ctx.lineTo(PAD.left + 72, PAD.top + 9);
+  ctx.stroke();
+  ctx.fillText("ρᵏ", PAD.left + 76, PAD.top + 13);
+}
+
+// ── Eigenvalue spectrum chart ──────────────────────────────────────────────────
+function drawSpectrumChart() {
+  const canvas = document.getElementById("spectrumChart");
+  canvas.width = canvas.clientWidth;
+  const W = canvas.width, H = canvas.height;
+  const ctx = canvas.getContext("2d");
+  const { k, M, r } = state;
+  const { rho1, lam2 } = compute(k, M, r);
+
+  // Build eigenvalue list for mod-2^M finite approx
+  // Leading eigenvalue: rho1
+  // Second eigenvalue: lam2 (continuous theory)
+  // All others: 0 (finite matrix)
+  const N = Math.pow(2, Math.min(M - 1, 6));  // cap display at 64 entries
+  const eigenvalues = [];
+  eigenvalues.push({ idx: 0, val: Math.pow(rho1, k), role: "leading" });
+  if (r > 0) {
+    eigenvalues.push({ idx: 1, val: Math.pow(lam2, k), role: "second" });
+  }
+  for (let i = (r > 0 ? 2 : 1); i < Math.min(N, 10); i++) {
+    eigenvalues.push({ idx: i, val: 0, role: "zero" });
+  }
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = "#0a0e14";
+  ctx.fillRect(0, 0, W, H);
+
+  const PAD = { top: 20, right: 20, bottom: 36, left: 60 };
+  const cw = W - PAD.left - PAD.right;
+  const ch = H - PAD.top  - PAD.bottom;
+
+  const maxAbs = eigenvalues[0].val || 1e-18;
+
+  function yPosEv(v) {
+    return PAD.top + ch - (v / maxAbs) * ch;
+  }
+
+  const N_EV = eigenvalues.length;
+  const barW = Math.min(40, (cw / N_EV) * 0.7);
+  const stepX = cw / N_EV;
+
+  // Grid lines
+  ctx.strokeStyle = "#1c2128";
+  ctx.lineWidth = 1;
+  [0, 0.25, 0.5, 0.75, 1.0].forEach(frac => {
+    const y = PAD.top + ch - frac * ch;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(W - PAD.right, y); ctx.stroke();
+    ctx.fillStyle = "#8b949e";
+    ctx.font = "10px monospace";
+    ctx.textAlign = "right";
+    ctx.fillText(fmt(frac * maxAbs, 3), PAD.left - 4, y + 3);
+  });
+
+  eigenvalues.forEach(({ idx, val, role }) => {
+    const cx = PAD.left + (idx + 0.5) * stepX;
+    const color = role === "leading" ? "#3fb950"
+                : role === "second"  ? "#58a6ff"
+                :                      "#30363d";
+    if (val > 0) {
+      const y = yPosEv(val);
+      ctx.fillStyle = color;
+      ctx.fillRect(cx - barW / 2, y, barW, PAD.top + ch - y);
+      ctx.fillStyle = color;
+      ctx.font = "9px monospace";
+      ctx.textAlign = "center";
+      ctx.fillText(fmt(val, 3), cx, y - 4);
+    } else {
+      ctx.fillStyle = "#30363d";
+      ctx.fillRect(cx - barW / 2, PAD.top + ch - 2, barW, 2);
+    }
+    ctx.fillStyle = role === "leading" ? "#3fb950" : role === "second" ? "#58a6ff" : "#555";
+    ctx.font = "10px monospace";
+    ctx.textAlign = "center";
+    ctx.fillText(idx === 0 ? "λ₁" : idx === 1 ? "λ₂" : `λ${idx+1}`, cx, H - PAD.bottom + 14);
+  });
+
+  // Axes
+  ctx.strokeStyle = "#30363d"; ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PAD.left, PAD.top); ctx.lineTo(PAD.left, H - PAD.bottom);
+  ctx.lineTo(W - PAD.right, H - PAD.bottom); ctx.stroke();
+
+  ctx.fillStyle = "#c9a84c"; ctx.font = "11px monospace"; ctx.textAlign = "center";
+  ctx.fillText("Eigenvalue index", W / 2, H - 4);
+  ctx.save(); ctx.translate(12, H / 2); ctx.rotate(-Math.PI / 2);
+  ctx.fillText("|λᵢ|ᵏ", 0, 0); ctx.restore();
+}
+
+// ── Eigenvalue table ──────────────────────────────────────────────────────────
+function updateSpectrumTable() {
+  const { k, M, r } = state;
+  const { rho1, lam2, rhok, lam2k } = compute(k, M, r);
+  const tbody = document.getElementById("specBody");
+  tbody.innerHTML = "";
+
+  const rows = [];
+  rows.push({ i: 1, val: rho1, valk: rhok, role: "Leading (Perron–Frobenius)", cls: "ev-leading" });
+  if (r > 0) {
+    rows.push({ i: 2, val: lam2, valk: lam2k, role: "Second eigenvalue", cls: "ev-second" });
+  }
+  const N = Math.min(Math.pow(2, Math.min(M - 1, 6)), 10);
+  for (let i = rows.length + 1; i <= N; i++) {
+    rows.push({ i, val: 0, valk: 0, role: "Zero (finite matrix)", cls: "ev-zero" });
+  }
+
+  rows.forEach(row => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="${row.cls}">${row.i}</td>
+      <td class="${row.cls}">${fmt(row.val)}</td>
+      <td class="${row.cls}">${fmt(Math.abs(row.val))}</td>
+      <td class="${row.cls}">${fmt(row.valk)}</td>
+      <td>${row.role}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ── Scaling table ──────────────────────────────────────────────────────────────
+function updateScalingTable() {
+  const { M, r } = state;
+  const tbody = document.getElementById("scalingBody");
+  tbody.innerHTML = "";
+  for (let ki = 1; ki <= 12; ki++) {
+    const c = compute(ki, M, r);
+    const tr = document.createElement("tr");
+    if (ki === state.k) tr.style.background = "#1f2d3d";
+    tr.innerHTML = `
+      <td style="color:${ki === state.k ? '#c9a84c' : '#c9d1d9'}">${ki}</td>
+      <td>${fmt(c.rhok)}</td>
+      <td>${fmt(c.lam2k)}</td>
+      <td style="color:#3fb950">${fmt(c.gapk)}</td>
+      <td>${(c.relgap * 100).toFixed(3)}%</td>
+      <td style="color:#c9a84c">${c.lyap.toFixed(6)}</td>
+      <td>${fmt(c.finitegap)}</td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+// ── Full redraw ────────────────────────────────────────────────────────────────
+function redraw() {
+  updateMetrics();
+  drawGapChart();
+  drawSpectrumChart();
+  updateSpectrumTable();
+  updateScalingTable();
+}
+
+// ── Slider wiring ──────────────────────────────────────────────────────────────
+document.getElementById("kSlider").addEventListener("input", e => {
+  state.k = parseInt(e.target.value);
+  document.getElementById("kVal").textContent = state.k;
+  redraw();
+});
+document.getElementById("mSlider").addEventListener("input", e => {
+  state.M = parseInt(e.target.value);
+  document.getElementById("mVal").textContent = state.M;
+  redraw();
+});
+document.getElementById("rSlider").addEventListener("input", e => {
+  state.r = parseFloat(e.target.value);
+  document.getElementById("rVal").textContent = state.r.toFixed(3);
+  redraw();
+});
+
+// ── Log scale toggle ───────────────────────────────────────────────────────────
+document.getElementById("btnLogScale").addEventListener("click", () => {
+  state.logScale = !state.logScale;
+  document.getElementById("btnLogScale").textContent =
+    state.logScale ? "Toggle Linear Scale" : "Toggle Log Scale";
+  drawGapChart();
+});
+
+// ── Animate k ─────────────────────────────────────────────────────────────────
+document.getElementById("btnAnimate").addEventListener("click", () => {
+  if (state.animating) {
+    clearInterval(state.animId);
+    state.animating = false;
+    document.getElementById("btnAnimate").textContent = "▶ Animate k";
+    return;
+  }
+  state.animating = true;
+  document.getElementById("btnAnimate").textContent = "⏹ Stop";
+  state.k = 1;
+  document.getElementById("kSlider").value = 1;
+  document.getElementById("kVal").textContent = 1;
+  state.animId = setInterval(() => {
+    state.k = (state.k % 12) + 1;
+    document.getElementById("kSlider").value = state.k;
+    document.getElementById("kVal").textContent = state.k;
+    redraw();
+  }, 700);
+});
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+    tab.classList.add("active");
+    const id = "tab-" + tab.dataset.tab;
+    document.getElementById(id).classList.add("active");
+    // Redraw charts when switching to their tab
+    requestAnimationFrame(() => {
+      if (tab.dataset.tab === "gap") drawGapChart();
+      if (tab.dataset.tab === "spectrum") { drawSpectrumChart(); updateSpectrumTable(); }
+      if (tab.dataset.tab === "scaling") updateScalingTable();
+    });
+  });
+});
+
+// ── Resize handler ─────────────────────────────────────────────────────────────
+window.addEventListener("resize", () => {
+  drawGapChart();
+  drawSpectrumChart();
+});
+
+// ── Initial render ─────────────────────────────────────────────────────────────
+redraw();
+</script>
+
+</body>
+</html>
