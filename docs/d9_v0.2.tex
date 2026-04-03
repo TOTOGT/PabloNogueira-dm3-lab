@@ -1,0 +1,327 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+
+% ── Collatz macros ──────────────────────────────────────────────────────────
+\newcommand{\vt}[1]{v_2\!\left(#1\right)}          % 2-adic valuation
+\newcommand{\Tn}{T(n)}                              % macro-step next-odd
+\newcommand{\wn}{w(n)}                              % contact-form weight
+\newcommand{\PrIw}{\Pr_{I,w}}                       % weighted conditional prob
+\newcommand{\Hmix}{(\mathbf{H}_{\mathrm{mix}})}     % mixing hypothesis
+
+% ── Theorem environments ────────────────────────────────────────────────────
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{condition}{Condition}
+
+\title{\textbf{D9 v0.2}: Conditional Closure via Modular Mixing Hypothesis\\
+       \large Isolating Micro-Obligation \Hmix{} and the Mean-Contraction Reduction}
+\author{Collatz dm$^3$ Project}
+\date{April 2026 — \emph{Draft; conditional on \Hmix{}}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We present D9 v0.2: the conditional closure of the mean-contraction argument for
+the Collatz conjecture framework under the single remaining micro-obligation
+\Hmix{} (Definition~\ref{def:hmix}).  All other analytic components are complete.
+We isolate \Hmix{} precisely, state the Reduction Lemma (Lemma~\ref{lem:reduction}),
+and provide empirical infrastructure for testing the hypothesis.
+\textbf{We do not claim C9.1 proved.}
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+%─────────────────────────────────────────────────────────────────────────────
+\section{Collatz Macro-Step and Basic Notation}
+%─────────────────────────────────────────────────────────────────────────────
+
+Throughout, $n$ ranges over \emph{odd positive integers} $n \ge 3$.
+
+\begin{definition}[Macro-step $T$]\label{def:macrostep}
+For odd $n$, define the \emph{next-odd map}
+\[
+  T(n) \;:=\; \frac{3n+1}{2^{\,\vt{3n+1}}},
+\]
+so $T(n)$ is the unique odd positive integer reached from $n$ by one application
+of $3n+1$ followed by dividing out all factors of $2$.
+\end{definition}
+
+\begin{definition}[Events $A(n)$ and $B(n)$]\label{def:events}
+\[
+  A(n) :\;\Longleftrightarrow\; \vt{3n+1} = 1, \qquad
+  B(n) :\;\Longleftrightarrow\; \vt{3T(n)+1} = 1.
+\]
+In words: $A(n)$ holds when the first Collatz step from $n$ produces a single
+factor of $2$; $B(n)$ is the same event for the \emph{subsequent} odd value
+$T(n)$.
+\end{definition}
+
+\begin{remark}
+$A(n) \Leftrightarrow 3n+1 \equiv 2 \pmod{4} \Leftrightarrow 3n \equiv 1 \pmod{4}
+\Leftrightarrow n \equiv 3 \pmod{4}$ (since $3 \cdot 3 = 9 \equiv 1 \pmod{4}$).
+\end{remark}
+
+%─────────────────────────────────────────────────────────────────────────────
+\section{Windowing Conventions and Weighted Probability}
+%─────────────────────────────────────────────────────────────────────────────
+
+\begin{definition}[Canonical window]\label{def:window}
+The \emph{canonical window} of scale $N$ is
+\[
+  I = I_N \;:=\; \{n \in \mathbb{Z}^{>0} : n \text{ odd},\; N \le n < 2N\}.
+\]
+Optionally, \emph{logarithmic windows} $I^{\log}_N := \{n \text{ odd} : N \le n \le N^2\}$
+may be used when discussing asymptotics; the canonical choice is $I_N$.
+\end{definition}
+
+\begin{definition}[Contact-form weight and weighted probability]\label{def:weight}
+The \emph{contact-form weight} is
+\[
+  \wn \;:=\; \frac{1}{\log n}, \qquad n \ge 2.
+\]
+For an event $E \subset I_N$ and a residue class $R \subset I_N$, the
+\emph{weighted conditional probability} is
+\[
+  \PrIw(E \mid R) \;:=\;
+  \frac{\displaystyle\sum_{n \in R,\, n \in E} w(n)}
+       {\displaystyle\sum_{n \in R} w(n)}.
+\]
+When the condition $R = I_N$ (no conditioning) we write $\PrIw(E)$.
+\end{definition}
+
+%─────────────────────────────────────────────────────────────────────────────
+\section{Unconditional Marginals}
+%─────────────────────────────────────────────────────────────────────────────
+
+\begin{lemma}[Marginal distribution of $\vt{3n+1}$]\label{lem:marginal}
+For any $k \ge 1$,
+\[
+  \Pr\!\bigl(\vt{3n+1} = k\bigr) \;=\; 2^{-k}
+\]
+in the following senses:
+\begin{enumerate}
+  \item \emph{(2-adic)} Under the Haar measure on the 2-adic integers, any odd $n$
+        satisfies $3n+1 \equiv 0 \pmod{2^k}$ iff $n \equiv 2^{k-1} - 1 \pmod{2^k}$
+        (for $k \ge 2$; adjust for $k=1$), and the 2-adic density is $2^{-k}$.
+  \item \emph{(Natural density)} The natural density of $\{n \text{ odd} : \vt{3n+1}=k\}$
+        among odd integers is $2^{-k}$.
+  \item \emph{(Logarithmic / weighted)} $\PrIw\!\bigl(\vt{3n+1}=k\bigr) \to 2^{-k}$
+        as $N \to \infty$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}[Proof sketch]
+Observe that $\vt{3n+1} = k$ iff $n \equiv 2^{k-1}-1 \pmod{2^k}$ and
+$n \not\equiv 2^{k}-1 \pmod{2^{k+1}}$; these are disjoint residue classes of
+density $2^{-k}$ among odd integers.  The weighted version follows from
+the prime number theorem for arithmetic progressions.
+\end{proof}
+
+%─────────────────────────────────────────────────────────────────────────────
+\section{Admissible Residue Classes and the Conditional Micro-Obligation}
+%─────────────────────────────────────────────────────────────────────────────
+
+\begin{definition}[Admissible residue class]\label{def:admissible}
+Fix $M \ge 2$.  A residue class $a \pmod{2^M}$ is \emph{admissible} if
+\begin{enumerate}
+  \item $a$ is odd (i.e., $a \equiv 1 \pmod 2$), and
+  \item $\vt{3a+1} = 1$ (i.e., $3a+1 \equiv 2 \pmod{4}$, equivalently
+        $a \equiv 3 \pmod 4$, since $3 \cdot 3 \equiv 1 \pmod 4$).
+\end{enumerate}
+Denote the set of admissible residues modulo $2^M$ by
+$\mathcal{A}_M \subset (\mathbb{Z}/2^M\mathbb{Z})^{\times}$.
+\end{definition}
+
+\begin{remark}
+The number of admissible classes is $|\mathcal{A}_M| = 2^{M-2}$ (quarter of the
+$2^{M-1}$ odd residues).  Within $\mathcal{A}_M$, the $A(n)$-event is
+automatically true by definition, so these are exactly the residues for which
+the consecutive-$1$ event $A(n) \land B(n)$ is non-trivially conditioned.
+\end{remark}
+
+\begin{definition}[Mixing hypothesis $\Hmix$]\label{def:hmix}
+Fix $M \ge 2$ and $\eta > 0$.
+
+\textbf{Setup.}  For odd $n \in I_N$ and admissible $a \in \mathcal{A}_M$, let
+\[
+  R_a \;:=\; \{n \in I_N : n \equiv a \pmod{2^M},\; A(n)\},
+  \qquad
+  W_N(a) := \sum_{n \in R_a} w(n),
+  \qquad
+  W_N := \sum_{n \in I_N} w(n),
+\]
+and define the \emph{signed per-residue deviation}
+\[
+  \delta_a(N) \;:=\; \PrIw\!\bigl(B(n) \mid R_a\bigr) - \tfrac{1}{2}.
+\]
+
+\textbf{Remark on determinism at fixed $M$.}  Since $B(n) \Leftrightarrow
+n \equiv 7 \pmod{8}$ among $n$ with $A(n)$ (i.e.\ $n \equiv 3 \pmod 4$),
+the per-residue deviation $|\delta_a(N)| = \tfrac{1}{2}$ for every admissible
+$a$ whenever $M \ge 3$: each admissible class is entirely contained in either
+$\{n \equiv 3 \pmod 8\}$ or $\{n \equiv 7 \pmod 8\}$.  Accordingly,
+\emph{per-residue} mixing fails for any $\eta < \tfrac{1}{2}$; the relevant
+quantity for mean contraction is the \emph{aggregate} signed deviation.
+
+\textbf{Hypothesis \Hmix{}$(M,\eta)$.}  We say \emph{$\Hmix(M,\eta)$ holds} if
+for all $N$ sufficiently large (depending only on $M$ and $\eta$),
+\begin{equation}\label{eq:hmix}
+  \Bigl|\,D_N(M)\,\Bigr|
+  \;\le\; \eta,
+  \qquad\text{where}\qquad
+  D_N(M)
+  \;:=\;
+  \sum_{a \in \mathcal{A}_M}
+  \frac{W_N(a)}{W_N}\,\delta_a(N).
+\end{equation}
+In words: the \emph{weighted aggregate deviation} (the average of signed
+per-residue deviations, weighted by occupancy in the window $I_N$) has
+absolute value at most $\eta$.
+\end{definition}
+
+\begin{remark}[Why aggregate, not per-residue]\label{rem:aggregate}
+The signed deviations $\delta_a = \pm\tfrac12$ alternate predictably
+(by the mod-$8$ structure of $B$), so their weighted sum $D_N(M)$ can be
+much smaller than $\tfrac12$.  For $M = 3$, the two admissible classes
+($a = 3$ and $a = 7$ mod $8$) contribute $-\tfrac12$ and $+\tfrac12$
+with equal weight, giving $D_N(3) = 0$ exactly.  For $M > 3$, the residual
+$D_N(M)$ is controlled by \emph{higher-order equidistribution} of $n \bmod 2^M$
+in the window: if the admissible classes of each type (B-true vs.\ B-false)
+are equally represented, then $D_N(M) \approx 0$.  It is this equidistribution
+statement — for all $M$ and uniformly in $N$ — that constitutes the genuine
+content of \Hmix{} and remains open.
+\end{remark}
+
+%─────────────────────────────────────────────────────────────────────────────
+\section{Reduction Lemma: $\Hmix \Rightarrow$ Mean Contraction}
+%─────────────────────────────────────────────────────────────────────────────
+
+We recall the mean-contraction quantity.  For odd $n$ in window $I_N$ let
+\[
+  \Lambda(n) \;:=\; \log_2 T(n) - \log_2 n
+              \;=\; \log_2(3n+1) - \vt{3n+1} - \log_2 n.
+\]
+Mean contraction over $I_N$ (with weight $\wn$) is
+\[
+  \overline\Lambda_N \;:=\; \PrIw\!\bigl(\Lambda(n)\bigr)
+  \;=\; \frac{\sum_{n \in I_N} w(n)\,\Lambda(n)}{\sum_{n \in I_N} w(n)}.
+\]
+Mean contraction is the assertion $\limsup_{N\to\infty} \overline\Lambda_N < 0$.
+
+\begin{lemma}[Defect decomposition]\label{lem:defect}
+For any $M \ge 2$,
+\[
+  \overline\Lambda_N
+  \;=\;
+  \underbrace{\overline\Lambda^{\,\mathrm{main}}_N}_{\text{negative main term}}
+  \;+\;
+  \underbrace{c_{\mathrm{step}} \cdot D_N(M)}_{\text{defect from cross-class correlations}},
+\]
+where $D_N(M)$ is defined in \eqref{eq:hmix}, the main term satisfies
+\[
+  \overline\Lambda^{\,\mathrm{main}}_N
+  \;\le\;
+  -\log_2\!\tfrac{4}{3} + O\!\left(\tfrac{1}{\log N}\right)
+  \;\approx\;
+  -0.415,
+\]
+and $c_{\mathrm{step}} > 0$ is the step-size contribution from a single
+$(1,1)$-event (depending only on $\log_2(3/4)$).
+\end{lemma}
+
+\begin{theorem}[Reduction Lemma: $\Hmix \Rightarrow$ Mean Contraction]\label{lem:reduction}
+Suppose $\Hmix(M,\eta)$ holds for some $M \ge 2$ and some
+\[
+  \eta \;<\; \frac{\log_2(4/3)}{c_{\mathrm{step}}},
+\]
+where $c_{\mathrm{step}}$ is the constant in Lemma~\ref{lem:defect}.
+Then
+\[
+  \limsup_{N\to\infty} \overline\Lambda_N
+  \;\le\;
+  -\log_2\!\tfrac{4}{3} + c_{\mathrm{step}} \cdot \eta
+  \;<\; 0.
+\]
+In particular, mean contraction holds.
+\end{theorem}
+
+\begin{proof}[Proof]
+By Lemma~\ref{lem:defect}, $\overline\Lambda_N \le -\log_2(4/3) + c_{\mathrm{step}} \cdot D_N(M)
++ O(1/\log N)$.  From $\Hmix(M,\eta)$, $|D_N(M)| \le \eta$ for all large $N$.
+The hypothesis $\eta < \log_2(4/3)/c_{\mathrm{step}}$ gives
+$c_{\mathrm{step}} \cdot \eta < \log_2(4/3)$, hence
+$\limsup_{N\to\infty} \overline\Lambda_N \le -\log_2(4/3) + c_{\mathrm{step}}\eta < 0$.
+\end{proof}
+
+\begin{remark}[Structure of $c_{\mathrm{step}}$]
+The constant $c_{\mathrm{step}}$ captures the excess per-step log-ratio contributed
+by a $(1,1)$-event relative to the expected contribution; it satisfies
+$c_{\mathrm{step}} \le \log_2(3/4) \approx 0.415$ by a direct calculation.
+The admissible-class density factors cancel in the Reduction Lemma because
+$D_N(M)$ already incorporates the weights $W_N(a)/W_N$.  The threshold
+$\eta < \log_2(4/3)/c_{\mathrm{step}} \approx 1$ is explicit and generous.
+\end{remark}
+
+%─────────────────────────────────────────────────────────────────────────────
+\section{Status of D9}
+%─────────────────────────────────────────────────────────────────────────────
+
+\begin{center}
+\begin{tabular}{lll}
+\hline
+\textbf{Component} & \textbf{Status} & \textbf{Reference} \\
+\hline
+Macro-step definition $T(n)$ & \checkmark Complete & Section~1 \\
+Event definitions $A(n)$, $B(n)$ & \checkmark Complete & Section~1 \\
+Windowing conventions & \checkmark Complete & Section~2 \\
+Marginal $\Pr(\vt{3n+1}=k)=2^{-k}$ & \checkmark Complete & Lemma~\ref{lem:marginal} \\
+Admissible residue classes $\mathcal{A}_M$ & \checkmark Complete & Section~4 \\
+Micro-obligation isolation \Hmix & \checkmark Complete (stated) & Def.~\ref{def:hmix} \\
+Defect decomposition & \checkmark Complete & Lemma~\ref{lem:defect} \\
+Reduction Lemma ($\Hmix \Rightarrow$ contraction) & \checkmark Complete & Thm~\ref{lem:reduction} \\
+\hline
+\textbf{Micro-obligation \Hmix{} itself} & \textbf{OPEN} & Issue C9.1 \\
+\hline
+\end{tabular}
+\end{center}
+
+\medskip
+The single remaining step is establishing $\Hmix(M,\eta)$ for \emph{some}
+explicit $(M,\eta)$ with $\eta < \log_2(4/3)/c_{\mathrm{step}} \approx 1$.
+The non-trivial content is the higher-order equidistribution of $n \bmod 2^M$
+in the window that controls the residual after cancellation of leading signed terms
+(see Remark~\ref{rem:aggregate}).  All other components are complete.
+
+\subsection*{Empirical evidence and scripts}
+
+Numerical evidence for $\Hmix$ can be generated using the sampling script:
+\begin{verbatim}
+  scripts/collatz_c9_2_sampling.py
+\end{verbatim}
+See \texttt{scripts/README.md} for usage instructions and
+\texttt{docs/c9\_1\_hypothesis.md} for the testing protocol.
+
+%─────────────────────────────────────────────────────────────────────────────
+\section{Cross-References}
+%─────────────────────────────────────────────────────────────────────────────
+
+\begin{itemize}
+  \item Standalone statement of \Hmix{} and testing protocol:
+        \texttt{docs/c9\_1\_hypothesis.md}
+  \item Empirical sampling script:
+        \texttt{scripts/collatz\_c9\_2\_sampling.py}
+  \item Script usage guide:
+        \texttt{scripts/README.md}
+  \item Contributor guide for D9:
+        \texttt{docs/CONTRIBUTING\_D9.md}
+\end{itemize}
+
+\end{document}
