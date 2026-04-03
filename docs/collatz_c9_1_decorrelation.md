@@ -132,7 +132,7 @@ Key theorems:
 | `Collatz.v2_3Tn1_eq_one_iff` | $v_2(3T(4k+3)+1)=1 \Leftrightarrow k$ odd |
 | `Collatz.eventB_iff_mod8` | Event B $\Leftrightarrow n\equiv 7\pmod8$ (given A) |
 | `Collatz.decorrelation_lemma` | Core decorrelation: eventB constant on residue classes mod $2^M$ for $M\geq 3$ |
-| `Collatz.half_classes_have_eventB` | Exactly half compatible classes satisfy event B |
+| `Collatz.half_classes_favorable` | Exactly half compatible classes satisfy event B |
 
 ---
 

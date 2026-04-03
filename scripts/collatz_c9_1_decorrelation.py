@@ -88,21 +88,8 @@ def analyse_residue_class(r: int, M: int, n_min: int, n_max: int):
     count_A = 0
     count_AB = 0
 
-    # Start at the first odd n ≥ n_min with n ≡ r (mod mod)
-    start = n_min + ((r - n_min) % mod)
-    if start % 2 == 0:
-        start += mod  # ensure odd; if start is even and start+mod is odd, jump once
-
-    # Walk with step 2*mod to stay odd within the residue class
-    step = 2 * mod
-    n = start
-    # Adjust if start is even
-    if n % 2 == 0:
-        n += mod
-    # Recheck: we need n ≡ r (mod mod) and n odd
-    # The simplest correct approach: iterate all odd n in [n_min, n_max] with n ≡ r mod mod
+    # Find the first odd n ≥ n_min with n ≡ r (mod mod)
     n = n_min if n_min % 2 == 1 else n_min + 1
-    # align to residue class r mod mod
     remainder = n % mod
     if remainder != r % mod:
         n += (r % mod - remainder) % mod
