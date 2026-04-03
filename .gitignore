@@ -1,0 +1,3 @@
+# Build / runtime outputs – do not commit
+scripts/out/
+simulations/outputs/
