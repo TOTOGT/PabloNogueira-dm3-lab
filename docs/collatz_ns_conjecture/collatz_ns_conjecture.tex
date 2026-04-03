@@ -1,0 +1,323 @@
+% collatz_ns_conjecture.tex
+% Title: The dm³ Operator Grammar: Collatz (TOGT) and Navier–Stokes as Parallel Structural Instances
+% G6 LLC · Pablo Nogueira Grossi · Newark NJ · 2026
+% Requires: booktabs, amsmath, amssymb, hyperref
+
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{lmodern}
+
+\geometry{margin=2.5cm}
+
+\title{The dm\textsuperscript{3} Operator Grammar:\\
+       Collatz (TOGT) and Navier--Stokes\\
+       as Parallel Structural Instances}
+\author{Pablo Nogueira Grossi\\
+        G6 LLC, Newark NJ\\
+        \texttt{dm3-lab}}
+\date{2026}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}
+\newtheorem{conj}{Conjecture}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\clearpage
+
+% ============================================================
+\section{Introduction}
+% ============================================================
+
+The dm\textsuperscript{3} framework (Discrete/Continuous Manifold Mechanics, level~3) posits a
+four-operator generative grammar
+\[
+  G \;=\; U \circ F \circ K \circ C
+\]
+that governs both discrete arithmetic dynamical systems and continuous partial-differential
+equations. The central claim is that Collatz (via TOGT) and the three-dimensional
+Navier--Stokes equations are \emph{instances} of the same grammar, sharing identical operator
+roles and a common local-to-global obstruction called \textbf{Bridge~0}.
+
+This document records the formal parallel, states the analytic targets on each side, and
+provides supporting LaTeX tables, subsection text, and a Lean~4 formalisation skeleton for
+the discrete (Collatz/TOGT) side.
+
+% ============================================================
+\section{The dm\textsuperscript{3} Operator Grammar}
+% ============================================================
+
+\begin{defn}[dm\textsuperscript{3} generative cycle]
+A \emph{dm\textsuperscript{3} generative cycle} is a quadruple of maps
+$(C, K, F, U)$ acting on a state space $\mathcal{S}$ such that:
+\begin{enumerate}
+  \item $C : \mathcal{S} \to \mathcal{S}$ \emph{injects} energy or height (Contact/Compression);
+  \item $K : \mathcal{S} \to \mathcal{S} \times \mathbb{R}_{\ge 0}$ \emph{extracts} the
+        kernel/valuation, recording local dissipation;
+  \item $F : \mathcal{S} \times \mathbb{R}_{\ge 0} \to \mathcal{S}$ \emph{dissipates} flux by
+        decrementing the Lyapunov height;
+  \item $U : \mathcal{S} \to \mathcal{S}$ \emph{unfolds} back to the next contact point,
+        regenerating global structure.
+\end{enumerate}
+The \emph{macro-step} is $T = U \circ F \circ K \circ C$.
+\end{defn}
+
+% ============================================================
+\section{TOGT as the Discrete Realisation of dm\textsuperscript{3} Mechanics}
+\label{sec:togt-discrete}
+% ============================================================
+
+\subsection{TOGT as the Discrete Realisation of dm\textsuperscript{3} Mechanics}
+
+Topographical Orthogonal Generative Theory (TOGT) is the discrete instantiation of the
+dm\textsuperscript{3} operator grammar $G = U \circ F \circ K \circ C$. In the Collatz setting
+the four operators have precise arithmetic roles: $C$ injects growth via $3n+1$, $K$ extracts
+the odd kernel and records the 2-adic valuation, $F$ encodes flux dissipation by decrementing
+the discrete Lyapunov height by $v\log 2$, and $U$ folds the result back to the next contact
+point. Navier--Stokes supplies the continuous analogue: advection injects energy, scalewise
+measurement extracts gradients and vorticity, viscosity dissipates energy, and the return to a
+transverse section regenerates the global structure.
+
+The parallel is structural and exact at the level of operator roles and the Bridge~0
+obstruction. In both domains a local dissipation mechanism is evident, yet the analytic language
+to convert that local control into a global closure theorem is missing. For Navier--Stokes the
+missing ingredient is endpoint control of nonlinear fluxes across scales; for TOGT/Collatz it is
+a discrete local-to-global dissipation inequality that yields mean contraction. Framing both
+problems as instances of the same generative grammar clarifies why progress on the
+higher-order closure principle would produce parallel advances across discrete and continuous
+settings.
+
+This perspective is empirical and conditional: the polar vortex demonstrates the continuous
+dm\textsuperscript{3} structure in nature, and Collatz is the arithmetic test case. The research
+program therefore focuses on formalising discrete dm\textsuperscript{3} membership axioms,
+calibrating empirical diagnostics, and proving the Bridge~0 closure principle in a higher-order
+language that treats continuous and discrete systems as instances of the same operator grammar.
+
+% ============================================================
+\section{Side-by-Side Structural Comparison}
+\label{sec:table}
+% ============================================================
+
+Table~\ref{tab:togt-vs-ns} summarises the exact correspondence between TOGT (discrete
+dm\textsuperscript{3}\_disc) and Navier--Stokes (continuous dm\textsuperscript{3}) at each
+operator level, together with the shared dm\textsuperscript{3} role and the Bridge~0 parallel.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{@{}p{3.2cm}p{4.1cm}p{4.1cm}p{4.1cm}@{}}
+\toprule
+\textbf{Concept}
+  & \textbf{TOGT (Discrete dm\textsuperscript{3}\_disc --- Collatz)}
+  & \textbf{Navier--Stokes (Continuous dm\textsuperscript{3})}
+  & \textbf{Shared dm\textsuperscript{3} Role / Bridge~0 Parallel} \\
+\midrule
+Contact Injection
+  & $C(n)=3n+1$ (odd-step growth + perturbation)
+  & Nonlinear advection $(u\cdot\nabla)u$
+  & Local energy / height injection \\[4pt]
+Kernel valuation / extraction
+  & $K(m)=(m/2^{v_2(m)},\,v_2(m))$ --- records exact dissipation count
+  & Extraction of velocity gradient / vorticity at each scale
+  & Local dissipation measurement \\[4pt]
+Flux dissipation
+  & $F$: subtract $v\log 2$ from discrete Lyapunov height
+  & Viscous dissipation $\nu\Delta u$ + cascade to small scales
+  & Local energy loss / flux control \\[4pt]
+Update / unfold
+  & $U$: return to next odd contact point; update orbit measure
+  & Return to next Poincar\'e section or transverse slice
+  & Global structure regeneration \\[4pt]
+Macro-step / time evolution
+  & $T(n)=U\circ F\circ K\circ C(n)=\dfrac{3n+1}{2^{v_2(3n+1)}}$
+  & Evolution under NS PDE over parabolic time scale $\tau_k$
+  & One full generative cycle \\[8pt]
+Monster threshold / flux barrier
+  & $g_6=33$; mean contraction $\mathbb{E}[\log T^2-\log n]<0$ above threshold
+  & Shell-flux barrier preventing cascade to small scales
+  & Critical stability point \\[4pt]
+Bridge~0 obstacle
+  & Local 2-adic dissipation + TOGT grammar $\not\Rightarrow$ global mean contraction
+  & Local energy inequality + controlled shell flux $\not\Rightarrow$ global regularity
+  & The shared local-to-global gap \\[4pt]
+Analytic target
+  & Mean contraction + Lyapunov descent + structured cycle
+  & Flux-barrier $\Rightarrow$ Carleson / KT endpoint $\Rightarrow$ no finite-time singularity
+  & Same membership condition in dm\textsuperscript{3} \\
+\bottomrule
+\end{tabular}
+\caption{Side-by-side structural comparison of TOGT (discrete dm\textsuperscript{3}\_disc) and
+  Navier--Stokes (continuous dm\textsuperscript{3}). Bridge~0 denotes the local-to-global
+  contraction/closure obstacle common to both.}
+\label{tab:togt-vs-ns}
+\end{table}
+
+% ============================================================
+\section{The Discrete Collatz Operators}
+\label{sec:operators}
+% ============================================================
+
+Let $n \in \mathbb{N}$ be odd. The four TOGT operators act as follows.
+
+\paragraph{Contact injection $C$.}
+\[
+  C(n) = 3n + 1.
+\]
+Since $n$ is odd, $C(n)$ is even, initiating the 2-adic cascade.
+
+\paragraph{Kernel extraction $K$.}
+Let $v_2(m)$ denote the 2-adic valuation of $m$ (the exponent of the highest power of 2
+dividing $m$). Then
+\[
+  K(m) = \bigl(m/2^{v_2(m)},\; v_2(m)\bigr).
+\]
+The first component is the odd kernel; the second records how much energy is dissipated in
+this step.
+
+\paragraph{Flux dissipation $F$.}
+Given a discrete Lyapunov height $h : \mathbb{N}_{\mathrm{odd}} \to \mathbb{R}$, the dissipated
+height after one step is
+\[
+  h(k) \;\longmapsto\; h(k) - v \log 2,\quad (k, v) = K(m).
+\]
+
+\paragraph{Unfold $U$.}
+$U$ returns the odd kernel $k$ as the next iterate, closing the generative cycle.
+
+\paragraph{Macro-step $T$.}
+Composing all four:
+\[
+  T(n) = U \circ F \circ K \circ C(n) = \frac{3n+1}{2^{v_2(3n+1)}}.
+\]
+$T$ maps odd integers to odd integers, and the Collatz conjecture asserts that every orbit
+under $T$ eventually reaches 1.
+
+% ============================================================
+\section{Bridge 0: The Shared Local-to-Global Gap}
+\label{sec:bridge0}
+% ============================================================
+
+\begin{defn}[Bridge~0 obstacle]
+Let $\mathcal{D}$ be a dm\textsuperscript{3} instance (discrete or continuous). A
+\emph{Bridge~0 obstacle} is the gap between:
+\begin{enumerate}
+  \item a provable \emph{local} dissipation or energy inequality at each step of $G$, and
+  \item a \emph{global} closure theorem --- mean contraction in the discrete case, global
+        regularity in the continuous case.
+\end{enumerate}
+\end{defn}
+
+\begin{conj}[Bridge~0 closure principle]
+There exists a higher-order language $\mathcal{L}$ in which the local dissipation data of any
+dm\textsuperscript{3} instance implies the global closure theorem, and in which the Collatz
+(TOGT) and Navier--Stokes instances are definitionally equivalent cases.
+\end{conj}
+
+The monster threshold $g_6 = 33$ and the mean-contraction estimate
+$\mathbb{E}[\log T(n)^2 - \log n] < 0$ for $n > 33$ represent empirical evidence that the
+discrete Bridge~0 gap is closeable. The Carleson--Koch--Tataru endpoint regularity theory
+represents the current best approach on the continuous side.
+
+% ============================================================
+\section{Research Programme}
+\label{sec:programme}
+% ============================================================
+
+The dm\textsuperscript{3} research programme proceeds along three parallel tracks:
+
+\begin{enumerate}
+  \item \textbf{Formalise discrete dm\textsuperscript{3} membership axioms.}
+        Define the axiom set for a system to qualify as a dm\textsuperscript{3}\_disc instance,
+        including operator roles, Lyapunov height, and the threshold $g_6$.
+  \item \textbf{Calibrate empirical diagnostics.}
+        Verify the mean-contraction inequality computationally over extended ranges and
+        connect it to the formal axioms via the AXLE formalisation (Lean~4).
+  \item \textbf{Prove the Bridge~0 closure principle.}
+        Develop the higher-order language $\mathcal{L}$ in which local dissipation implies
+        global closure, treating discrete and continuous systems as instances of the same grammar.
+\end{enumerate}
+
+The polar vortex demonstrates the continuous dm\textsuperscript{3} structure in nature; Collatz
+is the arithmetic test case. Progress on either front informs the other through the shared
+operator grammar.
+
+% ============================================================
+\appendix
+\section{Lean 4 AXLE Module: TOGT Operator Skeleton}
+\label{app:lean}
+% ============================================================
+
+The following Lean~4 pseudocode (module \texttt{TOGT\_Collatz}) provides the AXLE
+formalisation skeleton for the discrete TOGT operators. It is part of AXLE Target~5.
+
+\begin{verbatim}
+/-
+AXLE: TOGT operator skeleton (Lean 4)
+This module provides types and basic lemmas for the discrete TOGT operators.
+Fill in definitions and proofs as part of AXLE Target 5 formalisation.
+-/
+
+structure KernelVal where
+  k : Nat   -- odd kernel
+  v : Nat   -- 2-adic valuation
+
+def C (n : Nat) : Nat := 3 * n + 1
+
+/-- 2-adic valuation v2(n) -/
+def v2 : Nat -> Nat
+  | 0 => 0
+  | n =>
+    let rec aux (m : Nat) (cnt : Nat) : Nat :=
+      if m % 2 == 0 then aux (m / 2) (cnt + 1) else cnt
+    aux n 0
+
+def K (m : Nat) : KernelVal :=
+  { k := m / (2 ^ (v2 m)), v := v2 m }
+
+/-- Discrete Lyapunov height placeholder. -/
+def h (k : Nat) : Float := 0.0
+
+/-- Flux dissipation -/
+def F (kv : KernelVal) : KernelVal × Float :=
+  let k := kv.k
+  let v := kv.v
+  (kv, h k - Float.ofNat v * Float.log 2.0)
+
+/-- Update / unfold -/
+def U (kv_h : KernelVal × Float) : Nat := kv_h.1.k
+
+/-- Macro-step T(n) = U (F (K (C n))) -/
+def T (n : Nat) : Nat :=
+  let m := C n
+  let kv := K m
+  U (F kv)
+
+/- Lemmas to prove:
+   - T maps odd integers to odd integers (when n is odd)
+   - T n = (3n+1) / 2^{v2(3n+1)}
+   - Properties of v2 and K
+-/
+
+theorem T_eq_formula (n : Nat) :
+    T n = (3 * n + 1) / (2 ^ (v2 (3 * n + 1))) := by
+  simp [T, U, F, K, C]
+
+/- Bridge 0 schema (axiom template — to be proved, not assumed) -/
+-- axiom bridge0_schema :
+--   formal statement that local dissipation + TOGT axioms imply mean contraction
+\end{verbatim}
+
+The full runnable module (with \texttt{v2} proven and \texttt{T\_eq\_formula} completed) is
+maintained in \texttt{lean/TOGT\_Collatz.lean}.
+
+\end{document}
