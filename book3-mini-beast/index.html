@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book III MiniBeast — DM3 Lab (TOGT / dm³)</title>
+
+  <!-- Tailwind via CDN (production: consider building locally) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- KaTeX for math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" integrity="sha384-GvrOXuhMATgEsSwCs4smul74iXGOixntILdUW9XmUC6+HX0sLNAK3q71HotJqlAn" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" integrity="sha384-cpW21h6RZv/phavutF+AuVYrr+dA8xD9zs6FuyXpons1TM5fS33hiOQxzuriBe+" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4Uv8SKmo" crossorigin="anonymous"></script>
+
+  <!-- Mermaid for diagrams -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+  </script>
+
+  <style>
+    /* Small print-friendly tweaks and layout */
+    :root { --sidebar-width: 300px; }
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+    .toc-link { color: #0f172a; }
+    .placeholder { background: linear-gradient(90deg,#fff6e6,#f0f9ff); border-left:4px solid #f59e0b; padding:0.5rem; }
+    .verbatim-note { font-size:0.9rem; color:#374151; }
+    @media (prefers-color-scheme: dark) {
+      .placeholder { background: linear-gradient(90deg,#1f2937,#0f172a); border-left-color:#f97316; color:#e6eef8; }
+    }
+    /* Print-friendly */
+    @media print {
+      nav, .controls { display:none; }
+      .content { margin:0; padding:0; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
+
+  <!-- Top banner -->
+  <header class="bg-white dark:bg-slate-800 border-b dark:border-slate-700">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div>
+        <h1 class="text-xl font-semibold">Book III MiniBeast — DM3 Lab</h1>
+        <p class="text-sm text-slate-500 dark:text-slate-300">TOGT / dm³ research hub — interactive supplement scaffold</p>
+      </div>
+      <div class="text-sm text-slate-600 dark:text-slate-300">
+        <span id="last-updated">Last updated: 2026-04-03</span>
+        <span class="ml-4">Branch: <strong>coordination/v1.2</strong></span>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-6xl mx-auto px-4 py-6 grid grid-cols-12 gap-6">
+    <!-- Sidebar / TOC -->
+    <nav class="col-span-12 md:col-span-3 lg:col-span-3 sticky top-20">
+      <div class="bg-white dark:bg-slate-800 border rounded-lg p-4 shadow-sm">
+        <h2 class="font-semibold mb-2">Contents</h2>
+        <ul class="space-y-1 text-sm">
+          <li><a class="toc-link" href="#intro">Introduction</a></li>
+          <li><a class="toc-link" href="#polar-vortex">Polar Vortex (Empirical Certificate)</a></li>
+          <li><a class="toc-link" href="#the-same-gap">The Same Gap Across Two Problems</a></li>
+          <li><a class="toc-link" href="#togt-grammar">TOGT Operator Grammar</a></li>
+          <li><a class="toc-link" href="#c9-2-empirical">C9.2 Empirical Pipeline (Placeholders)</a></li>
+          <li><a class="toc-link" href="#figures">Figures &amp; Diagrams</a></li>
+          <li><a class="toc-link" href="#appendix">Appendix &amp; Notes</a></li>
+        </ul>
+        <div class="mt-4 text-xs text-slate-500 dark:text-slate-400">
+          <div class="mb-2">Edit this page:</div>
+          <a class="inline-block bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded text-xs" href="https://github.com/TOTOGT/dm3-lab/edit/coordination/v1.2/book3-mini-beast/index.html">Edit on GitHub</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="col-span-12 md:col-span-9 lg:col-span-9 content">
+      <!-- Intro -->
+      <section id="intro" class="mb-8">
+        <h2 class="text-2xl font-bold mb-2">Introduction</h2>
+        <p class="text-slate-600 dark:text-slate-300">This single-file supplement scaffold is prepared for the Book III MiniBeast materials and the Collatz supplement. It is intentionally <strong>placeholder-first</strong>: paste verbatim PDF text into the marked blocks below to produce the final single-file HTML deliverable.</p>
+
+        <div class="mt-4 placeholder">
+          <div class="font-medium">How to use this file</div>
+          <ol class="mt-2 text-sm list-decimal list-inside">
+            <li>Open this file in an editor and locate the verbatim placeholders (clearly marked).</li>
+            <li>Paste the exact PDF text (every word exactly as in the PDF) into the placeholder block(s).</li>
+            <li>Save and preview in a browser. KaTeX and Mermaid will render math and diagrams automatically.</li>
+            <li>Commit the file to <code>book3-mini-beast/index.html</code> on branch <code>coordination/v1.2</code> when ready.</li>
+          </ol>
+          <div class="mt-2 verbatim-note">Important: do not alter the placeholder markers; they help reviewers verify verbatim insertion.</div>
+        </div>
+      </section>
+
+      <!-- Polar vortex -->
+      <section id="polar-vortex" class="mb-8">
+        <h2 class="text-xl font-semibold mb-2">The Polar Vortex as Empirical Certificate</h2>
+
+        <!-- VERBATIM PLACEHOLDER: POLAR VORTEX SECTION -->
+        <div class="border rounded-md p-4 bg-white dark:bg-slate-800">
+          <div class="text-sm text-slate-500 mb-2">Insert verbatim text from <strong>Book3_VolIII_MiniBeast_eBook.pdf</strong> here.</div>
+          <!-- INSERT VERBATIM PDF TEXT HERE: POLAR VORTEX -->
+          <div id="verbatim-polar-vortex" class="placeholder" contenteditable="false">
+            <!-- PASTE EXACT PDF TEXT BETWEEN THESE MARKERS -->
+            <!-- BEGIN VERBATIM: Book3_VolIII_MiniBeast_eBook.pdf — Section: The Polar Vortex as Empirical Certificate -->
+            <!-- INSERT VERBATIM TEXT HERE -->
+            <!-- END VERBATIM -->
+          </div>
+        </div>
+      </section>
+
+      <!-- The Same Gap subsection -->
+      <section id="the-same-gap" class="mb-8">
+        <h2 class="text-xl font-semibold mb-2">The Same Gap Across Two Famous Unsolved Problems</h2>
+
+        <div class="border rounded-md p-4 bg-white dark:bg-slate-800">
+          <div class="text-sm text-slate-500 mb-2">Insert verbatim text from the Collatz supplement PDF here (the subsection you prepared).</div>
+          <!-- INSERT VERBATIM PDF TEXT HERE: THE SAME GAP -->
+          <div id="verbatim-same-gap" class="placeholder" contenteditable="false">
+            <!-- BEGIN VERBATIM: Collatz_Paper_Grossi2026_updated (2).pdf — Subsection -->
+            <!-- INSERT VERBATIM TEXT HERE -->
+            <!-- END VERBATIM -->
+          </div>
+        </div>
+      </section>
+
+      <!-- TOGT Operator Grammar -->
+      <section id="togt-grammar" class="mb-8">
+        <h2 class="text-xl font-semibold mb-2">TOGT Operator Grammar (G = U ∘ F ∘ K ∘ C)</h2>
+
+        <div class="prose max-w-none">
+          <p class="text-slate-600 dark:text-slate-300">Below is the formal operator table and a compact diagram. If you want the Lean module or LaTeX table inserted verbatim, paste it into the verbatim block.</p>
+
+          <!-- Operator table (rendered) -->
+          <div class="mt-4 overflow-x-auto">
+            <table class="min-w-full text-sm border-collapse">
+              <thead>
+                <tr class="text-left">
+                  <th class="px-3 py-2 font-semibold">Operator</th>
+                  <th class="px-3 py-2 font-semibold">Domain</th>
+                  <th class="px-3 py-2 font-semibold">Action (discrete Collatz)</th>
+                  <th class="px-3 py-2 font-semibold">Meaning</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="bg-white dark:bg-slate-800">
+                  <td class="px-3 py-2">C (Contact Injection)</td>
+                  <td class="px-3 py-2">odd integers</td>
+                  <td class="px-3 py-2"><code>C(n) = 3n + 1</code></td>
+                  <td class="px-3 py-2">Injects growth + perturbation (nonlinear advection analogue)</td>
+                </tr>
+                <tr class="bg-slate-50 dark:bg-slate-900">
+                  <td class="px-3 py-2">K (Kernel Valuation)</td>
+                  <td class="px-3 py-2">even integers</td>
+                  <td class="px-3 py-2"><code>K(m) = (m / 2^{v2(m)}, v2(m))</code></td>
+                  <td class="px-3 py-2">Extracts next odd kernel and records halvings</td>
+                </tr>
+                <tr class="bg-white dark:bg-slate-800">
+                  <td class="px-3 py-2">F (Flux Dissipation)</td>
+                  <td class="px-3 py-2">odd kernel + valuation</td>
+                  <td class="px-3 py-2">Subtracts <code>v log 2</code> from height</td>
+                  <td class="px-3 py-2">Encodes energy loss (Lyapunov decrement)</td>
+                </tr>
+                <tr class="bg-slate-50 dark:bg-slate-900">
+                  <td class="px-3 py-2">U (Update / Unfold)</td>
+                  <td class="px-3 py-2">odd kernel</td>
+                  <td class="px-3 py-2">Identity on kernel; update global orbit measure</td>
+                  <td class="px-3 py-2">Return to next contact point</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Mermaid operator flow -->
+          <div class="mt-6">
+            <div class="bg-white dark:bg-slate-800 p-4 rounded">
+              <div class="prose">
+                <div class="mermaid">
+                  flowchart LR
+                    C["C: Contact Injection\nC(n)=3n+1"] --> K["K: Kernel Valuation\nK(m)=(k,v2(m))"]
+                    K --> F["F: Flux Dissipation\nh(k)-v log 2"]
+                    F --> U["U: Update / Unfold\nreturn next odd"]
+                    U --> T["Macro-step T(n)=U∘F∘K∘C\n(3n+1)/2^{v2(3n+1)}"]
+                    T -.-> C
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VERBATIM PLACEHOLDER: TOGT formal Lean/LaTeX -->
+          <div class="mt-4 border rounded p-3 placeholder">
+            <div class="text-sm text-slate-500">If you want the Lean module or LaTeX operator table inserted verbatim, paste it here.</div>
+            <!-- INSERT VERBATIM: TOGT LEAN / LATEX -->
+            <div id="verbatim-togt" class="mt-2"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- C9.2 Empirical pipeline -->
+      <section id="c9-2-empirical" class="mb-8">
+        <h2 class="text-xl font-semibold mb-2">C9.2 Empirical Pipeline (Sampling + Fourier Diagnostics)</h2>
+
+        <div class="border rounded-md p-4 bg-white dark:bg-slate-800">
+          <p class="text-slate-600 dark:text-slate-300">This scaffold includes the sampling and Fourier helper placeholders. When you paste the exact script text into the repository, the runner will be ready. Below are the expected filenames and the exact placeholder markers for the scripts and outputs.</p>
+
+          <ul class="list-disc list-inside mt-3 text-sm">
+            <li><code>scripts/collatz_c9_2_sampling.py</code> — sampling script (stdlib-only)</li>
+            <li><code>scripts/collatz_c9_2_fourier.py</code> — Fourier diagnostics helper</li>
+            <li><code>scripts/run_c9_2_matrix.sh</code> — optional runner (M=12,14,16)</li>
+            <li>Output (local only): <code>scripts/out/c9_2_M{M}_N{N}.csv</code> and related JSON/CSV diagnostics</li>
+          </ul>
+
+          <div class="mt-3 placeholder">
+            <div class="font-medium">Sampling script verbatim</div>
+            <div class="text-sm text-slate-500 mt-1">Paste the exact script file contents into the repo at <code>scripts/collatz_c9_2_sampling.py</code>. Do not paste the script here unless you want it embedded verbatim in the HTML.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Figures -->
+      <section id="figures" class="mb-8">
+        <h2 class="text-xl font-semibold mb-2">Figures &amp; Diagrams</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Saturn hexagon SVG placeholder -->
+          <figure class="bg-white dark:bg-slate-800 border rounded p-4">
+            <figcaption class="text-sm text-slate-500 mb-2">Saturn north-polar hexagon (placeholder SVG)</figcaption>
+            <div class="flex items-center justify-center">
+              <!-- Simple hexagon SVG placeholder (replace with high-res image if available) -->
+              <svg width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Saturn hexagon placeholder">
+                <defs>
+                  <linearGradient id="g1" x1="0" x2="1">
+                    <stop offset="0" stop-color="#fef3c7"/>
+                    <stop offset="1" stop-color="#e0f2fe"/>
+                  </linearGradient>
+                </defs>
+                <rect width="220" height="220" rx="12" fill="#0f172a" opacity="0.06"/>
+                <g transform="translate(110,110)">
+                  <polygon points="0,-70 60,-35 60,35 0,70 -60,35 -60,-35" fill="url(#g1)" stroke="#0b6b8a" stroke-width="2"/>
+                  <circle r="12" fill="#0b6b8a"/>
+                </g>
+              </svg>
+            </div>
+            <p class="text-xs text-slate-500 mt-2">Replace this SVG with the exact figure or high-resolution asset when available.</p>
+          </figure>
+
+          <!-- Operator flow (Mermaid) -->
+          <figure class="bg-white dark:bg-slate-800 border rounded p-4">
+            <figcaption class="text-sm text-slate-500 mb-2">TOGT operator flow (compact)</figcaption>
+            <div class="prose">
+              <div class="mermaid">
+                graph LR
+                  C["C: 3n+1"] --> K["K: kernel, v2"]
+                  K --> F["F: h - v log 2"]
+                  F --> U["U: next odd"]
+                  U --> T["T(n) = U∘F∘K∘C"]
+              </div>
+            </div>
+          </figure>
+        </div>
+      </section>
+
+      <!-- Appendix -->
+      <section id="appendix" class="mb-12">
+        <h2 class="text-xl font-semibold mb-2">Appendix &amp; Notes</h2>
+
+        <div class="border rounded-md p-4 bg-white dark:bg-slate-800">
+          <h3 class="font-medium">Placeholder policy</h3>
+          <p class="text-sm text-slate-500">All verbatim PDF text must be pasted into the marked blocks. Do not paraphrase or summarize inside those blocks. The placeholders are intentionally visible so reviewers can verify verbatim insertion.</p>
+
+          <h3 class="mt-4 font-medium">Accessibility</h3>
+          <p class="text-sm text-slate-500">This page uses semantic headings, alt text for SVGs, and color contrast tuned for dark/light modes. If you add images, include descriptive captions and alt text.</p>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="mt-8 mb-12 text-sm text-slate-500">
+        <div class="border-t pt-4">
+          <div>Prepared for <strong>dm3-lab</strong>. For finalization: paste verbatim PDF text into placeholders, run local preview, then commit to <code>book3-mini-beast/index.html</code>.</div>
+          <div class="mt-2">If you want me to insert the verbatim text after you upload the PDFs here, say <strong>"Insert PDFs"</strong> and upload both files.</div>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- KaTeX auto-render init -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: "$$", right: "$$", display: true},
+          {left: "\\[", right: "\\]", display: true},
+          {left: "$", right: "$", display: false},
+          {left: "\\(", right: "\\)", display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+
+  <!-- Small JS: scroll-spy for TOC -->
+  <script>
+    (function() {
+      var tocLinks = document.querySelectorAll('nav a.toc-link');
+      function onScroll() {
+        var fromTop = window.scrollY + 120;
+        tocLinks.forEach(function(link) {
+          var section = document.querySelector(link.getAttribute('href'));
+          if (!section) return;
+          if (section.offsetTop <= fromTop && section.offsetTop + section.offsetHeight > fromTop) {
+            link.classList.add('font-semibold');
+          } else {
+            link.classList.remove('font-semibold');
+          }
+        });
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
+  </script>
+</body>
+</html>
