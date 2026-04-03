@@ -76,8 +76,9 @@ def main():
     # Sample from a range wide enough to populate all M dyadic levels.
     # For dyadic: bit-lengths 0..M-1 live in [1, 2^M); extend to [1, 2^(M+4))
     # so higher bit-length groups are also well-represented via the % M wrap.
+    # Include 1 so class-0 statistics are not skewed by its exclusion.
     upper = 2 ** (M + 4)
-    samples = [random.randint(2, upper) for _ in range(N)]
+    samples = [random.randint(1, upper) for _ in range(N)]
 
     t0 = time.time()
 
@@ -95,7 +96,8 @@ def main():
         for n in samples:
             c = dyadic_class(n, M) if args.window_type == "dyadic" else residue_class(n, M)
             ev_A = 1 if n % 2 == 1 else 0
-            ev_B = 1 if collatz_step(n) < n else 0
+            next_n = collatz_step(n)
+            ev_B = 1 if next_n < n else 0
             st = collatz_stopping_time(n)
 
             class_counts[c] += 1

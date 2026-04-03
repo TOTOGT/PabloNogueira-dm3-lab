@@ -54,6 +54,11 @@ def main():
                 N = int(part[1:])
             except ValueError:
                 pass
+    if N is None:
+        import warnings
+        warnings.warn(
+            f"Could not parse N from filename '{csv_basename}'; N will be null in output."
+        )
 
     # Aggregate per-class event_A counts from the CSV
     class_A = {}
@@ -66,7 +71,7 @@ def main():
             class_counts[c] = class_counts.get(c, 0) + 1
 
     hat_p = [
-        class_A.get(c, 0) / class_counts[c] if class_counts.get(c, 0) > 0 else 0.0
+        class_A.get(c, 0) / class_counts[c] if c in class_counts and class_counts[c] > 0 else 0.0
         for c in range(M)
     ]
 
