@@ -294,7 +294,7 @@
 
     <div class="ctrl-row"><label>Preset (odd M)</label></div>
     <select id="sel_mod">
-      <option value="27">27  (3⁴ − residues: 13)</option>
+      <option value="27">27  (3³ — residues: 13)</option>
       <option value="81">81  (3⁴ — residues: 40)</option>
       <option value="243" selected>243 (3⁵ — residues: 121)</option>
       <option value="729">729 (3⁶ — residues: 364)</option>
@@ -305,7 +305,7 @@
 
     <div class="custom-row" id="custom_row">
       <div class="ctrl-row"><label>Custom M (odd integer)</label></div>
-      <input type="number" id="inp_custom" value="243" min="3" step="2">
+      <input type="number" id="inp_custom" value="243" min="3" step="2" placeholder="odd integer ≥ 3">
     </div>
 
     <div class="btn-row">
@@ -402,11 +402,13 @@ function computeStats(M) {
 }
 
 // ─────────────────────────────────────────────
-//  CHART — dual histogram on canvas
+//  CONSTANTS
 // ─────────────────────────────────────────────
-const CHART_W = 680;
-const CHART_H = 300;
-const BINS    = 60;
+const DEFAULT_MODULUS = 243;  // reference modulus from the paper (3^5, 121 residues)
+const CHART_W = 680;          // canvas width in logical pixels
+const CHART_H = 300;          // canvas height in logical pixels
+const BINS    = 60;           // histogram bin count (balances resolution vs. noise)
+const MAX_TABLE_ROWS = 300;   // cap table rows for DOM performance
 
 function buildHistogram(values, binMin, binMax) {
   const hist = new Array(BINS).fill(0);
@@ -563,7 +565,7 @@ function drawChart(canvas, stats) {
 // ─────────────────────────────────────────────
 //  TABLE
 // ─────────────────────────────────────────────
-const MAX_ROWS = 300;
+const MAX_ROWS = MAX_TABLE_ROWS;
 
 function buildTable(rows) {
   const shown = rows.slice(0, MAX_ROWS);
@@ -612,7 +614,7 @@ function getM() {
   const sel = document.getElementById('sel_mod').value;
   if (sel === 'custom') {
     const v = parseInt(document.getElementById('inp_custom').value, 10);
-    return (isNaN(v) || v < 3) ? 243 : (v % 2 === 0 ? v + 1 : v);
+    return (isNaN(v) || v < 3) ? DEFAULT_MODULUS : (v % 2 === 0 ? v + 1 : v);
   }
   return parseInt(sel, 10);
 }
