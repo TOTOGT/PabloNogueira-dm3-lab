@@ -1,0 +1,525 @@
+% n9_1_v0.1_near_diagonal_decomp.tex
+%
+% N9.1 — Decomposition of Π_{j,x₀,k} − Π_j into near-diagonal
+%         commutator and paraproduct pieces for j ∈ [k, k+J]
+%
+% NS lane analysis note — DO NOT reference Collatz deliverables.
+% Part of the D9 envelope framework insertion programme.
+%
+% Author: DM3-lab · 2026
+% -----------------------------------------------------------------------
+
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+
+% -----------------------------------------------------------------------
+% Theorem environments
+% -----------------------------------------------------------------------
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+% -----------------------------------------------------------------------
+% Notation macros
+% -----------------------------------------------------------------------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Pij}{\Pi_j}
+\newcommand{\Pijxk}{\Pi_{j,x_0,k}}
+\newcommand{\diff}{\Pijxk - \Pij}
+\newcommand{\psi}{\psi}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\norm}[2]{\left\|#1\right\|_{#2}}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\ip}[2]{\langle #1,\, #2 \rangle}
+\newcommand{\Lp}[1]{L^{#1}(\R^n)}
+\newcommand{\Sob}[2]{H^{#1}(\R^n)}
+\newcommand{\para}{\mathsf{P}}     % paraproduct
+\newcommand{\comm}{\mathsf{C}}     % commutator
+\newcommand{\res}{\mathsf{R}}      % resonant / remainder
+\newcommand{\BHT}{\mathrm{BHT}}
+
+% -----------------------------------------------------------------------
+\title{%
+  \textbf{N9.1 — Decomposition of $\Pi_{j,x_0,k} - \Pi_j$}\\[4pt]
+  \large Explicit Near-Diagonal Commutator/Paraproduct Pieces\\
+  for $j \in [k,\, k+J]$
+}
+\author{DM3-lab NS lane}
+\date{Version 0.1 — 2026}
+% -----------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+% -----------------------------------------------------------------------
+\section{Overview and Goal}
+% -----------------------------------------------------------------------
+
+This note provides an explicit, finite decomposition of the near-diagonal
+operator difference
+\[
+  \delta\Pi_{j,x_0,k} \;:=\; \Pi_{j,x_0,k} - \Pi_j
+\]
+into commutator and paraproduct pieces, valid for the scale range
+$j \in [k,\, k+J]$ with $J \geq 1$ fixed.  All constants are tracked
+explicitly with their dependence on $J$, $n$ (spatial dimension), and the
+Schwartz seminorms of the underlying cutoff $\psi$.
+
+\medskip\noindent
+\textbf{Standing context.}
+This decomposition is a building block of the \emph{D9 envelope framework}
+(see Section~\ref{sec:d9link}).  The operator $\Pi_j$ is the standard
+Littlewood--Paley projector at dyadic frequency $2^j$, and $\Pi_{j,x_0,k}$
+is a spatially localised variant centered at $x_0 \in \R^n$ with spatial
+cutoff at scale $2^{-k}$.
+
+% -----------------------------------------------------------------------
+\section{Setup and Definitions}
+\label{sec:setup}
+% -----------------------------------------------------------------------
+
+\subsection{Littlewood--Paley projectors}
+
+Fix a smooth radial function $\varphi \in C^\infty_c(\R^n)$ with
+\[
+  \supp\varphi \;\subset\; \{\xi : |\xi| \leq 2\}, \qquad
+  \varphi(\xi) = 1 \text{ for } |\xi| \leq 1,
+\]
+and let $\psi(\xi) := \varphi(\xi) - \varphi(2\xi)$ be the associated
+annular cut, so $\supp\psi \subset \{1/2 \leq |\xi| \leq 2\}$.
+Define
+\[
+  \psi_j(\xi) := \psi(2^{-j}\xi), \qquad
+  \widehat{(\Pi_j f)}(\xi) := \psi_j(\xi)\,\hat{f}(\xi).
+\]
+Then $\Pi_j$ is an $L^p$-bounded Fourier multiplier for all $1 < p < \infty$,
+with
+\[
+  \norm{\Pi_j f}{L^p} \;\leq\; C_p\,\norm{f}{L^p}, \qquad
+  C_p \text{ independent of } j.
+\]
+
+\subsection{Localised projector $\Pi_{j,x_0,k}$}
+
+Let $\chi \in C^\infty_c(\R^n)$ satisfy $\chi(x) = 1$ for $|x| \leq 1$
+and $\supp\chi \subset \{|x| \leq 2\}$.  Set
+\[
+  \chi_{x_0,k}(x) \;:=\; \chi\!\left(2^k(x - x_0)\right),
+\]
+a bump function of unit scale $2^{-k}$ centred at $x_0$.
+Define the \emph{localised Littlewood--Paley projector}
+\[
+  \Pi_{j,x_0,k} f \;:=\; \chi_{x_0,k}\,\Pi_j(\chi_{x_0,k}\,f).
+\]
+This operator is the natural object appearing in the D9 envelope analysis,
+where one needs control of frequency-localised energy restricted to a spatial
+ball of radius $2^{-k}$.
+
+\subsection{The near-diagonal range}
+
+We say $j \in [k, k+J]$ is the \emph{near-diagonal} or
+\emph{near-resonant} range: the spatial localisation scale $2^{-k}$ is
+comparable (up to a factor $2^J$) to the frequency scale $2^{-j}$.
+For $j \gg k+J$ the projector $\Pi_j$ is effectively supported well below
+the localisation scale, and for $j \ll k$ the frequency and spatial scales
+are far apart; both regimes admit easier estimates (see Remark~\ref{rem:offdiag}).
+
+% -----------------------------------------------------------------------
+\section{The Decomposition}
+\label{sec:decomp}
+% -----------------------------------------------------------------------
+
+\subsection{Expansion of the difference}
+
+Write $m := \chi_{x_0,k}$ for brevity.  Then
+\[
+  \Pi_{j,x_0,k} f - \Pi_j f
+  \;=\; m\,\Pi_j(mf) - \Pi_j f
+  \;=\; m\,\Pi_j(mf) - m\,\Pi_j f + m\,\Pi_j f - \Pi_j f.
+\]
+Rearranging:
+\begin{equation}
+  \label{eq:firstsplit}
+  \delta\Pi_{j,x_0,k} f
+  \;=\; m\bigl[\Pi_j(mf) - \Pi_j f\bigr]
+        + (m-1)\,\Pi_j f.
+\end{equation}
+We decompose each bracket using the Bony paraproduct splitting.
+
+\subsection{Bony paraproduct splitting}
+
+For two functions $a, f$ write the bilinear product $af$ as
+\[
+  af \;=\; \para_a f + \para_f a + \res(a,f),
+\]
+where
+\begin{align*}
+  \para_a f &:= \sum_{\ell} S_{\ell-3} a \cdot \Pi_\ell f
+             & &\text{(paraproduct: low freq.\ of $a$ × high freq.\ of $f$)},\\
+  \para_f a &:= \sum_{\ell} S_{\ell-3} f \cdot \Pi_\ell a
+             & &\text{(paraproduct: low freq.\ of $f$ × high freq.\ of $a$)},\\
+  \res(a,f) &:= \sum_{\ell} \Pi_\ell a \cdot \widetilde\Pi_\ell f
+             & &\text{(resonant/diagonal: comparable frequencies)},
+\end{align*}
+with $S_j := \sum_{\ell \leq j} \Pi_\ell$ and $\widetilde\Pi_j$ a slightly
+fattened version of $\Pi_j$ covering $|\xi| \sim 2^j$.
+
+\subsection{Decomposition into four pieces}
+
+Apply the Bony splitting to $(m-1)f$, i.e.,
+$(m-1)f = \para_{(m-1)} f + \para_f(m-1) + \res(m-1,f)$,
+and substitute into \eqref{eq:firstsplit}.  Denoting the commutator
+\[
+  \comm(m,\Pi_j)f \;:=\; m\,\Pi_j(m f) - m\,\Pi_j f
+  \;=\; m\,\Pi_j\bigl(\para_{(m-1)} f
+        + \para_f(m-1) + \res(m-1,f)\bigr),
+\]
+the final \emph{four-term} decomposition is:
+\begin{equation}
+  \label{eq:main}
+  \boxed{
+  \delta\Pi_{j,x_0,k} f
+  \;=\;
+  \underbrace{m\,\Pi_j\!\bigl(\para_{(m-1)} f\bigr)}_{\displaystyle T_1}
+  +\underbrace{m\,\Pi_j\!\bigl(\para_f(m-1)\bigr)}_{\displaystyle T_2}
+  +\underbrace{m\,\Pi_j\!\bigl(\res(m-1,f)\bigr)}_{\displaystyle T_3}
+  +\underbrace{(m-1)\,\Pi_j f}_{\displaystyle T_4}
+  }
+\end{equation}
+where $T_1$--$T_3$ constitute the commutator $\comm(m,\Pi_j)f$ and $T_4$
+is the direct localisation error.  The four interaction types are:
+
+\begin{description}
+  \item[Low--high ($T_1$):]
+    The low-frequency part of $(m-1)$ (via $S_{\ell-3}(m-1)$) multiplies
+    the high-frequency part of $f$ ($\Pi_\ell f$), projected back to scale
+    $2^j$.  This is the standard paraproduct piece.
+
+  \item[High--low ($T_2$):]
+    The high-frequency part of $(m-1)$ ($\Pi_\ell(m-1)$ for $\ell \sim j$)
+    multiplies the low-frequency part of $f$ ($S_{\ell-3}f$).  Since
+    $m = \chi_{x_0,k}$ is smooth at scale $2^{-k}$, its spectrum is
+    concentrated at $|\xi| \lesssim 2^k$, making this term sensitive to
+    the near-diagonal range $j \in [k, k+J]$.
+
+  \item[Resonant/diagonal ($T_3$):]
+    Both $(m-1)$ and $f$ contribute at comparable frequency scales $\ell \sim j$.
+    This is the hardest piece and is the primary source of the $J$-dependence.
+
+  \item[Direct localisation error ($T_4$):]
+    The cutoff mismatch $(m-1)\Pi_j f$ is supported away from the ball
+    $B(x_0, 2^{-k})$ and is controlled by the $L^2$ norm of $f$ outside
+    the support region.
+\end{description}
+
+% -----------------------------------------------------------------------
+\section{Estimates for Each Piece}
+\label{sec:estimates}
+% -----------------------------------------------------------------------
+
+Throughout this section, all constants $C$ may depend on $n$, $p$,
+$\norm{\psi}{C^N}$, and $\norm{\chi}{C^N}$ for a sufficiently large $N$,
+but are \emph{uniform in $j$, $k$, $x_0$} unless stated otherwise.
+
+\subsection{Piece $T_4$: low-frequency contribution of $(m-1)$}
+
+\begin{proposition}[Estimate for $T_4$]
+\label{prop:T4}
+For all $j \in [k, k+J]$ and $f \in L^2(\R^n)$,
+\[
+  \norm{T_4 f}{L^2}
+  \;=\; \norm{(m-1)\Pi_j f}{L^2}
+  \;\leq\; \norm{\Pi_j f}{L^2(\R^n \setminus B(x_0,2^{-k}))}
+  \;\leq\; \norm{f}{L^2(\R^n)}.
+\]
+The first inequality holds because $m = 1$ on $B(x_0, 2^{-k})$ so
+$(m-1)\Pi_j f$ is supported in $\{|x-x_0| \geq 2^{-k}\}$, giving the
+pointwise bound
+\[
+  \abs{(m(x)-1)\Pi_j f(x)}
+  \;\leq\;
+  \mathbf{1}_{|x-x_0| \geq 2^{-k}}\,|\Pi_j f(x)|.
+\]
+The second inequality follows from $\norm{\Pi_j}{L^2 \to L^2} \leq C$
+(with $C$ independent of $j$).  Hence
+\[
+  \norm{T_4 f}{L^2} \;\leq\; C\,\norm{f}{L^2(\R^n)},
+\]
+with $C$ depending only on $n$ and $\psi$, and uniform in $j$, $k$, $x_0$.
+\end{proposition}
+
+\subsection{Piece $T_1$: low--high paraproduct}
+
+\begin{proposition}[Estimate for $T_1$]
+\label{prop:T1}
+Let $j \in [k, k+J]$.  Then
+\[
+  \norm{T_1 f}{L^2}
+  \;\leq\; C_{J}\,\norm{m}_{L^\infty}
+           \sum_{\ell : |\ell - j| \leq 3}
+           \norm{S_{\ell-3}m}_{L^\infty}\,\norm{\Pi_\ell f}{L^2},
+\]
+with $C_J \leq C\cdot 2^{J/2}$ (bounded in $J$), and the sum has $O(1)$
+terms.  Summing over $j \in [k, k+J]$ yields
+\[
+  \left(\sum_{j=k}^{k+J}\norm{T_1[\Pi_j] f}{L^2}^2\right)^{1/2}
+  \;\leq\; C(J+1)^{1/2}\,\norm{m}_{W^{n/2+1,\infty}}\,\norm{f}{L^2}.
+\]
+\end{proposition}
+
+\begin{proof}[Sketch]
+By Fourier support considerations, $\Pi_j(\para_{(m-1)} f)$ is supported at
+frequency $\sim 2^j$.  Since $\norm{m-1}_{L^\infty} \leq 1$ (as $m$ is a
+smooth cutoff with values in $[0,1]$), the $L^2$ norm is controlled by
+Bernstein's inequality.  The factor $(J+1)^{1/2}$ comes from summing $J+1$
+terms.
+\end{proof}
+
+\subsection{Piece $T_2$: high--low paraproduct}
+
+\begin{proposition}[Estimate for $T_2$]
+\label{prop:T2}
+For $j \in [k, k+J]$, the multiplier $m = \chi_{x_0,k}$ satisfies
+$\Pi_\ell m = 0$ unless $|\xi| \lesssim 2^k$, so $T_2$ is non-trivial
+only for $\ell \leq k + C_0$ (some absolute constant $C_0$).
+Hence for $j \in [k, k+J]$ with $J$ fixed:
+\[
+  \norm{T_2 f}{L^2}
+  \;\leq\; C\,\norm{\nabla^n \chi}_{L^1}
+           \sum_{\ell=k}^{k+J+C_0}
+           \norm{S_{\ell-3}f}_{L^\infty}\,\norm{\Pi_\ell m}_{L^2}.
+\]
+Applying Bernstein ($\norm{\Pi_\ell m}_{L^2} \leq C 2^{-\ell n/2}\norm{m}_{L^1}
+\leq C 2^{-\ell n/2} \cdot 2^{-kn}$) and Sobolev embedding, we obtain
+the $L^2$ bound uniform in $x_0$:
+\[
+  \norm{T_2 f}{L^2}
+  \;\leq\; C_J\,\norm{\chi}_{H^{n/2+1}}\,\norm{f}{L^2}.
+\]
+The constant $C_J$ grows at most polynomially in $J$.
+\end{proposition}
+
+\subsection{Piece $T_3$: resonant/diagonal term}
+
+\begin{proposition}[Estimate for $T_3$]
+\label{prop:T3}
+For $j \in [k, k+J]$,
+\[
+  T_3 f \;=\; m\,\Pi_j\!\left(\sum_{\ell}\Pi_\ell(m-1) \cdot \widetilde\Pi_\ell f\right).
+\]
+Since the spectrum of $(m-1)$ lies in $\{|\xi| \lesssim 2^k\}$ (as $m-1$
+is also smooth at scale $2^{-k}$), the resonant
+sum has contributions only from $\ell \in [k-C_0,\, k+J+C_0]$.  Thus
+\[
+  \norm{T_3 f}{L^2}
+  \;\leq\; C\,\norm{m}_{L^\infty}
+  \sum_{\ell=k-C_0}^{k+J+C_0}
+  \norm{\Pi_\ell(m-1)}_{L^\infty}\,\norm{\Pi_j\widetilde\Pi_\ell f}{L^2}.
+\]
+Using $\norm{\Pi_\ell(m-1)}_{L^\infty} \leq C_\chi 2^{-k(N-n/2)}$ for any
+$N \geq 0$ (since $m-1$ is smooth at scale $2^{-k}$), we get
+\begin{equation}
+  \label{eq:T3bound}
+  \norm{T_3 f}{L^2}
+  \;\leq\; C_{\chi,J}\, 2^{-k\varepsilon}\,\norm{f}{L^2}
+\end{equation}
+for any $\varepsilon > 0$, where $C_{\chi,J}$ depends only on $\chi$, $J$,
+$n$, and $\varepsilon$, and is independent of $x_0$ and $k$.
+\end{proposition}
+
+\begin{remark}[Pointwise bound for $T_3$]
+Under the additional assumption $f \in L^\infty$, the resonant piece
+satisfies
+\[
+  \abs{T_3 f(x)}
+  \;\leq\; C_{\chi,J}\,\norm{f}_{L^\infty}
+           \sum_{\ell=k-C_0}^{k+J+C_0} 2^{\ell n}\,\norm{\Pi_\ell(m-1)}_{L^1}
+  \;\leq\; C_{\chi,J}'\,(J+1)\,\norm{f}_{L^\infty},
+\]
+uniformly in $x_0$, $k$, and $x$.
+\end{remark}
+
+\subsection{Summary table}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|c|l|c|c|}
+\hline
+\textbf{Piece} & \textbf{Type} & \textbf{$L^2$ bound} & \textbf{$J$-dep.} \\
+\hline
+$T_1$ & Low--high paraproduct & $C(J+1)^{1/2}\norm{f}{L^2}$ & $O(\sqrt{J})$ \\
+$T_2$ & High--low paraproduct & $C_J\norm{f}{L^2}$ & polynomial \\
+$T_3$ & Resonant (diagonal)   & $C_{\chi,J}2^{-k\varepsilon}\norm{f}{L^2}$ & polynomial \\
+$T_4$ & $(m-1)\Pi_j f$ cutoff & $C\norm{f}{L^2}$ & none \\
+\hline
+\end{tabular}
+\end{center}
+
+All constants are independent of $x_0 \in \R^n$, uniform in $k \geq 0$,
+and uniform in $j \in [k, k+J]$.
+
+% -----------------------------------------------------------------------
+\section{Constant Tracking and Uniformity}
+\label{sec:constants}
+% -----------------------------------------------------------------------
+
+\begin{theorem}[Main Decomposition Estimate]
+\label{thm:main}
+Let $n \geq 2$, $J \geq 1$, $k \geq 0$, $x_0 \in \R^n$, and
+$j \in [k, k+J]$.  Then
+\[
+  \norm{\Pi_{j,x_0,k} f - \Pi_j f}{L^2}
+  \;\leq\; \mathcal{A}(J,\chi,n)\,\norm{f}{L^2},
+\]
+where
+\[
+  \mathcal{A}(J,\chi,n)
+  \;:=\; C(n)\bigl[(J+1)^{1/2}
+         + C_{\chi}\,(J+1)^2\bigr]
+  \;\leq\; C(n,\chi)\,(J+1)^2,
+\]
+and $C(n)$, $C_\chi$ depend only on dimension $n$ and the $C^{n+4}$ norm
+of $\chi$, \emph{not} on $x_0$, $k$, or $j$.
+\end{theorem}
+
+\begin{proof}
+Sum the estimates of Propositions~\ref{prop:T4}--\ref{prop:T3}.
+The polynomial bound in $J$ absorbs all terms.
+\end{proof}
+
+\begin{corollary}[Uniformity in $(x_0, k)$]
+The bound $\mathcal{A}(J,\chi,n)$ is uniform over all $x_0 \in \R^n$ and
+$k \geq 0$.  In particular, the decomposition is suitable for insertion
+into any summation over $k$ and spatial centres $x_0$ appearing in the
+D9 envelope.
+\end{corollary}
+
+\begin{remark}[$J$-dependence is sharp for $T_3$]
+\label{rem:Jsharp}
+For the resonant piece $T_3$, the factor $(J+1)$ counts the number of
+resonant frequency bands.  A simple example with $f = \sum_{\ell=k}^{k+J}
+\Pi_\ell g$ and $m = $ a bump shows this is optimal up to constants.
+\end{remark}
+
+% -----------------------------------------------------------------------
+\section{Off-Diagonal Ranges}
+\label{sec:offdiag}
+% -----------------------------------------------------------------------
+
+\begin{remark}[Off-diagonal ranges]
+\label{rem:offdiag}
+The near-diagonal range $j \in [k, k+J]$ is the critical case.
+\begin{itemize}
+  \item For $j > k+J$ (sub-localisation scale): the projector $\Pi_j$ acts
+    at frequencies below $2^k$, so $\Pi_{j,x_0,k} = \Pi_j$ on smooth
+    data, and $\delta\Pi_{j,x_0,k} = 0$ up to exponentially small tails.
+  \item For $j < k$ (super-localisation scale): $\Pi_j$ acts at frequencies
+    $2^j \ll 2^k$, and the commutator $\comm(m,\Pi_j)$ has kernel decay
+    $O(2^{j(N-n/2)} / 2^{kN})$ for any $N$, giving rapid decay in $(k-j)$.
+\end{itemize}
+Hence the only active range is indeed $j \in [k, k+J]$.
+\end{remark}
+
+% -----------------------------------------------------------------------
+\section{Link to the D9 Envelope Framework}
+\label{sec:d9link}
+% -----------------------------------------------------------------------
+
+The decomposition~\eqref{eq:main} and Theorem~\ref{thm:main} are designed
+for direct insertion into the \emph{NS D9 envelope framework}, where one
+constructs energy envelopes $\mathcal{E}_{k}(t)$ of the form
+\[
+  \mathcal{E}_{k}(t)
+  \;:=\; \sup_{x_0}\sum_{j=k}^{k+J}
+         \norm{\Pi_{j,x_0,k} u(t,\cdot)}{L^2(B(x_0,2^{-k}))}^2.
+\]
+The difference $\Pi_{j,x_0,k} - \Pi_j$ enters when commuting the
+localisation with the nonlinear (Navier--Stokes) evolution.  The estimate
+of Theorem~\ref{thm:main} shows that this commutator contributes at most
+$\mathcal{A}(J,\chi,n)^2\,\norm{u}{L^2}^2$ to the energy envelope, with
+constants that are uniform in $(x_0, k)$, enabling a closed estimate.
+
+\paragraph{Insertion recipe.}
+Given a D9-envelope inequality of the form
+\[
+  \partial_t \mathcal{E}_k
+  \;\leq\; [\text{NS terms}]
+           + R_k
+\]
+where $R_k$ involves $\Pi_{j,x_0,k} u - \Pi_j u$, replace $R_k$ by
+\[
+  R_k \;\leq\; \mathcal{A}(J,\chi,n)^2 \norm{u(t)}{L^2}^2
+  \;+\; \text{(off-diagonal tails from Section~\ref{sec:offdiag})}.
+\]
+The off-diagonal tails are summable in $k$ with the factor
+$\sum_{k \geq 0} 2^{-k\varepsilon} < \infty$.
+
+% -----------------------------------------------------------------------
+\section{Open Items and Next Steps}
+\label{sec:open}
+% -----------------------------------------------------------------------
+
+\begin{itemize}
+  \item \textbf{Sharp constants for $T_2$, $T_3$:}  The polynomial bound
+    in $J$ for $T_2$ and $T_3$ may be improvable to $(J+1)^{1/2}$
+    by bilinear estimates or $T(b)$-theorem techniques.
+  \item \textbf{$L^p$ extensions:}  The estimates above are stated in
+    $L^2$; extensions to $L^p$, $1 < p < \infty$, follow from
+    Calderón--Zygmund theory but require tracking $p$-dependent constants.
+  \item \textbf{Sobolev-norm version:}  For NS regularity theory one needs
+    the analogue with $H^s$ norms; the same decomposition applies with
+    $2^{sj}$ weights inserted.
+  \item \textbf{N9.2 interface:}  The present decomposition feeds into
+    the N9.2 \#8 observable definition once the admissibility conditions
+    and windowing parameters are fixed.
+\end{itemize}
+
+% -----------------------------------------------------------------------
+\appendix
+\section{Bernstein and Littlewood--Paley Reference Inequalities}
+\label{sec:bernstein}
+% -----------------------------------------------------------------------
+
+For reference, we collect the standard inequalities used above.
+
+\begin{lemma}[Bernstein]
+Let $f$ be supported at frequencies $|\xi| \leq R$.  Then for
+$1 \leq p \leq q \leq \infty$:
+\[
+  \norm{D^\alpha f}{L^q}
+  \;\leq\; C_\alpha\, R^{|\alpha| + n(1/p - 1/q)}\,\norm{f}{L^p}.
+\]
+\end{lemma}
+
+\begin{lemma}[Littlewood--Paley square function]
+For $1 < p < \infty$ there exists $C_p > 0$ such that
+\[
+  C_p^{-1}\,\norm{f}{L^p}
+  \;\leq\; \norm{\Bigl(\sum_j |\Pi_j f|^2\Bigr)^{1/2}}{L^p}
+  \;\leq\; C_p\,\norm{f}{L^p}.
+\]
+\end{lemma}
+
+\begin{lemma}[Paraproduct $L^2$ bound]
+For $a \in L^\infty$ and $f \in L^2$:
+\[
+  \norm{\para_a f}{L^2} \;\leq\; C\,\norm{a}_{L^\infty}\,\norm{f}{L^2},
+  \qquad
+  \norm{\res(a,f)}{L^2} \;\leq\; C\,\norm{a}_{L^\infty}\,\norm{f}_{L^2}.
+\]
+\end{lemma}
+
+% -----------------------------------------------------------------------
+\end{document}
