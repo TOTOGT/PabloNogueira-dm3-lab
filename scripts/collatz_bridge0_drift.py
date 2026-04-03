@@ -135,10 +135,23 @@ def run_exhaustive(M_min: int = 4, M_max: int = 24, output_dir: str = "."):
 # ---------------------------------------------------------------------------
 
 def random_odd(lo: int, hi: int, rng: random.Random) -> int:
-    """Return a uniformly random odd integer in [lo, hi]."""
-    n = rng.randint(lo, hi)
+    """Return a uniformly random odd integer in [lo, hi].
+
+    lo must be odd (or at most 1 less than an odd number in range).
+    The implementation adjusts even draws to the nearest odd, staying in bounds.
+    """
+    # Ensure [lo, hi] contains at least one odd integer
+    lo_odd = lo if lo % 2 == 1 else lo + 1
+    hi_odd = hi if hi % 2 == 1 else hi - 1
+    if lo_odd > hi_odd:
+        raise ValueError(f"No odd integer in [{lo}, {hi}]")
+    n = rng.randint(lo_odd, hi_odd)
+    # Make odd: prefer +1, but clamp to [lo_odd, hi_odd]
     if n % 2 == 0:
-        n = n - 1 if n > lo else n + 1
+        if n + 1 <= hi_odd:
+            n += 1
+        else:
+            n -= 1
     return n
 
 
@@ -155,7 +168,8 @@ def run_sampling(
 
     total_drift = 0.0
     negative_count = 0
-    sample_rows = []          # keep first 1000 rows for the CSV
+    sample_rows = []          # keep first 1000 rows for the CSV (representative sample;
+                              # writing all trials would produce a very large file)
 
     for i in range(num_trials):
         n = random_odd(lo, hi, rng)
@@ -271,7 +285,11 @@ def main():
         summary["sampling"] = sampling_result
         print()
 
-    # Heuristic derivation: E[k] > log₂3
+    # Heuristic: after one step the growth factor is ×3 but we divide by 2^k where
+    # k = v₂(3n+1).  The expected number of halvings E[k] > log₂3 ≈ 1.585,
+    # so the average net factor per step is < 3/2^{log₂3} = 3/3 = 1, i.e. < 1 in
+    # multiplicative terms.  Over two steps this compounds: (3/4)² < 1, giving a
+    # strictly negative log drift, as confirmed numerically above.
     log2_3 = math.log2(3)
     print(f"=== Heuristic check ===")
     print(f"  log₂3 ≈ {log2_3:.6f}  (minimum average halvings needed for contraction)")
