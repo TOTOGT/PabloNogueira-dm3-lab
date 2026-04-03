@@ -29,7 +29,6 @@ def v2(x):
 
 def fft_inplace(a):
     """In-place radix-2 Cooley-Tukey FFT. len(a) must be power of 2."""
-    import cmath
     n = len(a)
     j = 0
     for i in range(1, n):
