@@ -37,7 +37,9 @@ AXLE/
 ├── mappings/
 │   └── domain_mappings.md     — C→K→F→U across six domains
 ├── docs/
-│   └── index.md               — This file
+│   ├── index.md               — This file
+│   └── operator_flow.md       — Mermaid + SVG operator flow figure (C→K→F→U)
+├── 06_operator_flow.svg       — Compact SVG of the operator flow (embed in HTML/LaTeX)
 ├── lakefile.toml              — Lean 4 / Mathlib project file
 ├── README.md
 ├── topics.json
