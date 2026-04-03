@@ -330,7 +330,7 @@
     <div class="math-block">
       ρ(ℒ)  =  E[|T′(n)|]  =  e<sup>λ</sup>
 
-      λ ≈ −0.286 288  (from mod-243 weighted drift)
+      λ ≈ −0.286 288  <em>(empirical — C9.2 pipeline diagnostics; see C9.2 section)</em>
       ρ(ℒ) ≈ e<sup>−0.286 288</sup> ≈ 0.7510
 
       k-fold iterate:
@@ -546,7 +546,7 @@
           explicit <span class="math-inline">O(2<sup>−M</sup>)</span> rate constant.</li>
       <li>Establish a uniform spectral gap for all M ≥ M₀ (Perron–Frobenius for
           primitive non-negative matrices).</li>
-      <li>Connect the Lyapunov exponent λ ≈ −0.2863 to the dm³ transverse eigenvalue
+      <li>Connect the Lyapunov exponent λ ≈ −0.2863 <em>(empirical, C9.2 pipeline)</em> to the dm³ transverse eigenvalue
           bound <span class="math-inline">μ<sub>max</sub> ≤ −2</span> via the
           crystal contact geometry.</li>
     </ul>
@@ -555,6 +555,69 @@
       iterated contraction already produces global geometric order once the monster
       threshold <span class="math-inline">g⁶ = 33</span> is crossed.
     </p>
+  </div>
+
+  <!-- §5 Structural Analogy: Three Panels -->
+  <div class="section-block" id="sec-analogy">
+    <div class="section-tag">Section 5 — Structural Analogy</div>
+    <div class="section-title-border">
+      <h2>Three-Panel Analogy: Holonomy · Spectral Selection · Drift Observable</h2>
+    </div>
+    <p>
+      The following three panels illustrate a <em>structural analogy</em> across three settings
+      where a discrete or geometric constraint organises a spectrum. Panel (iii) summarises
+      internal project computations; it is included to motivate the analogy, not as a claim
+      about established number theory.
+    </p>
+
+    <figure>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.2rem; margin:1.2rem 0;">
+
+        <!-- Panel 1: Berry / Geometric Phase -->
+        <div style="background:#fff; border:1px solid var(--light); border-radius:0.75rem; padding:1.25rem;">
+          <div style="font-family:sans-serif; font-size:0.75rem; font-weight:600; color:var(--gold); text-align:center; margin-bottom:0.75rem; text-transform:uppercase; letter-spacing:0.08em;">1. Geometric Phase (Berry)</div>
+          <div class="math-block" style="font-size:0.8rem; text-align:center;">
+            γ = i ∮ ⟨n|∇<sub>R</sub>|n⟩ · dR
+          </div>
+          <p style="font-size:0.78rem; color:#555; margin-top:0.6rem; line-height:1.6;">
+            Phase accumulated as holonomy under a closed loop in parameter space.
+            Topological invariant; independent of loop speed.
+          </p>
+        </div>
+
+        <!-- Panel 2: Spectral Selection (driven atom) -->
+        <div style="background:#fff; border:1px solid var(--light); border-radius:0.75rem; padding:1.25rem;">
+          <div style="font-family:sans-serif; font-size:0.75rem; font-weight:600; color:var(--mid); text-align:center; margin-bottom:0.75rem; text-transform:uppercase; letter-spacing:0.08em;">2. Spectral Coupling (Driven Atom)</div>
+          <div class="math-block" style="font-size:0.8rem; text-align:center;">
+            ⟨f|ê·r|i⟩ = 0  unless  ΔJ ∈ {0,±1}
+          </div>
+          <p style="font-size:0.78rem; color:#555; margin-top:0.6rem; line-height:1.6;">
+            Symmetry-constrained spectral coupling.
+            Selection rules suppress all but finitely many transitions per level.
+          </p>
+        </div>
+
+        <!-- Panel 3: Collatz Drift Observable (project diagnostics) -->
+        <div style="background:#fff; border:1px solid var(--light); border-radius:0.75rem; padding:1.25rem;">
+          <div style="font-family:sans-serif; font-size:0.75rem; font-weight:600; color:#b45309; text-align:center; margin-bottom:0.75rem; text-transform:uppercase; letter-spacing:0.08em;">3. Collatz Drift Observable</div>
+          <p style="font-size:0.78rem; color:#555; line-height:1.6;">
+            Residue-class observable on ℤ/2<sup>M</sup>ℤ.<br>
+            Centered drift observable on residues mod 2<sup>M</sup>.<br>
+            FFT spectrum organised by v₂(ξ) buckets (project diagnostics — empirical).<br>
+            <em>See: C9.2 diagnostics section for definitions and empirical outputs.</em>
+          </p>
+        </div>
+
+      </div>
+      <figcaption style="text-align:center; font-size:0.75rem; color:#888; margin-top:0.5rem; font-style:italic;">
+        Three panels illustrating a <em>structural analogy</em>: (i) geometric phase as holonomy
+        under parameter loops, (ii) symmetry-constrained spectral coupling in a driven atomic
+        transition, and (iii) mode decompositions of residue-class observables used in this
+        project's Collatz diagnostics.
+        The Collatz panel summarises internal computations in this project; it is included to
+        motivate the analogy, not as a claim about established number theory.
+      </figcaption>
+    </figure>
   </div>
 
 </main>
@@ -794,7 +857,7 @@ const RHO_TRUE       = Math.exp(LAMBDA_DEFAULT);  // ≈ 0.7510
     ctx.fillStyle = "#c9d1d9";
     ctx.font = "bold 12px sans-serif";
     ctx.textAlign = "left";
-    ctx.fillText(`M=${M},  ρ(P_M)=2^{-(M-1)}=1/${Math.pow(2,M-1)},  λ=${lambda.toFixed(4)},  ρ(ℒ)=${rhoL.toFixed(4)}`, PAD.left, PAD.top - 10);
+    ctx.fillText(`M=${M},  ρ(P_M)=2^{-(M-1)}=1/${Math.pow(2,M-1)},  λ=${lambda.toFixed(4)} (empirical),  ρ(ℒ)=${rhoL.toFixed(4)}`, PAD.left, PAD.top - 10);
   }
 
   function updateLiveTable() {
