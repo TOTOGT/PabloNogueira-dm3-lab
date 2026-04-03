@@ -1,327 +1,165 @@
 #!/usr/bin/env python3
 """
-collatz_c9_2_sampling.py
-========================
-Empirical sampling for the D9 modular mixing hypothesis (H_mix).
+scripts/collatz_c9_2_sampling.py
 
-For a given M and window I=[N, N+window_size), enumerate all admissible
-residue classes a mod 2^M (odd a with v2(3a+1)=1, i.e. a ≡ 3 mod 4),
-then sample odd n in the window with n ≡ a (mod 2^M) and A(n) true.
-
-For each such (residue, n) pair compute:
-  - A(n) : v2(3n+1) = 1
-  - B(n) : v2(3*T(n)+1) = 1
-  - w(n) = 1/log(n)
+Stdlib-only Collatz sampling script for C9.2 empirical pipeline.
 
 Outputs:
-  out/residue_stats_M{M}_N{N}.csv
-  out/summary_M{M}_N{N}.csv
+  - {output}/c9_2_M{M}_N{N}.csv
+  - {output}/c9_2_M{M}_N{N}_summary.json
 
-See docs/c9_1_hypothesis.md and scripts/README.md for context.
+Default observable:
+  - event_A(n): n odd
+  - event_B(n): T(n) < n where T(n) is odd-normalized Collatz image
 """
+from __future__ import annotations
 
 import argparse
 import csv
-import math
+import json
 import os
 import random
-import sys
+import math
+from collections import defaultdict
+from statistics import mean
 
-# Informal threshold for H_mix pass/fail check: |D_N(M)| < HMIX_INFORMAL_THRESHOLD
-# This is a practical guide, not the analytic bound (which is η < log₂(4/3)/c_step ≈ 1.0).
-HMIX_INFORMAL_THRESHOLD = 0.05
-
-
-# ── 2-adic helpers ──────────────────────────────────────────────────────────
-
-def v2(n: int) -> int:
-    """Return the 2-adic valuation of n (largest k with 2^k | n)."""
-    if n == 0:
-        return float('inf')
-    k = 0
-    while n % 2 == 0:
-        n >>= 1
-        k += 1
-    return k
-
-
-def collatz_next_odd(n: int) -> int:
-    """Apply one Collatz macro-step: T(n) = (3n+1) / 2^{v2(3n+1)}."""
-    m = 3 * n + 1
-    return m >> v2(m)
-
-
+# ---------- Observable (defaults) ----------
 def event_A(n: int) -> bool:
-    """A(n): v2(3n+1) = 1."""
-    return v2(3 * n + 1) == 1
+    return (n & 1) == 1
 
+def collatz_one_step_image(n: int) -> int:
+    if (n & 1) == 0:
+        return n // 2
+    x = 3 * n + 1
+    while (x & 1) == 0:
+        x >>= 1
+    return x
 
 def event_B(n: int) -> bool:
-    """B(n): v2(3*T(n)+1) = 1."""
-    return v2(3 * collatz_next_odd(n) + 1) == 1
+    return collatz_one_step_image(n) < n
+# ------------------------------------------
 
+def weight(n: int) -> float:
+    return 1.0
 
-# ── Admissible residues ──────────────────────────────────────────────────────
-
-def admissible_residues(M: int):
-    """
-    Return all admissible residues a mod 2^M:
-      - a is odd
-      - v2(3a+1) = 1  (equivalently a ≡ 3 mod 4, since 3·3≡1 mod 4)
-    """
-    mod = 1 << M  # 2^M
-    result = []
-    for a in range(1, mod, 2):      # odd residues
-        if v2(3 * a + 1) == 1:      # A-event true
-            result.append(a)
-    return result
-
-
-# ── Sampling ─────────────────────────────────────────────────────────────────
-
-def sample_residue(
-    a: int,
-    M: int,
-    N: int,
-    window_end: int,
-    mode: str,
-    max_samples: int,
-    stride: int,
-    rng: random.Random,
-) -> dict:
-    """
-    Sample odd n in [N, window_end) with n ≡ a (mod 2^M) and A(n) true.
-    Returns a dict with weighted counts.
-    """
-    mod = 1 << M
-
-    # First odd n >= N that is ≡ a (mod mod)
-    # We need n ≡ a (mod mod) and n odd.
-    # Since a is odd and mod is a power of 2, n ≡ a (mod mod) => n is odd.
-    start = N + ((a - N) % mod)
-    if start < N:
-        start += mod
-
-    # Build candidate list depending on mode
-    if mode in ('exhaustive', 'stride'):
-        step = mod if mode == 'exhaustive' else mod * stride
-        candidates = range(start, window_end, step)
-    elif mode == 'random':
-        # Collect all candidates then sample randomly
-        all_cands = list(range(start, window_end, mod))
-        if len(all_cands) > max_samples:
-            candidates = rng.sample(all_cands, max_samples)
-        else:
-            candidates = all_cands
+def enumerate_window(window_type: str, N: int, start: int | None = None, end: int | None = None):
+    if window_type == "dyadic":
+        start = N
+        end = 2 * N
+    elif window_type == "range":
+        if start is None or end is None:
+            raise ValueError("range requires --start and --end")
     else:
-        raise ValueError(f"Unknown mode: {mode!r}")
+        raise ValueError("unknown window_type")
+    assert start is not None and end is not None
+    n = start
+    while n <= end:
+        yield n
+        n += 1
 
-    count_A = 0
-    count_AB = 0
-    weighted_A = 0.0
-    weighted_AB = 0.0
-    processed = 0
+def compute_per_class(N: int, M: int, window_type: str, start: int | None, end: int | None, sample_rate: float, seed: int):
+    random.seed(seed)
+    mod = 1 << M
+    counts_A = defaultdict(float)
+    counts_A_and_B = defaultdict(float)
+    counts_raw_A = defaultdict(int)
+    counts_raw_A_and_B = defaultdict(int)
+    total_weight = 0.0
+    total_seen = 0
 
-    for n in candidates:
-        if processed >= max_samples and mode != 'random':
-            break
-        if n < 3:
+    for n in enumerate_window(window_type, N, start, end):
+        if sample_rate < 1.0 and random.random() > sample_rate:
             continue
-        if not event_A(n):
-            # Should always be true for admissible a, but guard anyway
+        total_seen += 1
+        total_weight += weight(n)
+        a = n % mod
+        if event_A(n):
+            w = weight(n)
+            counts_A[a] += w
+            counts_raw_A[a] += 1
+            if event_B(n):
+                counts_A_and_B[a] += w
+                counts_raw_A_and_B[a] += 1
+
+    results = []
+    for a in sorted(counts_A.keys()):
+        ca = counts_A[a]
+        cab = counts_A_and_B.get(a, 0.0)
+        hat_p = (cab / ca) if ca > 0 else None
+        results.append((a, ca, cab, hat_p, counts_raw_A.get(a, 0), counts_raw_A_and_B.get(a, 0)))
+    return results, total_weight, total_seen
+
+def compute_L2_variance(results):
+    vals = [r[3] for r in results if r[3] is not None]
+    if not vals:
+        return None
+    m = mean(vals)
+    var = sum((x - m) ** 2 for x in vals) / len(vals)
+    return var, m, len(vals)
+
+def compute_sparse_fraction(results, threshold: float = 0.05):
+    total = 0
+    bad = 0
+    for (_, _, _, hat_p, _, _) in results:
+        if hat_p is None:
             continue
-        w = 1.0 / math.log(n)
-        count_A += 1
-        weighted_A += w
-        if event_B(n):
-            count_AB += 1
-            weighted_AB += w
-        processed += 1
+        total += 1
+        if abs(hat_p - 0.5) > threshold:
+            bad += 1
+    return (bad / total) if total > 0 else None, bad, total
 
-    p_hat = (weighted_AB / weighted_A) if weighted_A > 0 else float('nan')
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Collatz C9.2 sampling: per-class conditional probabilities")
+    parser.add_argument("--N", type=int, default=100000)
+    parser.add_argument("--M", type=int, default=16)
+    parser.add_argument("--window-type", choices=["dyadic", "range"], default="dyadic")
+    parser.add_argument("--start", type=int, default=None)
+    parser.add_argument("--end", type=int, default=None)
+    parser.add_argument("--output", type=str, default="scripts/out")
+    parser.add_argument("--sample-rate", type=float, default=1.0)
+    parser.add_argument("--threshold", type=float, default=0.05)
+    parser.add_argument("--seed", type=int, default=0)
+    args = parser.parse_args()
 
-    return {
-        'count_A': count_A,
-        'count_AB': count_AB,
-        'weighted_A': weighted_A,
-        'weighted_AB': weighted_AB,
-        'p_hat': p_hat,
+    os.makedirs(args.output, exist_ok=True)
+    results, total_weight, total_seen = compute_per_class(args.N, args.M, args.window_type, args.start, args.end, args.sample_rate, args.seed)
+
+    base = f"c9_2_M{args.M}_N{args.N}"
+    csv_path = os.path.join(args.output, f"{base}.csv")
+    with open(csv_path, "w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["class", "weighted_count_A", "weighted_count_A_and_B", "hat_p", "raw_count_A", "raw_count_A_and_B"])
+        for row in results:
+            w.writerow(row)
+
+    l2 = compute_L2_variance(results)
+    sparse_frac, bad, total = compute_sparse_fraction(results, threshold=args.threshold)
+
+    summary = {
+        "N": args.N,
+        "M": args.M,
+        "window_type": args.window_type,
+        "total_weight": total_weight,
+        "total_seen": total_seen,
+        "l2_variance": l2[0] if l2 else None,
+        "l2_mean_hat_p": l2[1] if l2 else None,
+        "num_classes": l2[2] if l2 else 0,
+        "sparse_fraction": sparse_frac,
+        "sparse_bad": bad,
+        "sparse_total": total,
+        "sample_rate": args.sample_rate,
+        "seed": args.seed,
+        "notes": "event_A = odd n; event_B = one-step contraction T(n) < n"
     }
 
+    json_path = os.path.join(args.output, f"{base}_summary.json")
+    with open(json_path, "w") as f:
+        json.dump(summary, f, indent=2)
 
-# ── Output helpers ────────────────────────────────────────────────────────────
+    print("Wrote CSV:", csv_path)
+    print("Wrote summary JSON:", json_path)
+    return 0
 
-def ensure_out_dir(out_dir: str):
-    os.makedirs(out_dir, exist_ok=True)
+if __name__ == "__main__":
+    raise SystemExit(main())
 
-
-def write_residue_csv(path: str, M: int, N: int, window_end: int, rows: list):
-    with open(path, 'w', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=[
-            'M', 'N', 'window_end', 'residue_a',
-            'count_A', 'count_AB', 'weighted_A', 'weighted_AB', 'p_hat',
-        ])
-        writer.writeheader()
-        for row in rows:
-            writer.writerow(row)
-
-
-def write_summary_csv(path: str, M: int, N: int, window_end: int,
-                      mean_p: float, mean_over_residues: float,
-                      max_deviation: float, aggregate_deviation: float,
-                      quantiles: dict):
-    with open(path, 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerow(['metric', 'value'])
-        writer.writerow(['M', M])
-        writer.writerow(['N', N])
-        writer.writerow(['window_end', window_end])
-        writer.writerow(['mean_p_overall', mean_p])
-        writer.writerow(['mean_p_over_residues', mean_over_residues])
-        writer.writerow(['max_deviation_per_residue', max_deviation])
-        writer.writerow(['aggregate_signed_deviation_D_N', aggregate_deviation])
-        for q_label, q_val in sorted(quantiles.items()):
-            writer.writerow([f'p_hat_q{q_label}', q_val])
-
-
-# ── Main ──────────────────────────────────────────────────────────────────────
-
-def parse_args():
-    parser = argparse.ArgumentParser(
-        description='Empirical sampling for Collatz D9 mixing hypothesis (H_mix).',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-    parser.add_argument('--M', type=int, default=4,
-                        help='Modulus exponent (residues mod 2^M).')
-    parser.add_argument('--N', type=int, default=100000,
-                        help='Window start (inclusive).')
-    parser.add_argument('--window-size', type=int, default=None,
-                        help='Window size (default: N, giving I=[N,2N)).')
-    parser.add_argument('--mode', choices=['exhaustive', 'stride', 'random'],
-                        default='exhaustive',
-                        help='Sampling mode within each residue class.')
-    parser.add_argument('--stride', type=int, default=1,
-                        help='Stride multiplier (used with --mode stride).')
-    parser.add_argument('--max-samples', type=int, default=100000,
-                        help='Max samples per residue class.')
-    parser.add_argument('--seed', type=int, default=42,
-                        help='RNG seed (used with --mode random).')
-    parser.add_argument('--out-dir', type=str, default='out',
-                        help='Output directory for CSV files.')
-    return parser.parse_args()
-
-
-def quantile(values: list, q: float) -> float:
-    """Simple quantile computation (linear interpolation)."""
-    if not values:
-        return float('nan')
-    sv = sorted(values)
-    n = len(sv)
-    idx = q * (n - 1)
-    lo = int(idx)
-    hi = min(lo + 1, n - 1)
-    frac = idx - lo
-    return sv[lo] * (1 - frac) + sv[hi] * frac
-
-
-def main():
-    args = parse_args()
-
-    M = args.M
-    N = args.N
-    window_size = args.window_size if args.window_size is not None else N
-    window_end = N + window_size
-    mode = args.mode
-    max_samples = args.max_samples
-    stride = args.stride
-    out_dir = args.out_dir
-    rng = random.Random(args.seed)
-
-    admissible = admissible_residues(M)
-    n_admissible = len(admissible)
-
-    print(f"D9 H_mix empirical sampler")
-    print(f"  M={M}, 2^M={1<<M}, admissible residues: {n_admissible}")
-    print(f"  Window I=[{N}, {window_end})  (size={window_size})")
-    print(f"  Mode: {mode}, max_samples/residue: {max_samples}, seed: {args.seed}")
-    print()
-
-    rows = []
-    total_wA = 0.0
-    total_wAB = 0.0
-
-    for a in admissible:
-        stats = sample_residue(
-            a=a, M=M, N=N, window_end=window_end,
-            mode=mode, max_samples=max_samples,
-            stride=stride, rng=rng,
-        )
-        row = {
-            'M': M,
-            'N': N,
-            'window_end': window_end,
-            'residue_a': a,
-            'count_A': stats['count_A'],
-            'count_AB': stats['count_AB'],
-            'weighted_A': stats['weighted_A'],
-            'weighted_AB': stats['weighted_AB'],
-            'p_hat': stats['p_hat'],
-        }
-        rows.append(row)
-        total_wA += stats['weighted_A']
-        total_wAB += stats['weighted_AB']
-
-    # Overall weighted p
-    mean_p_overall = (total_wAB / total_wA) if total_wA > 0 else float('nan')
-
-    # Stats over residues
-    valid_phats = [r['p_hat'] for r in rows if not math.isnan(r['p_hat'])]
-    mean_over_residues = (sum(valid_phats) / len(valid_phats)
-                          if valid_phats else float('nan'))
-    # Aggregate signed deviation D_N = sum_a (W_N(a)/W_N) * (p_hat(a) - 0.5)
-    aggregate_deviation = sum(
-        r['weighted_A'] / total_wA * (r['p_hat'] - 0.5)
-        for r in rows
-        if total_wA > 0 and not math.isnan(r['p_hat'])
-    ) if total_wA > 0 else float('nan')
-    max_dev = max(abs(p - 0.5) for p in valid_phats) if valid_phats else float('nan')
-    qs = {
-        '25': quantile(valid_phats, 0.25),
-        '50': quantile(valid_phats, 0.50),
-        '75': quantile(valid_phats, 0.75),
-        '90': quantile(valid_phats, 0.90),
-        '95': quantile(valid_phats, 0.95),
-    }
-
-    # Print human-readable summary
-    print(f"Results")
-    print(f"  Overall weighted p_hat (pooled):       {mean_p_overall:.6f}  (target ≈ 0.5)")
-    print(f"  Mean p_hat over residues:               {mean_over_residues:.6f}")
-    print(f"  Max |p_hat - 0.5| per residue:          {max_dev:.6f}  (≈0.5 expected: B is mod-8 deterministic)")
-    print(f"  Aggregate signed deviation |D_N(M)|:    {abs(aggregate_deviation):.6f}  (H_mix quantity; target ≈ 0)")
-    print(f"  p_hat quantiles: Q25={qs['25']:.4f}  Q50={qs['50']:.4f}"
-          f"  Q75={qs['75']:.4f}  Q90={qs['90']:.4f}  Q95={qs['95']:.4f}")
-    print()
-    # H_mix check uses the aggregate deviation, not the per-residue max
-    mixing_ok = not math.isnan(aggregate_deviation) and abs(aggregate_deviation) < HMIX_INFORMAL_THRESHOLD
-    print(f"  H_mix informal check (|D_N(M)| < {HMIX_INFORMAL_THRESHOLD}): {'PASS' if mixing_ok else 'FAIL/unclear'}")
-    print(f"  (Note: per-residue max ≈ 0.5 is expected; the H_mix quantity is the aggregate |D_N(M)|)")
-    print()
-
-    # Write CSVs
-    ensure_out_dir(out_dir)
-    residue_path = os.path.join(out_dir, f'residue_stats_M{M}_N{N}.csv')
-    summary_path = os.path.join(out_dir, f'summary_M{M}_N{N}.csv')
-
-    write_residue_csv(residue_path, M, N, window_end, rows)
-    write_summary_csv(summary_path, M, N, window_end,
-                      mean_p_overall, mean_over_residues, max_dev,
-                      aggregate_deviation, qs)
-
-    print(f"Output written:")
-    print(f"  {residue_path}")
-    print(f"  {summary_path}")
-
-
-if __name__ == '__main__':
-    main()
