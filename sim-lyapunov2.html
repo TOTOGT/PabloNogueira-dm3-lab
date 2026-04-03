@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lyapunov λ₂ — Double-Iterate Collatz · AXLE SIM</title>
+<style>
+  :root {
+    --bg:      #090c10;
+    --panel:   #0d1117;
+    --border:  #30363d;
+    --text:    #c9d1d9;
+    --gold:    #c9a84c;
+    --dim:     #8b949e;
+    --navy:    #1a2744;
+    --accent:  #58a6ff;
+    --green:   #3fb950;
+    --red:     #f85149;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Georgia', serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  nav {
+    background: var(--navy);
+    padding: 0.7rem 2rem;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-shrink: 0;
+  }
+  .nav-logo { color: var(--gold); font-weight: bold; font-size: 0.95rem; letter-spacing: 0.1em; text-decoration: none; font-family: sans-serif; }
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+  .nav-links a { color: #ccc; text-decoration: none; font-size: 0.85rem; font-family: sans-serif; }
+  .nav-links a:hover { color: var(--gold); }
+
+  .workspace {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* ── Side panel ── */
+  .panel {
+    width: 270px;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 1.2rem 1rem;
+    overflow-y: auto;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .panel-title {
+    font-family: sans-serif;
+    font-size: 0.95rem;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.4rem;
+  }
+  .panel-section {
+    margin-top: 0.8rem;
+    font-family: sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 0.2rem;
+  }
+  .ctrl-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.3rem 0;
+  }
+  .ctrl-row label {
+    font-family: sans-serif;
+    font-size: 0.8rem;
+    color: var(--text);
+    flex: 1;
+  }
+  select, input[type=number] {
+    background: #161b22;
+    border: 1px solid var(--border);
+    color: var(--gold);
+    font-family: monospace;
+    font-size: 0.8rem;
+    padding: 0.25rem 0.4rem;
+    width: 100%;
+    margin-top: 0.2rem;
+    outline: none;
+  }
+  select:focus, input[type=number]:focus {
+    border-color: var(--gold);
+  }
+  input[type=number] { width: 100%; }
+  .custom-row {
+    display: none;
+    margin-top: 0.3rem;
+  }
+  .custom-row.visible { display: block; }
+
+  .btn-row {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-top: 0.6rem;
+  }
+  button {
+    flex: 1;
+    min-width: 3.5rem;
+    padding: 0.45rem 0.3rem;
+    background: #161b22;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: sans-serif;
+    font-size: 0.75rem;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: background 0.15s, color 0.15s;
+  }
+  button:hover { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+  button.active { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+
+  /* Metrics */
+  .metrics {
+    margin-top: 0.6rem;
+    background: #0a0e14;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 0.6rem 0.7rem;
+    font-family: monospace;
+    font-size: 0.78rem;
+    line-height: 1.85;
+    color: var(--text);
+  }
+  .metrics .lbl  { color: var(--dim); }
+  .metrics .num  { color: var(--gold); }
+  .metrics .neg  { color: var(--accent); }
+  .metrics .pos  { color: var(--green); }
+  .metrics .sep  { color: var(--border); display: block; border-top: 1px solid var(--border); margin: 0.3rem 0; }
+
+  /* Legend */
+  .legend {
+    margin-top: 0.5rem;
+    font-family: sans-serif;
+    font-size: 0.72rem;
+    color: var(--dim);
+    line-height: 1.6;
+  }
+  .legend-dot {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+
+  /* Doc block */
+  .doc-block {
+    margin-top: 0.8rem;
+    font-size: 0.75rem;
+    line-height: 1.6;
+    color: var(--dim);
+    font-family: sans-serif;
+  }
+  .doc-block strong { color: var(--text); }
+  .doc-block em { color: var(--gold); font-style: normal; }
+
+  /* Right area */
+  .main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .chart-wrap {
+    flex: 0 0 auto;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem;
+    border-bottom: 1px solid var(--border);
+  }
+  canvas {
+    display: block;
+  }
+
+  /* Residue table */
+  .table-wrap {
+    flex: 1;
+    overflow: auto;
+    padding: 0.8rem 1rem;
+  }
+  .table-label {
+    font-family: sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 0.5rem;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: monospace;
+    font-size: 0.78rem;
+  }
+  th {
+    background: #161b22;
+    color: var(--dim);
+    padding: 0.35rem 0.6rem;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+    font-weight: normal;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+  th:first-child { text-align: left; }
+  td {
+    padding: 0.3rem 0.6rem;
+    text-align: right;
+    border-bottom: 1px solid #1c2128;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  td:first-child { text-align: left; color: var(--dim); }
+  td.step1-neg { color: var(--accent); }
+  td.step1-pos { color: var(--green); }
+  td.step2-neg { color: #a371f7; }
+  td.step2-pos { color: var(--red); }
+  tr:hover td { background: #0d1117; }
+
+  footer {
+    background: var(--navy);
+    color: #666;
+    padding: 0.5rem 1.5rem;
+    font-size: 0.7rem;
+    font-family: sans-serif;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  footer a { color: var(--dim); text-decoration: none; }
+  footer a:hover { color: var(--gold); }
+
+  /* empty state */
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--dim);
+    font-family: sans-serif;
+    font-size: 0.85rem;
+    gap: 0.5rem;
+    padding: 2rem;
+    text-align: center;
+  }
+  .empty-state .big { font-size: 2.5rem; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">PRINCIPIA ORTHOGONA</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sim.html">AXLE Simulator</a></li>
+    <li><a href="portal.html">Student Portal</a></li>
+    <li><a href="https://github.com/TOTOGT/AXLE" target="_blank">GitHub</a></li>
+  </ul>
+</nav>
+
+<div class="workspace">
+
+  <!-- PANEL -->
+  <div class="panel">
+    <div class="panel-title">Lyapunov λ₂ · SIM</div>
+
+    <div class="panel-section">Modulus</div>
+
+    <div class="ctrl-row"><label>Preset (odd M)</label></div>
+    <select id="sel_mod">
+      <option value="27">27  (3⁴ − residues: 13)</option>
+      <option value="81">81  (3⁴ — residues: 40)</option>
+      <option value="243" selected>243 (3⁵ — residues: 121)</option>
+      <option value="729">729 (3⁶ — residues: 364)</option>
+      <option value="2187">2187 (3⁷ — residues: 1093)</option>
+      <option value="6561">6561 (3⁸ — residues: 3280)</option>
+      <option value="custom">Custom…</option>
+    </select>
+
+    <div class="custom-row" id="custom_row">
+      <div class="ctrl-row"><label>Custom M (odd integer)</label></div>
+      <input type="number" id="inp_custom" value="243" min="3" step="2">
+    </div>
+
+    <div class="btn-row">
+      <button id="btn_compute">Compute</button>
+    </div>
+
+    <div class="panel-section">Results</div>
+    <div class="metrics" id="metrics">
+      <span class="lbl">Modulus M&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="num" id="m_M">—</span><br>
+      <span class="lbl">Residues |S| </span><span class="num" id="m_n">—</span><br>
+      <span class="sep"></span>
+      <span class="lbl">λ  (single step)</span><span id="m_l1" class="num">—</span><br>
+      <span class="lbl">λ₂ (double step)</span><span id="m_l2" class="num">—</span><br>
+      <span class="sep"></span>
+      <span class="lbl">2λ (theory)&nbsp;&nbsp;</span><span id="m_th" class="num">—</span><br>
+      <span class="lbl">δ = λ₂ − 2λ&nbsp;</span><span id="m_dv" class="num">—</span><br>
+      <span class="sep"></span>
+      <span class="lbl">Bridge 0 holds </span><span id="m_b0" class="num">—</span>
+    </div>
+
+    <div class="legend">
+      <span class="legend-dot" style="background:#58a6ff;"></span>λ single-step contributions<br>
+      <span class="legend-dot" style="background:#a371f7;"></span>λ₂ double-step contributions<br>
+      <span style="color: var(--gold);">|</span> mean λ &nbsp;&nbsp;
+      <span style="color: #a371f7;">|</span> mean λ₂
+    </div>
+
+    <div class="doc-block">
+      <strong>Double-Iterate Lyapunov Exponent</strong><br><br>
+      For each odd residue <em>r &lt; M</em>, computes<br>
+      log(<em>T</em>(<em>r</em>)/<em>r</em>) and log(<em>T</em>²(<em>r</em>)/<em>r</em>)<br>
+      using the compressed Syracuse map<br>
+      <em>T</em>(<em>n</em>) = (3<em>n</em>+1) / 2^<em>v₂</em>(3<em>n</em>+1).<br><br>
+      The drift <strong>λ₂ &lt; 0</strong> is Bridge 0: the mean log-contraction over two growth+dissipation phases. The small offset <strong>δ = λ₂ − 2λ</strong> captures 2-adic correlations between consecutive steps.<br><br>
+      Reference value at M = 243:<br>
+      λ ≈ −0.286288, λ₂ ≈ −0.585345.
+    </div>
+  </div>
+
+  <!-- MAIN AREA -->
+  <div class="main-area" id="main_area">
+    <div class="empty-state" id="empty_state">
+      <span class="big">λ₂</span>
+      <span>Choose a modulus and press <strong>Compute</strong></span>
+      <span style="color:#444;">to visualise the Lyapunov spectrum</span>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <span>AXLE SIM · Lyapunov λ₂ · G6 LLC · Newark, NJ</span>
+  <span><a href="index.html#sims">← All SIMs</a></span>
+</footer>
+
+<script>
+// ─────────────────────────────────────────────
+//  MATH — compressed Syracuse map
+// ─────────────────────────────────────────────
+function v2(n) {
+  if (n <= 0) return 0;
+  let k = 0;
+  while ((n & 1) === 0) { n >>>= 1; k++; }
+  return k;
+}
+
+function T(n) {
+  // n must be odd; result is odd
+  const m = 3 * n + 1;
+  return m >>> v2(m);
+}
+
+function T2(n) {
+  return T(T(n));
+}
+
+function computeStats(M) {
+  // Odd residues: 1, 3, 5, ..., M-2  (M must be odd, so M-1 is even)
+  const rows = [];
+  let sumL1 = 0, sumL2 = 0;
+  for (let r = 1; r < M; r += 2) {
+    const tr  = T(r);
+    const t2r = T(tr);
+    const l1  = Math.log(tr) - Math.log(r);
+    const l2  = Math.log(t2r) - Math.log(r);
+    sumL1 += l1;
+    sumL2 += l2;
+    rows.push({ r, tr, t2r, l1, l2 });
+  }
+  const n  = rows.length;
+  const lambda  = sumL1 / n;
+  const lambda2 = sumL2 / n;
+  return { rows, n, lambda, lambda2 };
+}
+
+// ─────────────────────────────────────────────
+//  CHART — dual histogram on canvas
+// ─────────────────────────────────────────────
+const CHART_W = 680;
+const CHART_H = 300;
+const BINS    = 60;
+
+function buildHistogram(values, binMin, binMax) {
+  const hist = new Array(BINS).fill(0);
+  const span = binMax - binMin;
+  for (const v of values) {
+    const idx = Math.floor((v - binMin) / span * BINS);
+    if (idx >= 0 && idx < BINS) hist[idx]++;
+  }
+  return hist;
+}
+
+function drawChart(canvas, stats) {
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width  = CHART_W * dpr;
+  canvas.height = CHART_H * dpr;
+  canvas.style.width  = CHART_W + 'px';
+  canvas.style.height = CHART_H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const PAD = { top: 24, right: 20, bottom: 36, left: 48 };
+  const W = CHART_W - PAD.left - PAD.right;
+  const H = CHART_H - PAD.top  - PAD.bottom;
+
+  // background
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, CHART_W, CHART_H);
+
+  const l1vals = stats.rows.map(r => r.l1);
+  const l2vals = stats.rows.map(r => r.l2);
+  const allVals = l1vals.concat(l2vals);
+  const globalMin = Math.min(...allVals);
+  const globalMax = Math.max(...allVals);
+  // pad slightly
+  const pad = (globalMax - globalMin) * 0.05;
+  const binMin = globalMin - pad;
+  const binMax = globalMax + pad;
+
+  const hist1 = buildHistogram(l1vals, binMin, binMax);
+  const hist2 = buildHistogram(l2vals, binMin, binMax);
+  const maxCount = Math.max(...hist1, ...hist2, 1);
+
+  // draw grid lines
+  ctx.strokeStyle = '#1c2128';
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 4; i++) {
+    const y = PAD.top + (i / 4) * H;
+    ctx.beginPath();
+    ctx.moveTo(PAD.left, y);
+    ctx.lineTo(PAD.left + W, y);
+    ctx.stroke();
+  }
+
+  const binW = W / BINS;
+
+  // draw λ₂ histogram (back, purple)
+  for (let b = 0; b < BINS; b++) {
+    const barH = (hist2[b] / maxCount) * H;
+    const x = PAD.left + b * binW;
+    const y = PAD.top + H - barH;
+    ctx.fillStyle = 'rgba(163, 113, 247, 0.55)';
+    ctx.fillRect(x + 0.5, y, binW - 1, barH);
+  }
+
+  // draw λ histogram (front, blue)
+  for (let b = 0; b < BINS; b++) {
+    const barH = (hist1[b] / maxCount) * H;
+    const x = PAD.left + b * binW;
+    const y = PAD.top + H - barH;
+    ctx.fillStyle = 'rgba(88, 166, 255, 0.65)';
+    ctx.fillRect(x + 0.5, y, binW - 1, barH);
+  }
+
+  // helper: x position for a value
+  function xOfVal(v) {
+    return PAD.left + ((v - binMin) / (binMax - binMin)) * W;
+  }
+
+  // zero line
+  const x0 = xOfVal(0);
+  ctx.strokeStyle = '#30363d';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(x0, PAD.top);
+  ctx.lineTo(x0, PAD.top + H);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // mean λ line (gold)
+  const xl1 = xOfVal(stats.lambda);
+  ctx.strokeStyle = '#c9a84c';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(xl1, PAD.top);
+  ctx.lineTo(xl1, PAD.top + H);
+  ctx.stroke();
+
+  // mean λ₂ line (purple)
+  const xl2 = xOfVal(stats.lambda2);
+  ctx.strokeStyle = '#a371f7';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(xl2, PAD.top);
+  ctx.lineTo(xl2, PAD.top + H);
+  ctx.stroke();
+
+  // axes
+  ctx.strokeStyle = '#30363d';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PAD.left, PAD.top);
+  ctx.lineTo(PAD.left, PAD.top + H);
+  ctx.lineTo(PAD.left + W, PAD.top + H);
+  ctx.stroke();
+
+  // x-axis labels
+  ctx.fillStyle = '#8b949e';
+  ctx.font = '10px monospace';
+  ctx.textAlign = 'center';
+  const nTicks = 6;
+  for (let i = 0; i <= nTicks; i++) {
+    const v = binMin + (i / nTicks) * (binMax - binMin);
+    const x = PAD.left + (i / nTicks) * W;
+    ctx.fillText(v.toFixed(2), x, PAD.top + H + 14);
+  }
+
+  // y-axis label
+  ctx.fillStyle = '#8b949e';
+  ctx.font = '9px sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText('count', PAD.left - 6, PAD.top + 4);
+
+  // λ label
+  ctx.fillStyle = '#c9a84c';
+  ctx.font = 'bold 10px monospace';
+  ctx.textAlign = xl1 < CHART_W / 2 ? 'left' : 'right';
+  const labelOff = xl1 < CHART_W / 2 ? 4 : -4;
+  ctx.fillText('λ=' + stats.lambda.toFixed(4), xl1 + labelOff, PAD.top + 14);
+
+  // λ₂ label
+  ctx.fillStyle = '#a371f7';
+  ctx.textAlign = xl2 < CHART_W / 2 ? 'left' : 'right';
+  const l2Off = xl2 < CHART_W / 2 ? 4 : -4;
+  ctx.fillText('λ₂=' + stats.lambda2.toFixed(4), xl2 + l2Off, PAD.top + 26);
+
+  // chart title
+  ctx.fillStyle = '#8b949e';
+  ctx.font = '10px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('Distribution of log-step contributions  (blue = single step λ, purple = double step λ₂)', PAD.left, 14);
+}
+
+// ─────────────────────────────────────────────
+//  TABLE
+// ─────────────────────────────────────────────
+const MAX_ROWS = 300;
+
+function buildTable(rows) {
+  const shown = rows.slice(0, MAX_ROWS);
+  const more  = rows.length - shown.length;
+
+  let html = `
+    <div class="table-label">
+      Residue Table — showing ${shown.length} of ${rows.length} odd residues
+      ${more > 0 ? '(first ' + MAX_ROWS + ' shown)' : ''}
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>r</th>
+          <th>T(r)</th>
+          <th>T²(r)</th>
+          <th>log(T/r)</th>
+          <th>log(T²/r)</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+  for (const row of shown) {
+    const c1 = row.l1 < 0 ? 'step1-neg' : 'step1-pos';
+    const c2 = row.l2 < 0 ? 'step2-neg' : 'step2-pos';
+    html += `<tr>
+      <td>${row.r}</td>
+      <td>${row.tr}</td>
+      <td>${row.t2r}</td>
+      <td class="${c1}">${row.l1.toFixed(6)}</td>
+      <td class="${c2}">${row.l2.toFixed(6)}</td>
+    </tr>`;
+  }
+
+  html += `</tbody></table>`;
+  if (more > 0) {
+    html += `<p style="font-family:sans-serif;font-size:0.72rem;color:var(--dim);margin-top:0.5rem;">… ${more} more rows not shown</p>`;
+  }
+  return html;
+}
+
+// ─────────────────────────────────────────────
+//  MAIN
+// ─────────────────────────────────────────────
+function getM() {
+  const sel = document.getElementById('sel_mod').value;
+  if (sel === 'custom') {
+    const v = parseInt(document.getElementById('inp_custom').value, 10);
+    return (isNaN(v) || v < 3) ? 243 : (v % 2 === 0 ? v + 1 : v);
+  }
+  return parseInt(sel, 10);
+}
+
+function run() {
+  const M = getM();
+  const stats = computeStats(M);
+
+  // update metrics panel
+  document.getElementById('m_M').textContent  = M;
+  document.getElementById('m_n').textContent  = stats.n;
+
+  const fmt = v => v.toFixed(6);
+  const neg = (id, v) => {
+    const el = document.getElementById(id);
+    el.textContent = fmt(v);
+    el.className   = v < 0 ? 'neg' : 'pos';
+  };
+  neg('m_l1', stats.lambda);
+  neg('m_l2', stats.lambda2);
+
+  const theory = 2 * stats.lambda;
+  neg('m_th', theory);
+
+  const dev = stats.lambda2 - theory;
+  const dEl = document.getElementById('m_dv');
+  dEl.textContent = (dev >= 0 ? '+' : '') + fmt(dev);
+  dEl.className   = dev < 0 ? 'neg' : (dev > 0 ? 'pos' : 'num');
+
+  const b0El = document.getElementById('m_b0');
+  if (stats.lambda2 < 0) {
+    b0El.textContent = '✓ YES  (λ₂ < 0)';
+    b0El.className   = 'pos';
+  } else {
+    b0El.textContent = '✗ NO   (λ₂ ≥ 0)';
+    b0El.className   = 'neg';
+  }
+
+  // rebuild main area
+  const mainArea = document.getElementById('main_area');
+  mainArea.innerHTML = '';
+
+  // chart
+  const chartWrap = document.createElement('div');
+  chartWrap.className = 'chart-wrap';
+  const canvas = document.createElement('canvas');
+  chartWrap.appendChild(canvas);
+  mainArea.appendChild(chartWrap);
+  drawChart(canvas, stats);
+
+  // table
+  const tableWrap = document.createElement('div');
+  tableWrap.className = 'table-wrap';
+  tableWrap.innerHTML = buildTable(stats.rows);
+  mainArea.appendChild(tableWrap);
+}
+
+// UI wiring
+document.getElementById('sel_mod').addEventListener('change', function() {
+  const cr = document.getElementById('custom_row');
+  if (this.value === 'custom') cr.classList.add('visible');
+  else cr.classList.remove('visible');
+});
+
+document.getElementById('btn_compute').addEventListener('click', run);
+
+// auto-compute on load with default M = 243
+run();
+</script>
+</body>
+</html>
