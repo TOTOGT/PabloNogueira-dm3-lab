@@ -1,0 +1,16 @@
+{
+  "M": 12,
+  "N": 100000,
+  "window_end": 200000,
+  "window_size": 100000,
+  "mode": "exhaustive",
+  "seed": 42,
+  "n_residues_total": 4096,
+  "n_residues_with_data": 2048,
+  "global_mean_log_drift": -0.287597,
+  "l2_variance": 0.96,
+  "sparse_threshold": 0.05,
+  "sparse_bad": 1536,
+  "sparse_total": 2048,
+  "sparse_fraction": 0.75
+}
