@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Lean / lake build artefacts
+.lake/
+*.olean
+*.ilean
+
+# D9 / C9 empirical outputs (attach to issues instead of committing)
+scripts/out/
+simulations/outputs/
+
+# macOS / editor
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
