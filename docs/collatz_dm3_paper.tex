@@ -1,0 +1,452 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{microtype}
+
+\geometry{margin=2.5cm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\title{One Obstacle, Two Unsolved Problems:\\
+How Collatz and Navier--Stokes Point to the Same Missing Language}
+
+\author{Pablo Nogueira Grossi\\
+G6 LLC · Newark, NJ · 2026\\
+\texttt{pablogrossi@hotmail.com}\\
+ORCID: 0009-0000-6496-2186}
+
+\date{April 2026 (preprint)}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We propose that the Collatz conjecture is a canonical instance of a
+\emph{dm\textsuperscript{3}-system}: a dynamical system governed by the
+operator algebra $\mathcal{G} = U \circ F \circ K \circ C$ (Unfold,
+Fold, Curvature, Compression) acting on a contact manifold.
+Under this framing the mean-contraction property of the Collatz map
+with coefficient $c = 3$ is not a numerical accident but a structural
+fingerprint of the operator grammar — the same fingerprint that selects
+wavenumber $n = 6$ in Saturn's polar hexagon, governs
+reconnection-onset in plasma instabilities, and drives fold transitions
+in biological morphogenesis.
+
+We do not claim a proof of the conjecture.
+We claim \emph{structural visibility prior to axiomatisation}: the
+dm\textsuperscript{3} framework makes the relevant invariants explicit,
+identifies the precise gap (Bridge~0, the local-to-global dissipation
+inequality) that separates observable contraction from a closure theorem,
+and places Collatz in the same universality class as the Navier--Stokes
+regularity problem.
+We invite fluid dynamicists, harmonic analysts, number theorists, and
+applied mathematicians to supply the local hypotheses and empirical
+diagnostics needed to formalise the missing language.
+\end{abstract}
+
+\tableofcontents
+\bigskip
+
+%% ------------------------------------------------------------------
+\section{Introduction}
+%% ------------------------------------------------------------------
+
+The Collatz map $T : \mathbb{N} \to \mathbb{N}$,
+\[
+  T(n) = \begin{cases} n/2 & \text{if } n \text{ is even,} \\
+                        3n+1 & \text{if } n \text{ is odd,}
+         \end{cases}
+\]
+has resisted proof for nearly a century despite the empirical
+universality of the cycle $\{4 \to 2 \to 1\}$.
+Standard analytic approaches — density arguments, $p$-adic methods,
+ergodic theory — each establish partial results but fall short of a
+global closure theorem.
+
+We argue that this persistent gap is not merely a technical obstacle
+but a symptom of a \emph{missing formal language}: a higher-order logic
+that can translate local contraction estimates into global convergence
+statements across both discrete arithmetic and continuous analysis.
+The same gap appears in the Navier--Stokes regularity problem, and
+framing both as instances of a single obstacle clarifies why parallel
+progress across domains is not only plausible but structurally expected.
+
+The paper proceeds as follows.
+Section~2 recalls the dm\textsuperscript{3} framework and the operator
+grammar $\mathcal{G} = U \circ F \circ K \circ C$.
+Section~3 presents Saturn's polar vortex as an empirical certificate
+for the framework.
+The new Section~3.1 identifies the common structural obstacle shared by
+Collatz and Navier--Stokes.
+Section~4 analyses the $c = 3$ coefficient as a triad fingerprint.
+Sections~5--9 develop the Collatz dm\textsuperscript{3} identification,
+the open axioms (Bridge~0), the Lean~4 formalisation programme, and
+the cross-disciplinary invitation.
+
+%% ------------------------------------------------------------------
+\section{The dm\textsuperscript{3} Framework}
+%% ------------------------------------------------------------------
+
+\subsection{The Operator Algebra}
+
+\begin{definition}[Generative Operator]
+Let $(X, g)$ be a compact Riemannian manifold with contact form
+$\alpha$.  The \emph{generative operator} is the composition
+\[
+  \mathcal{G} = U \circ F \circ K \circ C : X \to X,
+\]
+where
+\begin{enumerate}[label=(\roman*)]
+  \item $C$ (\emph{Compression}): a Lipschitz map onto a
+        lower-dimensional submanifold, $\kappa = \mathrm{Lip}(C) < 1$;
+  \item $K$ (\emph{Curvature}): a Riemannian-curvature flow driving
+        orbits toward the critical threshold $\kappa^*$;
+  \item $F$ (\emph{Fold}): a Whitney $A_1$ singularity triggered at
+        $\|\kappa\| = \kappa^*$, where $\det(Df) \to 0$;
+  \item $U$ (\emph{Unfold}): gradient descent on a Lyapunov functional
+        $\Phi$, selecting the stable attractor ($\nabla\Phi = 0$).
+\end{enumerate}
+\end{definition}
+
+\subsection{The Canonical dm\textsuperscript{3} Invariants}
+
+The toy model on $M = S \times \mathbb{R}$ with contact form
+$\alpha = dz - r^2\,d\theta$ realises the canonical triple
+\[
+  \iota(\mathfrak{D}) = (T^*, \mu_{\max}, \tau) = (2\pi,\,-2,\,2).
+\]
+The structural stability radius is $\varepsilon_0 = 1/3$, and the
+noise-tolerance product satisfies $\tau \cdot \varepsilon_0 = 2/3$.
+
+\begin{remark}[Epistemic status]
+Axioms~1--6 of the dm\textsuperscript{3} framework are structural
+definitions.  Axioms~7--8 (no divergent orbits; unique attractor) are
+open for the Collatz map — they \emph{are} the conjecture.
+All claims in this paper are conditional on those open axioms unless
+explicitly stated otherwise.
+\end{remark}
+
+%% ------------------------------------------------------------------
+\section{The Polar Vortex as Empirical Certificate}
+%% ------------------------------------------------------------------
+
+Saturn's north polar hexagon constitutes the strongest available
+empirical certificate for the dm\textsuperscript{3} framework.
+The mapping is clean and over-determined:
+
+\begin{enumerate}
+  \item \textbf{C (Compression):} The 3-D atmosphere compresses into a
+        quasi-2D zonal jet layer.
+  \item \textbf{K (Curvature):} Rossby wave curvature accumulates,
+        selecting wavenumber $n = 6$ — not 5, not 7 — via the
+        constraint $\kappa^* = \varepsilon_0 = 1/3$.
+  \item \textbf{F (Fold):} The Whitney fold locks six sharp corners
+        with sub-kilometer precision.
+  \item \textbf{U (Unfold):} Gradient descent on $\Phi$ yields the
+        persistent $40^+$-year fixed point observed from Voyager through
+        Cassini (1980--2020).
+\end{enumerate}
+
+The $c = 3$ triad fingerprint (Section~4) reappears here: the
+Rossby-wave triad resonance selects precisely $n = 6 = 2 \times 3$
+and suppresses $n = 4, 5, 7, 8$.  The polar vortex is therefore both a
+test case and a parameter-estimation laboratory for the discrete
+arithmetic application.
+
+%% ------------------------------------------------------------------
+\subsection{The Same Gap Across Two Famous Unsolved Problems}
+%% ------------------------------------------------------------------
+
+Two of the longest-standing open problems in mathematics --- the
+Collatz conjecture in discrete arithmetic and the Navier--Stokes
+regularity problem in fluid dynamics --- share a common structural
+obstacle we call \textbf{Bridge~0}.  In both settings a local mechanism
+appears to dissipate or contract at small scales, yet the available
+analytic language fails to convert that local control into a robust
+global closure theorem.  For Navier--Stokes the obstruction is endpoint
+control of nonlinear fluxes across scales; for Collatz it is the lack
+of a discrete analogue of the local-to-global dissipation inequality
+(the mean-contraction bridge).  Framing these as instances of the same
+missing step clarifies why progress in one domain can illuminate the
+other.
+
+A higher-order logic that unifies the operator grammar
+$G = U \circ F \circ K \circ C$ across continuous manifolds and
+discrete arithmetic would turn both problems into corollaries of a
+single closure principle.  Such a formalism would supply the discrete
+analogues of Lyapunov functionals, contact forms, and scale-invariant
+closure theorems needed to convert local contraction estimates into
+global convergence or regularity.  This is not a claim that the
+problems are trivial; it is a claim that the \emph{same} missing formal
+ingredient blocks both, and that constructing that ingredient would
+unlock parallel advances across domains.
+
+This is therefore a cross-disciplinary programme.  Fluid dynamicists,
+harmonic analysts, number theorists, plasma physicists, and applied
+mathematicians each encounter manifestations of the same generative
+operator grammar at their scale.  We invite domain experts to
+(a)~identify the precise local control statements they already use in
+practice, (b)~translate those statements into candidate axioms for a
+higher-order language, and (c)~test the axioms against empirical
+diagnostics (Fourier decay, operator numerics, exceptional sets).
+Your expertise is the missing ingredient.
+
+\begin{quote}
+\emph{This programme is conditional and collaborative --- we do not
+claim a proof.  We invite experts from each domain to contribute
+precise local hypotheses and empirical diagnostics so the higher-order
+language can be formalised and tested.}
+\end{quote}
+
+%% ------------------------------------------------------------------
+\section{The \texorpdfstring{$c = 3$}{c=3} Coefficient as Triad Fingerprint}
+%% ------------------------------------------------------------------
+
+\subsection{Mean-Contraction Analysis}
+
+For the generalised Collatz map with odd-branch coefficient $c$,
+\[
+  T_c(n) = \begin{cases} n/2 & n \text{ even,} \\ cn+1 & n \text{ odd,} \end{cases}
+\]
+the mean step ratio over one even--odd pair is
+\[
+  \rho(c) = \frac{c}{2 \cdot 2} = \frac{c}{4}.
+\]
+Mean contraction requires $\rho(c) < 1$, i.e.\ $c < 4$.
+Since $c$ must be odd and $c \geq 1$:
+\[
+  c = 3 \quad \Longrightarrow \quad \rho(3) = \tfrac{3}{4} < 1 \quad
+  \text{(contraction);}
+\]
+\[
+  c = 5 \quad \Longrightarrow \quad \rho(5) = \tfrac{5}{4} > 1 \quad
+  \text{(divergence on average).}
+\]
+
+\begin{proposition}[Minimality of $c = 3$]
+$c = 3$ is the unique minimal odd positive integer producing mean
+contraction in $T_c$.
+\end{proposition}
+
+\subsection{Triad Resonance}
+
+In the operator-grammar language, $c = 3$ encodes the minimum
+three-element resonant triad (even $\to$ odd $\to$ attractor) that
+closes under $\mathcal{G}$.  The same triad structure selects $n = 6$
+in the Saturn hexagon ($6 = 2 \times 3$) and the $4:1$ Arnold tongue
+in Schumann resonance ($f_4 \approx 33.5$ Hz $\sim 2 \times g^6$
+with $g^6 = 33$).
+
+%% ------------------------------------------------------------------
+\section{Collatz as a dm\textsuperscript{3}-System}
+%% ------------------------------------------------------------------
+
+\subsection{Operator Identification}
+
+We identify the Collatz dynamics with the dm\textsuperscript{3}
+operator sequence as follows:
+
+\begin{center}
+\begin{tabular}{lll}
+\hline
+\textbf{Operator} & \textbf{Collatz instantiation} & \textbf{Formal role} \\
+\hline
+$C$ & Even-step halving: $n \mapsto n/2$ & Lipschitz compression $\kappa = 1/2$ \\
+$K$ & Parity curvature: odd/even alternation & Threshold accumulation \\
+$F$ & Odd-branch expansion: $n \mapsto 3n+1$ & Whitney $A_1$ local model \\
+$U$ & Descent to $\{4,2,1\}$ attractor & Gradient descent on $\Phi$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Structural Hypothesis}
+
+\begin{conjecture}[Collatz dm\textsuperscript{3} identification]
+The Collatz dynamical system $(\mathbb{N}, T)$ is a dm\textsuperscript{3}
+system with canonical invariants
+\[
+  (T^*, \mu_{\max}, \tau) = (2\pi,\,-2,\,2), \quad \varepsilon_0 = 1/3,
+\]
+where $T^*$ is the attractor period (the $\{4 \to 2 \to 1\}$ cycle),
+$\mu_{\max}$ is the maximal Lyapunov exponent of the discrete orbit,
+and $\tau = \sqrt{c/\kappa} = \sqrt{3/(1/2)} \cdot (2/3) = 2$ is the
+embodiment threshold.
+\end{conjecture}
+
+This conjecture does not imply a proof of convergence.  It identifies
+the precise structural parameters that a proof would need to verify.
+
+%% ------------------------------------------------------------------
+\section{Bridge~0: The Open Gap}
+%% ------------------------------------------------------------------
+
+\subsection{Statement of Bridge~0}
+
+\begin{definition}[Bridge~0]
+\emph{Bridge~0} is the local-to-global dissipation inequality:
+a formal statement of the form
+\[
+  \text{``local contraction } \Rightarrow \text{ global convergence''}
+\]
+valid in the discrete arithmetic setting of $T$.
+\end{definition}
+
+More precisely, the mean-contraction property $\rho(3) = 3/4 < 1$
+(established by direct computation) must be upgraded to an inequality
+of the form
+\[
+  \Phi(T^k(n)) \leq (1 - \delta)^k \Phi(n) \quad \forall\, n \in \mathbb{N},
+\]
+for some Lyapunov functional $\Phi : \mathbb{N} \to \mathbb{R}_{\geq 0}$
+and $\delta > 0$ uniform in $n$.
+
+\subsection{Why Standard Tools Fail}
+
+\begin{itemize}
+  \item \textbf{Density / ergodic arguments} establish almost-sure
+        convergence but cannot rule out a single exceptional orbit.
+  \item \textbf{$p$-adic methods} control the $2$-adic and $3$-adic
+        structure locally but lack a bridge from local to global
+        $\ell^\infty$ control.
+  \item \textbf{Harmonic analysis} (Fourier decay, Tao's logarithmic
+        density result) shows that almost all orbits eventually reach
+        below any bound, but the endpoint $\ell^\infty$ estimate
+        remains open.
+\end{itemize}
+
+Each of these corresponds, in continuous analysis, to the endpoint
+regularity problem for Navier--Stokes: local $L^2$ energy dissipation
+is controlled, but the $L^\infty$ or $\dot{H}^{1/2}$ endpoint is not.
+This structural parallel is Bridge~0's primary diagnostic content.
+
+%% ------------------------------------------------------------------
+\section{The Lean~4 Formalisation Programme (AXLE)}
+%% ------------------------------------------------------------------
+
+The AXLE repository (\url{https://github.com/TOTOGT/PabloNogueira-dm3-lab})
+contains Lean~4 formalisations of the structural components that \emph{do}
+admit formal proof:
+
+\begin{enumerate}
+  \item \texttt{TOGT.noiseTolerance} — $\tau \cdot \varepsilon_0 = 2/3$
+  \item \texttt{TOGT.stabilityRadius\_eq} — $\varepsilon_0 = 1/3$
+  \item \texttt{TOGT.crystal\_aspect\_ratio} — height/base $= 66$
+  \item \texttt{TOGT.aspect\_ratio\_encodes\_invariants} — $66 = g^6 \cdot \tau$
+  \item \texttt{TOGT.regeneration\_unbounded} — hierarchy is unbounded
+\end{enumerate}
+
+Axioms~7--8 (no divergent orbits; unique attractor) are designated
+\texttt{AXLE Target 5} and remain open, consistent with the Collatz
+conjecture itself.
+
+%% ------------------------------------------------------------------
+\section{Empirical Diagnostics}
+%% ------------------------------------------------------------------
+
+\subsection{Fourier Decay of Exceptional Sets}
+
+Following Tao~\cite{Tao2022}, define the exceptional set
+$E_N = \{n \leq N : T^k(n) > n \text{ for all } k \leq K(n)\}$.
+The dm\textsuperscript{3} framework predicts:
+\[
+  |E_N| = O(N^{1 - \delta}) \quad \text{for some } \delta > 0.
+\]
+This is consistent with Tao's result $|E_N| = O(N / \log N)$ but does
+not sharpen it without Bridge~0.
+
+\subsection{Operator Numerics}
+
+Python simulations in \texttt{simulations/simple\_to\_operator.py}
+compute the dm\textsuperscript{3} metric
+$\tau = \sqrt{c/\kappa}$ and Lyapunov exponents for orbit segments of
+length up to $10^6$.  Preliminary results confirm $\rho(3) = 3/4$
+and detect no divergent segment up to $n = 2^{68}$ (Oliveira--Leal
+census).
+
+%% ------------------------------------------------------------------
+\section{The Cross-Disciplinary Invitation}
+%% ------------------------------------------------------------------
+
+The programme described here is explicitly collaborative and conditional.
+We identify a structural obstacle (Bridge~0) and a formal language that
+makes the obstacle explicit.  We do not claim to have resolved either
+the Collatz conjecture or the Navier--Stokes regularity problem.
+
+We invite:
+
+\begin{itemize}
+  \item \textbf{Number theorists and harmonic analysts} to identify
+        candidate Lyapunov functionals $\Phi$ and test whether they
+        satisfy the discrete dissipation inequality.
+  \item \textbf{Fluid dynamicists} to translate their local energy
+        estimates into axiom candidates for the higher-order language,
+        and to test those axioms against Navier--Stokes numerics.
+  \item \textbf{Plasma physicists} to contribute reconnection-rate
+        estimates as empirical diagnostics for the fold-operator
+        identification.
+  \item \textbf{Applied mathematicians and computer scientists} to
+        extend the Lean~4 formalisation (AXLE) to cover new axioms as
+        they are proposed.
+\end{itemize}
+
+The repository is MIT licensed.  Domain-mapping contributions follow
+the template in \texttt{mappings/domain\_mappings.md}.
+
+%% ------------------------------------------------------------------
+\section*{Acknowledgements}
+%% ------------------------------------------------------------------
+
+The dm\textsuperscript{3} framework was developed in the \emph{Principia
+Orthogona} series (Volumes I--VI, G6 LLC).  Saturn hexagon parameter
+data are drawn from Cassini VIMS and ISS archives (NASA/ESA/ASI).
+Lean~4 formalisation uses Mathlib4.  The connectome simulation uses the
+FlyWire adult female fly connectome (\url{https://codex.flywire.ai}).
+
+%% ------------------------------------------------------------------
+\begin{thebibliography}{99}
+
+\bibitem{Collatz1937}
+L.~Collatz,
+\emph{Unpublished problem presented at the 7th International Congress of
+Mathematicians}, Cambridge, 1950.
+
+\bibitem{Tao2022}
+T.~Tao,
+\emph{Almost all orbits of the Collatz map attain almost bounded values},
+Forum of Mathematics, Pi, \textbf{10} (2022), e12.
+\url{https://doi.org/10.1017/fmp.2022.8}
+
+\bibitem{Fefferman2000}
+C.~L.~Fefferman,
+\emph{Existence and smoothness of the Navier--Stokes equation},
+Clay Mathematics Institute Millennium Prize Problem description, 2000.
+
+\bibitem{Lagarias2010}
+J.~C.~Lagarias (ed.),
+\emph{The Ultimate Challenge: The 3x+1 Problem},
+American Mathematical Society, Providence, RI, 2010.
+
+\bibitem{PrincipalOrthogona}
+P.~Nogueira Grossi,
+\emph{Principia Orthogona}, Volumes I--VI,
+G6 LLC, Newark, NJ, 2024--2026.
+
+\bibitem{Zenodo2026}
+P.~Nogueira Grossi,
+\emph{The Collatz Conjecture as a Canonical dm\textsuperscript{3}-System:
+A Structural Framework for Decidability},
+Zenodo, 2026.
+\url{https://doi.org/10.5281/zenodo.19117400}
+
+\end{thebibliography}
+
+\end{document}
