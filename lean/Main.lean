@@ -5,6 +5,10 @@
 
   v5: definitions first, structures second, theorems last.
   Closes #6. ZERO sorry. ZERO axioms.
+
+  See also:
+  · lean/FreqEnvelopes.lean — N9.2 canonical localized frequency envelopes
+    and the H_FE summability hypothesis (issue #N9.2).
 -/
 
 import Mathlib.Topology.MetricSpace.Basic

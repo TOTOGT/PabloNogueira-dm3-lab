@@ -8,6 +8,12 @@ Guidelines:
 - Do not assume baseline 1/2 unless explicitly defined; record baseline p0 in summaries.
 - Use clear filenames: `n9_v0.1_topic.tex`, `n9_v0.1_operator_estimate.tex`, etc.
 
-Current status: waiting for observable definition (A/B events, class space, scale parameter, admissibility,
+Current files:
+
+| File | Issue | Status |
+|---|---|---|
+| `n9_v0.1_freq_envelopes.md` | N9.2 | ✅ Draft complete — defines `c_{j,x₀,k}(t)`, states H_FE, proves bootstrap reduction |
+
+Previous status: waiting for observable definition (A/B events, class space, scale parameter, admissibility,
 windowing/weighting, baseline p0) from N9.2 #8 / N9.1 #9.
 
