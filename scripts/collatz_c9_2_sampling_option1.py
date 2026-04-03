@@ -36,6 +36,9 @@ import math
 import os
 import random
 
+# Number of decimal places used when formatting hat_p values.
+_HAT_P_FMT = '.6f'
+
 
 # ---------------------------------------------------------------------------
 # Core Collatz machinery
@@ -189,11 +192,13 @@ def main():
             ns = sample_exhaustive(a, mod, args.N, args.window_size,
                                    args.max_samples)
 
-        A_count = sum(1 for n in ns if event_A(n))
-        AB_count = sum(1 for n in ns if event_A(n) and event_B(n))
+        # All n sampled here have residue a which is odd, so event_A(n) is
+        # always True by construction.  A single pass is sufficient.
+        A_count = len(ns)
+        AB_count = sum(1 for n in ns if event_B(n))
 
         if A_count > 0:
-            hat_p_str = f'{AB_count / A_count:.6f}'
+            hat_p_str = format(AB_count / A_count, _HAT_P_FMT)
         else:
             hat_p_str = 'NaN'
 
@@ -217,7 +222,7 @@ def main():
         writer.writerows(rows)
 
     # Write JSON summary
-    global_hat_p = total_AB / total_A if total_A > 0 else None
+    global_hat_p = total_AB / total_A if total_A > 0 else math.nan
     summary = {
         'M': args.M,
         'mod': mod,
@@ -229,17 +234,16 @@ def main():
         'residues_processed': len(rows),
         'total_A': total_A,
         'total_AB': total_AB,
-        'global_hat_p': global_hat_p if global_hat_p is not None else 'NaN',
+        'global_hat_p': 'NaN' if math.isnan(global_hat_p) else global_hat_p,
         'csv': csv_path,
     }
     with open(json_path, 'w') as f:
         json.dump(summary, f, indent=2)
 
     # Console summary
-    if global_hat_p is not None:
-        hat_p_display = f'{global_hat_p:.6f}'
-    else:
-        hat_p_display = 'NaN'
+    hat_p_display = (
+        format(global_hat_p, _HAT_P_FMT) if not math.isnan(global_hat_p) else 'NaN'
+    )
     print(f'[OK] CSV  -> {csv_path}')
     print(f'[OK] JSON -> {json_path}')
     print(f'     residues={len(rows)}  total_A={total_A}  '
