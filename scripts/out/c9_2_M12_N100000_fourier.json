@@ -1,0 +1,80 @@
+{
+  "M": 12,
+  "modulus": 4096,
+  "csv_source": "scripts/out/c9_2_M12_N100000.csv",
+  "signal_length": 4096,
+  "dc_amplitude": 0.48649166,
+  "top_10_non_dc_modes": [
+    {
+      "freq_index": 1024,
+      "amplitude": 0.00355626,
+      "phase_rad": 2.38138031,
+      "re": -0.00257719,
+      "im": 0.00245053
+    },
+    {
+      "freq_index": 3072,
+      "amplitude": 0.00355626,
+      "phase_rad": -2.38138031,
+      "re": -0.00257719,
+      "im": -0.00245053
+    },
+    {
+      "freq_index": 1536,
+      "amplitude": 0.00319563,
+      "phase_rad": -2.77617075,
+      "re": -0.00298464,
+      "im": -0.00114194
+    },
+    {
+      "freq_index": 2560,
+      "amplitude": 0.00319563,
+      "phase_rad": 2.77617075,
+      "re": -0.00298464,
+      "im": 0.00114194
+    },
+    {
+      "freq_index": 256,
+      "amplitude": 0.00208878,
+      "phase_rad": 1.48812929,
+      "re": 0.00017248,
+      "im": 0.00208165
+    },
+    {
+      "freq_index": 3840,
+      "amplitude": 0.00208878,
+      "phase_rad": -1.48812929,
+      "re": 0.00017248,
+      "im": -0.00208165
+    },
+    {
+      "freq_index": 1280,
+      "amplitude": 0.00195752,
+      "phase_rad": 2.34701188,
+      "re": -0.00137141,
+      "im": 0.00139683
+    },
+    {
+      "freq_index": 2816,
+      "amplitude": 0.00195752,
+      "phase_rad": -2.34701188,
+      "re": -0.00137141,
+      "im": -0.00139683
+    },
+    {
+      "freq_index": 768,
+      "amplitude": 0.00168061,
+      "phase_rad": -3.13192669,
+      "re": -0.00168053,
+      "im": -1.624e-05
+    },
+    {
+      "freq_index": 3328,
+      "amplitude": 0.00168061,
+      "phase_rad": 3.13192669,
+      "re": -0.00168053,
+      "im": 1.624e-05
+    }
+  ],
+  "modes_csv": "scripts/out/c9_2_M12_N100000_fourier_modes.csv"
+}
