@@ -126,6 +126,13 @@ Key theorems currently formalized:
 
 ---
 
+## Key Documents
+
+| Document | Description |
+|---|---|
+| [`collatz-rh-comparison.md`](collatz-rh-comparison.md) | Collatz vs RH structural comparison in the dm³ + Crystal-Geometry framework |
+| [`../mappings/domain_mappings.md`](../mappings/domain_mappings.md) | C→K→F→U operator mappings across six domains |
+
 ## Related Work
 
 | Item | Link |
