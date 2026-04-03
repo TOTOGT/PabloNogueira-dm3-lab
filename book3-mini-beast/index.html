@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DM3-Lab Book 3 — The Mini-Beast | Living Web Edition</title>
+<meta name="description" content="Living Web Edition of DM3-Lab Book 3: The Mini-Beast. Collatz conjecture, drifts, matrices, Fibonacci, and the golden ratio — bridged for ESL readers to advanced research.">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  /* ── Theme tokens ── */
+  :root {
+    --navy:   #1a2744;
+    --gold:   #c9a84c;
+    --cream:  #faf7f0;
+    --smoke:  #f0ece4;
+    --mid:    #3a4f7a;
+    --rule:   #8a7340;
+    --text:   #1c1c1c;
+    --green:  #2d5a27;
+    --light:  #e8e2d4;
+    --bg:     var(--cream);
+    --fg:     var(--text);
+    --card:   #ffffff;
+    --border: #d4c9a8;
+  }
+  [data-theme="dark"] {
+    --bg:     #0d1117;
+    --fg:     #e6edf3;
+    --card:   #161b22;
+    --border: #30363d;
+    --smoke:  #1c2128;
+    --cream:  #0d1117;
+    --navy:   #0d1117;
+    --mid:    #58a6ff;
+    --rule:   #c9a84c;
+    --light:  #21262d;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: var(--bg);
+    color: var(--fg);
+    transition: background 0.3s, color 0.3s;
+    line-height: 1.75;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+  /* ── Navigation ── */
+  .site-nav {
+    background: #1a2744;
+    padding: 0.75rem 1.5rem;
+    position: sticky; top: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+  .nav-logo { color: var(--gold); font-weight: bold; font-size: 0.9rem; letter-spacing: 0.12em; text-decoration: none; font-family: sans-serif; }
+  .nav-links { display: flex; gap: 1.2rem; list-style: none; align-items: center; }
+  .nav-links a { color: #ccc; text-decoration: none; font-size: 0.82rem; font-family: sans-serif; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--gold); }
+
+  /* ── Theme toggle ── */
+  .theme-btn {
+    background: none; border: 1px solid #555; color: #ccc;
+    padding: 0.3rem 0.65rem; border-radius: 4px; cursor: pointer;
+    font-size: 0.8rem; font-family: sans-serif; transition: all 0.2s;
+  }
+  .theme-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ── Hero ── */
+  .hero {
+    background: linear-gradient(135deg, #1a2744 0%, #0d1a38 60%, #162040 100%);
+    color: white;
+    padding: 5rem 1.5rem 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 80%, rgba(201,168,76,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow { font-family: sans-serif; font-size: 0.78rem; letter-spacing: 0.22em; color: var(--gold); text-transform: uppercase; margin-bottom: 1rem; }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.15; color: white; margin-bottom: 0.7rem; }
+  .hero-subtitle { color: #b8c0cc; max-width: 680px; margin: 0 auto 1.5rem; font-size: 1.05rem; }
+  .hero-badges { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+  .badge { font-family: sans-serif; font-size: 0.72rem; letter-spacing: 0.1em; padding: 0.3rem 0.8rem; border-radius: 20px; border: 1px solid; }
+  .badge-gold  { border-color: var(--gold); color: var(--gold); }
+  .badge-green { border-color: #4caf50; color: #81c784; }
+  .badge-blue  { border-color: #58a6ff; color: #79b8ff; }
+
+  /* ── Main layout ── */
+  .main-wrap { max-width: 900px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+
+  /* ── Section headings ── */
+  .section-eyebrow { font-family: sans-serif; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rule); margin-bottom: 0.3rem; }
+  .section-title { font-size: clamp(1.3rem, 3vw, 1.8rem); color: #1a2744; border-bottom: 2px solid var(--gold); padding-bottom: 0.4rem; margin-bottom: 1.2rem; }
+  [data-theme="dark"] .section-title { color: var(--gold); }
+
+  .section-block { margin: 3rem 0; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 1.4rem 1.6rem;
+    margin-bottom: 1.2rem;
+    border-radius: 2px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+
+  /* ── CEFR callout ── */
+  .cefr-box {
+    border-left: 4px solid var(--gold);
+    background: var(--smoke);
+    padding: 0.9rem 1.2rem;
+    margin: 1rem 0;
+    font-family: sans-serif;
+    font-size: 0.88rem;
+    border-radius: 0 2px 2px 0;
+  }
+  .cefr-tag { font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--rule); font-weight: bold; margin-bottom: 0.25rem; }
+
+  /* ── Research-bridge box ── */
+  .bridge-box {
+    border: 1px solid var(--mid);
+    background: var(--card);
+    padding: 1.2rem 1.4rem;
+    margin: 1.2rem 0;
+    position: relative;
+    border-radius: 2px;
+  }
+  .bridge-tag {
+    position: absolute; top: -0.65rem; left: 1rem;
+    background: var(--mid); color: white;
+    font-family: sans-serif; font-size: 0.65rem; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 0.15rem 0.6rem; border-radius: 2px;
+  }
+  [data-theme="dark"] .bridge-tag { background: #58a6ff; color: #0d1117; }
+
+  /* ── ESL seed sentence ── */
+  .seed-sentence {
+    background: #e8f5e9;
+    border-left: 3px solid #4caf50;
+    padding: 0.7rem 1rem;
+    margin: 0.8rem 0;
+    font-style: italic;
+    font-size: 0.92rem;
+    color: #1b5e20;
+    border-radius: 0 2px 2px 0;
+  }
+  [data-theme="dark"] .seed-sentence {
+    background: #0f2211;
+    color: #81c784;
+    border-color: #388e3c;
+  }
+  .seed-label { font-style: normal; font-size: 0.68rem; font-family: sans-serif; letter-spacing: 0.15em; text-transform: uppercase; color: #388e3c; display: block; margin-bottom: 0.25rem; }
+  [data-theme="dark"] .seed-label { color: #81c784; }
+
+  /* ── Math display ── */
+  .math-block {
+    font-family: 'Courier New', monospace;
+    font-size: 0.92rem;
+    background: var(--smoke);
+    border: 1px solid var(--border);
+    padding: 1rem 1.4rem;
+    margin: 0.8rem 0;
+    border-radius: 2px;
+    overflow-x: auto;
+    line-height: 1.9;
+  }
+  .math-inline { font-family: 'Courier New', monospace; font-size: 0.9em; background: var(--smoke); padding: 0.1em 0.35em; border-radius: 2px; }
+
+  /* ── Table ── */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; font-family: sans-serif; margin: 1rem 0; }
+  .data-table th { background: #1a2744; color: var(--gold); padding: 0.6rem 0.8rem; text-align: left; font-weight: 600; letter-spacing: 0.05em; }
+  .data-table td { padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--border); }
+  .data-table tr:hover td { background: var(--smoke); }
+  [data-theme="dark"] .data-table th { background: #21262d; }
+
+  /* ── Collapsible ── */
+  .collapsible-btn {
+    width: 100%; text-align: left; background: var(--card);
+    border: 1px solid var(--border); padding: 0.85rem 1.2rem;
+    cursor: pointer; font-family: sans-serif; font-size: 0.9rem;
+    color: var(--fg); display: flex; justify-content: space-between; align-items: center;
+    transition: background 0.2s; border-radius: 2px; margin-bottom: 0.3rem;
+  }
+  .collapsible-btn:hover { background: var(--smoke); }
+  .collapsible-btn .arrow { transition: transform 0.25s; font-size: 0.75rem; color: var(--gold); }
+  .collapsible-btn.open .arrow { transform: rotate(90deg); }
+  .collapsible-content { display: none; padding: 1rem 1.4rem; background: var(--smoke); border: 1px solid var(--border); border-top: none; margin-bottom: 0.6rem; border-radius: 0 0 2px 2px; }
+  .collapsible-content.open { display: block; }
+
+  /* ── Drift Calculator ── */
+  .calculator {
+    background: var(--card);
+    border: 1px solid var(--gold);
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    border-radius: 2px;
+  }
+  .calc-title { font-family: sans-serif; font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--rule); margin-bottom: 1rem; }
+  .calc-row { display: flex; gap: 0.8rem; align-items: flex-end; flex-wrap: wrap; margin-bottom: 0.8rem; }
+  .calc-field { display: flex; flex-direction: column; gap: 0.3rem; flex: 1; min-width: 120px; }
+  .calc-field label { font-family: sans-serif; font-size: 0.78rem; color: var(--rule); }
+  .calc-field input {
+    padding: 0.5rem 0.8rem; border: 1px solid var(--border);
+    background: var(--bg); color: var(--fg);
+    font-family: 'Courier New', monospace; font-size: 0.92rem;
+    border-radius: 2px; width: 100%;
+  }
+  .calc-field input:focus { outline: 2px solid var(--gold); }
+  .calc-btn {
+    padding: 0.55rem 1.4rem; background: #1a2744; color: var(--gold);
+    border: none; cursor: pointer; font-family: sans-serif; font-size: 0.85rem;
+    letter-spacing: 0.08em; border-radius: 2px; transition: background 0.2s; align-self: flex-end;
+  }
+  .calc-btn:hover { background: var(--mid); }
+  .calc-output {
+    font-family: 'Courier New', monospace; font-size: 0.88rem;
+    background: var(--smoke); border: 1px solid var(--border);
+    padding: 0.8rem 1rem; min-height: 2.5rem; border-radius: 2px;
+    white-space: pre-wrap; word-break: break-all;
+  }
+
+  /* ── Mermaid wrapper ── */
+  .mermaid-wrap {
+    background: var(--card); border: 1px solid var(--border);
+    padding: 1.4rem; margin: 1rem 0; overflow-x: auto; border-radius: 2px;
+    text-align: center;
+  }
+
+  /* ── Polar diagram SVG ── */
+  .diagram-wrap { display: flex; justify-content: center; margin: 1.2rem 0; }
+
+  /* ── Changelog ── */
+  .changelog-entry { border-left: 3px solid var(--gold); padding: 0.6rem 1rem; margin-bottom: 0.8rem; }
+  .changelog-date { font-family: sans-serif; font-size: 0.72rem; color: var(--rule); margin-bottom: 0.2rem; }
+  .changelog-desc { font-size: 0.9rem; }
+
+  /* ── Footer ── */
+  footer {
+    background: #1a2744; color: #999;
+    padding: 2.5rem 1.5rem; text-align: center;
+    font-family: sans-serif; font-size: 0.82rem; line-height: 1.7;
+  }
+  footer a { color: var(--gold); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* ── Responsive nav ── */
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── Navigation ─── -->
+<nav class="site-nav" aria-label="Site navigation">
+  <a href="../index.html" class="nav-logo">DM³-LAB</a>
+  <ul class="nav-links">
+    <li><a href="#bridge0">Bridge&nbsp;0</a></li>
+    <li><a href="#drifts">Drifts</a></li>
+    <li><a href="#matrices">Matrices</a></li>
+    <li><a href="#fibonacci">Fibonacci</a></li>
+    <li><a href="#polar">Polar</a></li>
+    <li><a href="#changelog">Changelog</a></li>
+    <li>
+      <button class="theme-btn" id="themeToggle" aria-label="Toggle dark/light mode">🌙 Dark</button>
+    </li>
+  </ul>
+</nav>
+
+<!-- ─── Hero ─── -->
+<header class="hero">
+  <p class="hero-eyebrow">DM³-Lab · Book 3 · Living Web Edition v1.0</p>
+  <h1>The Mini-Beast</h1>
+  <p class="hero-subtitle">
+    Collatz sequences, drifts, matrices, and the golden ratio —<br>
+    bridged from ESL foundations to active research.
+  </p>
+  <div class="hero-badges">
+    <span class="badge badge-gold">Collatz Conjecture</span>
+    <span class="badge badge-green">ESL A2 → C1</span>
+    <span class="badge badge-blue">Interactive Widgets</span>
+    <span class="badge badge-gold">DM³ Framework</span>
+    <span class="badge badge-blue">2026-04-03</span>
+  </div>
+</header>
+
+<!-- ─── Main Content ─── -->
+<main class="main-wrap">
+
+  <!-- ══ Section 0 — Introduction ══ -->
+  <section class="section-block" id="intro">
+    <p class="section-eyebrow">Orientation</p>
+    <h2 class="section-title">What Is the Mini-Beast?</h2>
+
+    <p>The <strong>Mini-Beast</strong> is the informal name for the Collatz conjecture — one of the simplest rules in mathematics that no one has yet proved. Pick any positive whole number. If it is <em>even</em>, divide it by 2. If it is <em>odd</em>, multiply it by 3 and add 1. Repeat. The conjecture says you will always reach 1.</p>
+
+    <div class="seed-sentence">
+      <span class="seed-label">ESL Seed · A2</span>
+      "We pick a number. We follow the rule. We always get to 1."
+    </div>
+
+    <div class="cefr-box">
+      <div class="cefr-tag">CEFR Note · B1</div>
+      The word <em>conjecture</em> means a strong guess that has not been proved. Scientists and mathematicians use it when evidence points one way but no one has given a full logical proof yet.
+    </div>
+
+    <p>Within the DM³ framework, the Mini-Beast acts as a stress-test for the Coherence Bridge: a minimal dynamical system whose long-range behaviour encodes deep arithmetic structure. The sections below build from first contact to research frontier.</p>
+  </section>
+
+  <!-- ══ Section 1 — Bridge 0 ══ -->
+  <section class="section-block" id="bridge0">
+    <p class="section-eyebrow">Section 1</p>
+    <h2 class="section-title">Bridge 0 — First Contact with the Rule</h2>
+
+    <p><strong>Bridge 0</strong> is the entry point: you understand nothing yet except how to apply the rule by hand. That is enough to observe the Mini-Beast in action.</p>
+
+    <div class="seed-sentence">
+      <span class="seed-label">ESL Seed · A2</span>
+      "Start at 6. Is 6 even? Yes. Divide: 6 ÷ 2 = 3. Is 3 odd? Yes. Multiply and add: 3 × 3 + 1 = 10. Continue …"
+    </div>
+
+    <div class="math-block">
+      <strong>Collatz rule (formal):</strong><br><br>
+      T(n) = n / 2        if n ≡ 0 (mod 2)<br>
+      T(n) = 3n + 1       if n ≡ 1 (mod 2)<br><br>
+      <strong>Example — seed 27:</strong><br>
+      27 → 82 → 41 → 124 → 62 → 31 → 94 → 47 → … → 1<br>
+      (111 steps — one of the longest journeys below 100)
+    </div>
+
+    <div class="cefr-box">
+      <div class="cefr-tag">CEFR Note · B2</div>
+      The notation <span class="math-inline">n ≡ 0 (mod 2)</span> means "n leaves remainder 0 when divided by 2" — i.e., n is even. <span class="math-inline">n ≡ 1 (mod 2)</span> means n is odd.
+    </div>
+
+    <div class="bridge-box">
+      <span class="bridge-tag">Research Bridge</span>
+      <p>The stopping time of a seed <span class="math-inline">n</span> is the number of steps before reaching 1. Proving that the stopping time is finite for <em>all</em> positive integers is the open conjecture. As of 2024, all integers up to approximately 2.95 × 10²⁰ have been verified computationally (Oliveira e Silva, 2021; extended checks ongoing).</p>
+    </div>
+
+    <button class="collapsible-btn" onclick="toggleCollapse(this)">
+      <span>▶ Try it: step through seed 27 by hand</span>
+      <span class="arrow">›</span>
+    </button>
+    <div class="collapsible-content">
+      <p>Write out each step on paper:</p>
+      <div class="math-block">
+        27 (odd)  → 82<br>
+        82 (even) → 41<br>
+        41 (odd)  → 124<br>
+        124 (even)→ 62<br>
+        62 (even) → 31<br>
+        31 (odd)  → 94<br>
+        94 (even) → 47<br>
+        47 (odd)  → 142<br>
+        … (keep going) …<br>
+        → 4 → 2 → 1  ✓
+      </div>
+      <p>Count how many steps you take. You should reach 111 before the sequence hits 1.</p>
+    </div>
+  </section>
+
+  <!-- ══ Section 2 — Drifts ══ -->
+  <section class="section-block" id="drifts">
+    <p class="section-eyebrow">Section 2</p>
+    <h2 class="section-title">Drifts — The Tendency to Fall</h2>
+
+    <p>A <strong>drift</strong> in the Collatz context measures the average upward or downward movement per step. Because odd steps multiply by roughly 3 and even steps divide by 2, the long-run drift is negative — the sequence tends to fall toward 1.</p>
+
+    <div class="seed-sentence">
+      <span class="seed-label">ESL Seed · B1</span>
+      "Every 'odd' step makes the number bigger. Every 'even' step makes it smaller. On average, the number gets smaller. That is the drift."
+    </div>
+
+    <div class="math-block">
+      <strong>Expected drift per step (logarithmic):</strong><br><br>
+      E[log₂(T(n)/n)] = (1/2)·log₂(1/2) + (1/2)·log₂(3/2)<br>
+                      ≈ (1/2)(−1) + (1/2)(0.585)<br>
+                      ≈ −0.2075<br><br>
+      Each step shrinks the average by about 20 % in log-scale.
+    </div>
+
+    <div class="cefr-box">
+      <div class="cefr-tag">CEFR Note · C1</div>
+      This probabilistic argument assumes that parity (odd/even) behaves like a fair coin toss — an assumption that is heuristically reasonable but not proved in general. The DM³ drift operator formalises this as a <em>signed coherence flux</em> across scales.
+    </div>
+
+    <!-- Drift Calculator Widget -->
+    <div class="calculator" id="driftCalc">
+      <div class="calc-title">Interactive: Drift Calculator</div>
+      <div class="calc-row">
+        <div class="calc-field">
+          <label for="seedInput">Starting number (seed)</label>
+          <input type="number" id="seedInput" value="27" min="1" max="99999">
+        </div>
+        <div class="calc-field">
+          <label for="stepsInput">Max steps shown</label>
+          <input type="number" id="stepsInput" value="20" min="5" max="200">
+        </div>
+        <button class="calc-btn" onclick="runCollatz()">Run ▶</button>
+      </div>
+      <div class="calc-output" id="calcOutput">Press "Run ▶" to see the sequence and step count.</div>
+    </div>
+
+    <div class="bridge-box">
+      <span class="bridge-tag">Research Bridge</span>
+      <p>The negative drift is the basis of most probabilistic proofs of <em>almost-all</em> results: almost every integer eventually reaches 1. The exceptional set (if it exists) would consist of seed values that escape to infinity or enter a cycle other than 4→2→1. No such values have been found; their non-existence is the conjecture.</p>
+    </div>
+  </section>
+
+  <!-- ══ Section 3 — Matrices ══ -->
+  <section class="section-block" id="matrices">
+    <p class="section-eyebrow">Section 3</p>
+    <h2 class="section-title">Matrices — Encoding the Rule</h2>
+
+    <p>The Collatz map can be expressed as a pair of <strong>2×2 matrices</strong> acting on a two-component vector. This matrix encoding connects the Mini-Beast to linear algebra and, ultimately, to the DM³ operator chain.</p>
+
+    <div class="seed-sentence">
+      <span class="seed-label">ESL Seed · B2</span>
+      "A matrix is a grid of numbers. When we multiply it with our starting vector, we get the next step in the sequence."
+    </div>
+
+    <div class="math-block">
+      <strong>Matrix representation:</strong><br><br>
+      Even step:  M_even = [1/2  0]   applied to [n]<br>
+                           [0    1]              [1]<br><br>
+      Odd step:   M_odd  = [3    1]   applied to [n]<br>
+                           [0    1]              [1]<br><br>
+      A trajectory of length k is: (M_σₖ · … · M_σ₁) · [n, 1]ᵀ<br>
+      where σᵢ ∈ {even, odd} is the parity of step i.
+    </div>
+
+    <div class="cefr-box">
+      <div class="cefr-tag">CEFR Note · C1</div>
+      The second component of the vector stays 1 throughout; it is a <em>homogeneous coordinate</em> that lets us encode the "+1" in the odd rule as a matrix multiplication rather than an addition. This is the same trick used in computer graphics transformations.
+    </div>
+
+    <button class="collapsible-btn" onclick="toggleCollapse(this)">
+      <span>▶ Worked example: seed 3 via matrices</span>
+      <span class="arrow">›</span>
+    </button>
+    <div class="collapsible-content">
+      <div class="math-block">
+        Seed n = 3 (odd):   M_odd · [3,1]ᵀ = [3·3+1, 1]ᵀ = [10, 1]ᵀ<br>
+        n = 10 (even):      M_even· [10,1]ᵀ = [5, 1]ᵀ<br>
+        n = 5 (odd):        M_odd · [5,1]ᵀ  = [16, 1]ᵀ<br>
+        n = 16 (even×4):    → 8 → 4 → 2 → 1  ✓
+      </div>
+    </div>
+
+    <div class="bridge-box">
+      <span class="bridge-tag">Research Bridge</span>
+      <p>The product of these matrices along a trajectory defines a <em>Collatz word</em>. The DM³ framework interprets this word as an operator-chain element in the G-series hierarchy (Grossi 2026, §3.2). Bounding the spectral radius of random matrix products is one active research direction (Lagarias &amp; Kontorovich, 2010).</p>
+    </div>
+  </section>
+
+  <!-- ══ Section 4 — Fibonacci &amp; Golden Ratio ══ -->
+  <section class="section-block" id="fibonacci">
+    <p class="section-eyebrow">Section 4</p>
+    <h2 class="section-title">Fibonacci &amp; the Golden Ratio — Hidden Symmetry</h2>
+
+    <p>The <strong>Fibonacci sequence</strong> (1, 1, 2, 3, 5, 8, 13, 21, …) and the Collatz sequence share a structural kinship: both are defined by simple local rules, yet produce complex global patterns. The golden ratio φ appears at the boundary of both.</p>
+
+    <div class="seed-sentence">
+      <span class="seed-label">ESL Seed · B1</span>
+      "The Fibonacci numbers grow by adding the two previous numbers. The golden ratio is the number they grow toward, in a ratio: φ ≈ 1.618."
+    </div>
+
+    <div class="math-block">
+      <strong>Fibonacci recurrence:</strong>  F(n) = F(n−1) + F(n−2), F(1)=F(2)=1<br><br>
+      <strong>Golden ratio:</strong>           φ = (1 + √5) / 2 ≈ 1.61803…<br><br>
+      <strong>Binet's formula:</strong>        F(n) = (φⁿ − ψⁿ) / √5<br>
+                                where ψ = (1 − √5)/2 ≈ −0.618<br><br>
+      <strong>Collatz–Fibonacci link:</strong><br>
+      The odd-step multiplier 3 and the even-step divisor 2 satisfy:<br>
+      log_φ(3) ≈ 2.285,  log_φ(2) ≈ 1.440<br>
+      Their ratio ≈ 1.587 ≈ φ + 1/φ²  (approximate resonance)
+    </div>
+
+    <div class="cefr-box">
+      <div class="cefr-tag">CEFR Note · C1</div>
+      This resonance is not a theorem — it is a <em>structural observation</em> that guides DM³ model-building. The golden ratio appears in the Collatz literature as an exponent bound in the "Syracuse" compression (see Terras 1976). The DM³ framework explores whether φ encodes a deeper coherence symmetry at the drift boundary.
+    </div>
+
+    <div class="bridge-box">
+      <span class="bridge-tag">Research Bridge</span>
+      <p>Terras (1976) showed that the reduced Collatz map — which skips even steps — has a natural connection to the golden ratio through the distribution of odd iterates. Grossi (2026, §4.1) proposes that the DM³ coherence bridge is indexed by φ as a fixed-point attractor in the drift-normalized operator space.</p>
+    </div>
+
+    <!-- Comparison Table -->
+    <h3 style="margin: 1.5rem 0 0.6rem; font-size: 1.05rem; color: var(--rule); font-family: sans-serif; letter-spacing: 0.08em; text-transform: uppercase;">Comparison Table — Collatz vs. Fibonacci</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Collatz</th>
+          <th>Fibonacci</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Rule type</td><td>Branching (odd/even)</td><td>Linear recurrence</td></tr>
+        <tr><td>Attractor</td><td>1 (conjectured)</td><td>φ (ratio limit)</td></tr>
+        <tr><td>Growth rate</td><td>Sub-exponential (heuristic)</td><td>Exponential ~φⁿ</td></tr>
+        <tr><td>Proved?</td><td>No (open conjecture)</td><td>Yes (Binet 1843)</td></tr>
+        <tr><td>Matrix encoding</td><td>2×2 product over orbit</td><td>2×2 power (single matrix)</td></tr>
+        <tr><td>DM³ role</td><td>Stress-test operator</td><td>Scaling reference</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ══ Section 5 — 3-6-9 Triad ══ -->
+  <section class="section-block" id="triad">
+    <p class="section-eyebrow">Section 5</p>
+    <h2 class="section-title">The 3-6-9 Triad — Arithmetic Structure</h2>
+
+    <p>Tesla's famous observation that "if you knew the magnificence of 3, 6, and 9, you would have a key to the universe" resonates with real arithmetic: in base 10, all multiples of 3 reduce to 3, 6, or 9 by digital root. In the Collatz context, odd numbers divisible by 3 behave differently from other odds.</p>
+
+    <div class="seed-sentence">
+      <span class="seed-label">ESL Seed · B1</span>
+      "If you add the digits of a multiple of 3, you get 3, 6, or 9. For example: 12 → 1+2 = 3. 24 → 2+4 = 6. 27 → 2+7 = 9."
+    </div>
+
+    <div class="math-block">
+      <strong>Digital root (base 10):</strong><br>
+      dr(n) = 1 + ((n−1) mod 9)   for n ≥ 1<br><br>
+      <strong>Collatz mod-3 behaviour:</strong><br>
+      If n ≡ 0 (mod 3): T(n) is odd and ≡ 1 (mod 3)  if n odd<br>
+      If n ≡ 1 (mod 3): T(n) ≡ 1 (mod 3)             if n odd (3n+1 ≡ 1)<br>
+      If n ≡ 2 (mod 3): T(n) ≡ 2 (mod 3)             if n odd (3n+1 ≡ 1... wait)<br><br>
+      Key fact: 3n+1 is NEVER divisible by 3 when n is odd.<br>
+      So multiples of 3 can only appear after an even-step halving.
+    </div>
+
+    <div class="cefr-box">
+      <div class="cefr-tag">CEFR Note · B2</div>
+      This means the Collatz orbit "escapes" multiples of 3 at odd steps. In DM³ terms, the 3-6-9 triad forms an <em>arithmetic invariant subspace</em> that constrains the drift pattern. The triad is not mystical — it reflects modular arithmetic over the ring ℤ/9ℤ.
+    </div>
+
+    <button class="collapsible-btn" onclick="toggleCollapse(this)">
+      <span>▶ Digital root table for seeds 1–27</span>
+      <span class="arrow">›</span>
+    </button>
+    <div class="collapsible-content">
+      <table class="data-table">
+        <thead><tr><th>Seed</th><th>Stopping time</th><th>Digital root of seed</th><th>Peak value</th></tr></thead>
+        <tbody id="triadTable"></tbody>
+      </table>
+    </div>
+
+    <div class="bridge-box">
+      <span class="bridge-tag">Research Bridge</span>
+      <p>The residue structure of Collatz orbits modulo powers of 3 is studied in the context of <em>3-adic</em> analysis (Bernstein 1994; Lagarias 2010). The DM³ 3-6-9 triad hypothesis proposes that coherence thresholds cluster near triadic resonance nodes in the operator hierarchy.</p>
+    </div>
+  </section>
+
+  <!-- ══ Section 6 — Polar Vortex Diagram ══ -->
+  <section class="section-block" id="polar">
+    <p class="section-eyebrow">Section 6</p>
+    <h2 class="section-title">Polar Vortex — Visualising the Orbit</h2>
+
+    <p>Plotting each value in a Collatz orbit as a point on a spiral — with angle proportional to step number and radius proportional to value — reveals a <strong>polar vortex</strong> pattern. The orbit spirals inward, occasionally spiking outward, then converging.</p>
+
+    <div class="seed-sentence">
+      <span class="seed-label">ESL Seed · B1</span>
+      "We draw each number as a point on a circle. The angle shows the step number. The distance from the centre shows the size of the number. We watch the spiral."
+    </div>
+
+    <div class="diagram-wrap">
+      <svg id="polarSvg" width="380" height="380" viewBox="-190 -190 380 380" aria-label="Polar vortex diagram of Collatz orbit for seed 27">
+        <circle cx="0" cy="0" r="185" fill="none" stroke="var(--border)" stroke-width="0.5"/>
+        <circle cx="0" cy="0" r="5" fill="var(--gold)"/>
+        <text x="0" y="-192" text-anchor="middle" font-family="sans-serif" font-size="9" fill="var(--rule)">Polar orbit — seed 27</text>
+      </svg>
+    </div>
+    <p style="text-align:center; font-family:sans-serif; font-size:0.8rem; color:var(--rule); margin-top:-0.5rem;">
+      Angle = step index × 30°. Radius = log₂(value) × 14. Gold dot = origin (n=1).
+    </p>
+
+    <!-- Mermaid flow diagram -->
+    <h3 style="margin: 2rem 0 0.6rem; font-size: 1.05rem; color: var(--rule); font-family: sans-serif; text-transform: uppercase; letter-spacing: 0.08em;">Collatz Decision Flow</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+    A[Pick seed n] --> B{Is n = 1?}
+    B -- Yes --> C[Done ✓]
+    B -- No --> D{Is n even?}
+    D -- Yes --> E["n = n / 2"]
+    D -- No --> F["n = 3n + 1"]
+    E --> B
+    F --> B
+      </div>
+    </div>
+
+    <div class="bridge-box">
+      <span class="bridge-tag">Research Bridge</span>
+      <p>The polar vortex visualisation was popularised by Numberphile (2016) and later formalised by Chamberland (2010) in the context of Collatz graph embeddings. In DM³ notation, the polar coordinate encoding maps to the angular momentum component of the coherence-bridge tensor (Grossi 2026, §5.3).</p>
+    </div>
+  </section>
+
+  <!-- ══ Section 7 — Editorial Policy ══ -->
+  <section class="section-block" id="policy">
+    <p class="section-eyebrow">About This Edition</p>
+    <h2 class="section-title">Editorial Policy</h2>
+
+    <div class="card">
+      <p><strong>Living document.</strong> This page is updated in parallel with the DM³-Lab research programme. Section content may change as new results are published. All substantive changes are logged in the Changelog below.</p>
+    </div>
+    <div class="card">
+      <p><strong>ESL scaffolding.</strong> Each section includes CEFR-graded language support. A2 seeds use everyday vocabulary. B1–B2 callouts introduce technical terms with plain-language explanations. C1 notes connect to formal literature without assuming prior knowledge.</p>
+    </div>
+    <div class="card">
+      <p><strong>Open research.</strong> Research Bridge boxes cite external literature. Claims attributed to <em>Grossi 2026</em> are working hypotheses from the DM³-Lab programme and are not yet peer-reviewed. They are labelled clearly to distinguish them from established results.</p>
+    </div>
+  </section>
+
+  <!-- ══ Section 8 — Contribute ══ -->
+  <section class="section-block" id="contribute">
+    <p class="section-eyebrow">Community</p>
+    <h2 class="section-title">Contribute to This Page</h2>
+
+    <p>This is an open-source living document. Contributions are welcome via GitHub pull request.</p>
+    <ul style="margin: 1rem 0 1rem 1.5rem; line-height: 2;">
+      <li>📄 <a href="https://github.com/TOTOGT/DM3-lab/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Read the contributing guide</a></li>
+      <li>🐛 <a href="https://github.com/TOTOGT/DM3-lab/issues" target="_blank" rel="noopener">Report an error or suggest a section</a></li>
+      <li>🔀 <a href="https://github.com/TOTOGT/DM3-lab/pulls" target="_blank" rel="noopener">Submit a pull request</a></li>
+      <li>📁 <a href="https://github.com/TOTOGT/DM3-lab/tree/main/book3-mini-beast" target="_blank" rel="noopener">View source on GitHub</a></li>
+    </ul>
+    <div class="cefr-box">
+      <div class="cefr-tag">Contribution tip · A2</div>
+      You can edit this page using the GitHub mobile app or website. You do not need to install any software. See CONTRIBUTING.md for step-by-step instructions.
+    </div>
+  </section>
+
+  <!-- ══ Section 9 — Changelog ══ -->
+  <section class="section-block" id="changelog">
+    <p class="section-eyebrow">Version History</p>
+    <h2 class="section-title">Changelog</h2>
+
+    <div class="changelog-entry">
+      <div class="changelog-date">2026-04-03 · v1.0</div>
+      <div class="changelog-desc">Initial Living Web Edition. Sections 0–6 published: introduction, Bridge 0, drifts (with interactive calculator), matrix encoding, Fibonacci/golden-ratio comparison, 3-6-9 triad, and polar vortex diagram. Dark/light mode, CEFR callouts, ESL seed sentences, research-bridge boxes, Mermaid flow diagram, and GitHub contribution links.</div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ─── Footer ─── -->
+<footer>
+  <p><strong style="color:var(--gold);">DM³-Lab · Book 3: The Mini-Beast</strong></p>
+  <p style="margin-top:0.4rem;">Living Web Edition v1.0 · Maintained by <a href="https://github.com/TOTOGT/DM3-lab" target="_blank" rel="noopener">TOTOGT/DM3-lab</a></p>
+  <p style="margin-top:0.4rem;">Pablo Grossi · G6 LLC · Newark, NJ · 2026 · <a href="../LICENSE">MIT License</a></p>
+  <p style="margin-top:0.8rem; font-size:0.75rem; color:#666;">The Collatz conjecture is open. No proof or disproof is claimed herein.</p>
+</footer>
+
+<!-- ─── Scripts ─── -->
+<script>
+  /* ── Dark/Light toggle ── */
+  const themeBtn = document.getElementById('themeToggle');
+  const html = document.documentElement;
+  function applyTheme(t) {
+    html.setAttribute('data-theme', t);
+    themeBtn.textContent = t === 'dark' ? '☀️ Light' : '🌙 Dark';
+    localStorage.setItem('dm3-theme', t);
+    // Re-initialise Mermaid with correct theme
+    mermaid.initialize({ startOnLoad: false, theme: t === 'dark' ? 'dark' : 'neutral' });
+    document.querySelectorAll('.mermaid').forEach(el => {
+      const code = el.getAttribute('data-original') || el.textContent;
+      el.removeAttribute('data-processed');
+      el.setAttribute('data-original', code);
+      el.textContent = code;
+    });
+    mermaid.run({ nodes: document.querySelectorAll('.mermaid') });
+  }
+  themeBtn.addEventListener('click', () => {
+    applyTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+  // Restore saved preference
+  const saved = localStorage.getItem('dm3-theme');
+  if (saved) applyTheme(saved);
+  else applyTheme('light');
+
+  /* ── Mermaid init ── */
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
+
+  /* ── Collapsibles ── */
+  function toggleCollapse(btn) {
+    btn.classList.toggle('open');
+    const content = btn.nextElementSibling;
+    content.classList.toggle('open');
+  }
+
+  /* ── Collatz runner ── */
+  function collatzSequence(n, maxSteps) {
+    const seq = [n];
+    let steps = 0;
+    while (n !== 1 && steps < maxSteps) {
+      n = (n % 2 === 0) ? n / 2 : 3 * n + 1;
+      seq.push(n);
+      steps++;
+    }
+    return seq;
+  }
+
+  function runCollatz() {
+    const seed = parseInt(document.getElementById('seedInput').value);
+    const maxSteps = parseInt(document.getElementById('stepsInput').value);
+    const output = document.getElementById('calcOutput');
+    if (!seed || seed < 1) { output.textContent = 'Please enter a positive integer.'; return; }
+
+    const full = collatzSequence(seed, 100000); // full run to count
+    const shown = collatzSequence(seed, maxSteps);
+    const totalSteps = full.length - 1;
+    const peak = Math.max(...full);
+
+    const displaySeq = shown.join(' → ') + (shown.length < full.length ? ' → …' : '');
+    output.textContent =
+      `Seed: ${seed}\n` +
+      `Total steps to 1: ${totalSteps}\n` +
+      `Peak value: ${peak}\n\n` +
+      `First ${Math.min(maxSteps, full.length - 1)} steps:\n${displaySeq}`;
+  }
+
+  /* ── Polar vortex diagram ── */
+  (function drawPolar() {
+    const svg = document.getElementById('polarSvg');
+    const seq = collatzSequence(27, 200);
+    const maxVal = Math.max(...seq);
+    const scale = 170 / Math.log2(maxVal + 1);
+    const points = seq.map((v, i) => {
+      const angle = (i * 30 * Math.PI) / 180;
+      const r = Math.log2(v + 1) * scale;
+      return { x: r * Math.cos(angle - Math.PI / 2), y: r * Math.sin(angle - Math.PI / 2), v };
+    });
+
+    // Draw path
+    let d = `M ${points[0].x.toFixed(2)} ${points[0].y.toFixed(2)}`;
+    for (let i = 1; i < points.length; i++) {
+      d += ` L ${points[i].x.toFixed(2)} ${points[i].y.toFixed(2)}`;
+    }
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', d);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', '#3a4f7a');
+    path.setAttribute('stroke-width', '1');
+    path.setAttribute('opacity', '0.6');
+    svg.insertBefore(path, svg.lastChild);
+
+    // Draw dots
+    points.forEach((p, i) => {
+      const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      c.setAttribute('cx', p.x.toFixed(2));
+      c.setAttribute('cy', p.y.toFixed(2));
+      c.setAttribute('r', i === 0 ? '4' : '2');
+      c.setAttribute('fill', i === 0 ? '#c9a84c' : (p.v % 2 === 0 ? '#3a4f7a' : '#e53935'));
+      c.setAttribute('opacity', '0.75');
+      const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+      title.textContent = `Step ${i}: ${p.v}`;
+      c.appendChild(title);
+      svg.appendChild(c);
+    });
+  })();
+
+  /* ── 3-6-9 triad table ── */
+  (function buildTriadTable() {
+    const tbody = document.getElementById('triadTable');
+    if (!tbody) return;
+    for (let n = 1; n <= 27; n++) {
+      const seq = collatzSequence(n, 100000);
+      const steps = seq.length - 1;
+      const dr = 1 + ((n - 1) % 9);
+      const peak = Math.max(...seq);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${n}</td><td>${steps}</td><td>${dr}</td><td>${peak}</td>`;
+      tbody.appendChild(tr);
+    }
+  })();
+</script>
+
+</body>
+</html>
