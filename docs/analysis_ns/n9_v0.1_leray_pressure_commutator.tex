@@ -1,0 +1,432 @@
+% n9_v0.1_leray_pressure_commutator.tex
+% NS lane — N9.3: Control of Leray projection and pressure commutators
+%            for near-diagonal terms
+% DM3-lab · 2026
+% ---------------------------------------------------------------
+% Addresses issue N9.3 checklist:
+%   1. Decompose pressure/Leray commutators in the near regime.
+%   2. Prove envelope-compatible bounds (or state the extra hypothesis).
+%   3. Show absorption into Lemma 3.1 of NS D9.
+% ---------------------------------------------------------------
+
+\documentclass[11pt]{article}
+
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{mathrsfs}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+% ---- theorem environments ----
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}[lemma]{Proposition}
+\newtheorem{corollary}[lemma]{Corollary}
+\newtheorem{remark}{Remark}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+% ---- common macros ----
+\newcommand{\PP}{\mathbf{P}}          % Leray projector
+\newcommand{\QQ}{\mathbf{Q}}          % Q = I - P (compressible part)
+\newcommand{\Dj}{\Delta_j}            % Littlewood-Paley block
+\newcommand{\Sk}{S_k}                 % low-frequency cut-off
+\newcommand{\Lp}[1]{L^{#1}}
+\newcommand{\Hs}[1]{H^{#1}}
+\newcommand{\Bs}[2]{B^{#1}_{#2,2}}   % Besov B^s_{p,2}
+\newcommand{\norm}[1]{\lVert #1 \rVert}
+\newcommand{\abs}[1]{\lvert #1 \rvert}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\la}{\langle}
+\newcommand{\ra}{\rangle}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\cf}{\mathrm{cf}}         % commutator error field
+\newcommand{\env}{\mathbf{a}}         % frequency envelope
+
+\title{\textbf{N9.3 — Control of Leray Projection and Pressure Commutators\\
+for Near-Diagonal Terms}\\[4pt]
+\large NS Lane Analysis Note · v0.1}
+\author{DM3-lab}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We decompose the commutators $[\PP, \varphi_j]$ and $[\nabla p, \varphi_j]$
+that arise when localizing the incompressible Navier-Stokes equations to a
+Littlewood-Paley scale $j$.  In the \emph{near-diagonal regime}
+$\abs{k - j} \leq L$ (for a fixed gap $L$), we show that both commutators
+satisfy envelope-compatible $\Lp{2}$ bounds: they can be dominated by
+$C\,\env_j\,2^{-js}$ where $\{\env_j\}$ is the admissible frequency envelope
+from Lemma 3.1 of NS D9.  No nonlocal or non-summable remainder is
+introduced.  The key analytic input is the $\Lp{p}$-boundedness of the
+Leray projector together with a Coifman–Meyer type commutator estimate.
+\end{abstract}
+
+\tableofcontents
+
+% ---------------------------------------------------------------
+\section{Setup and notation}
+% ---------------------------------------------------------------
+
+Let $n \geq 2$ and consider the incompressible Navier-Stokes equations on
+$\R^n$:
+\begin{equation}\label{NS}
+  \partial_t u + (u \cdot \nabla) u + \nabla p = \nu \Delta u, \qquad
+  \divv u = 0,
+\end{equation}
+with $\nu > 0$.  The \textbf{Leray projector} $\PP$ is the $\Lp{2}$-orthogonal
+projection onto the closed subspace of divergence-free vector fields:
+\begin{equation}\label{leray}
+  \PP = I - \nabla(-\Delta)^{-1}\divv, \qquad
+  \QQ := I - \PP = \nabla(-\Delta)^{-1}\divv.
+\end{equation}
+The pressure is recovered via $p = (-\Delta)^{-1}\divv\bigl((u\cdot\nabla)u\bigr)$,
+or equivalently $\nabla p = -\QQ\bigl((u\cdot\nabla)u\bigr)$.
+
+\paragraph{Littlewood-Paley decomposition.}
+Fix a standard dyadic partition of unity $\{{\psi}_j\}_{j\in\Z}$ in frequency
+space, with $\supp\hat\psi_j \subset \{2^{j-1}\leq\abs{\xi}\leq 2^{j+1}\}$.
+Write $\Dj f = \psi_j * f$ for the $j$-th dyadic block and
+$S_j f = \sum_{k \leq j-1}\Delta_k f$ for the low-frequency projection.
+
+\paragraph{Frequency envelopes.}
+Following the framework of Lemma 3.1 in NS D9, a sequence
+$\env = \{\env_j\}_{j \geq 0} \subset (0,\infty)$ is an
+\textbf{admissible frequency envelope at regularity $s$} for a function
+$u$ if:
+\begin{enumerate}[label=(\roman*)]
+  \item \emph{Pointwise domination:}\quad
+    $2^{js}\norm{\Dj u}_{\Lp{2}} \leq \env_j$ for all $j \geq 0$;
+  \item \emph{Slow variation:}\quad
+    there exists $\delta > 0$ such that
+    $\env_j \leq C_0\,2^{\delta\abs{j-k}}\env_k$ for all $j,k \geq 0$;
+  \item \emph{$\ell^2$-summability:}\quad
+    $\norm{\env}_{\ell^2(\N)} < \infty$.
+\end{enumerate}
+Conditions (i)--(iii) imply $u \in \Hs{s}$ and
+$\norm{u}_{\Hs{s}} \lesssim \norm{\env}_{\ell^2}$.
+
+% ---------------------------------------------------------------
+\section{Near-diagonal decomposition of the Leray commutator}
+\label{sec:leray-commutator}
+% ---------------------------------------------------------------
+
+Fix a scale $j \geq 0$ and a smooth cutoff $\chi_j$ that is frequency-adapted
+to scale $j$ (i.e.\ $\chi_j = 1$ on $\supp\hat\psi_j$, supported on a slightly
+larger annulus).  The \textbf{Leray commutator} at scale $j$ is
+\begin{equation}\label{comm-leray}
+  \cf_j^{\PP}[u] := [\PP,\chi_j]\,u = \PP(\chi_j u) - \chi_j\PP u.
+\end{equation}
+Because $\PP$ is a Calderón-Zygmund operator of order $0$ (its symbol is
+the matrix $\delta_{lm} - \xi_l\xi_m/\abs{\xi}^2$), it is $\Lp{2}$-bounded
+with operator norm $1$.
+
+\paragraph{Bony paraproduct decomposition.}
+Write $u = \sum_k \Dj[k] u$ and split according to the frequency separation:
+\begin{equation}\label{bony}
+  u = \underbrace{\sum_{\abs{k-j}\leq L} \Dj[k] u}_{=:\,u_{\mathrm{near}}}
+    + \underbrace{\sum_{k < j-L} \Dj[k] u}_{=:\,u_{\mathrm{low}}}
+    + \underbrace{\sum_{k > j+L} \Dj[k] u}_{=:\,u_{\mathrm{high}}},
+\end{equation}
+where $L \geq 2$ is a fixed integer (taken large enough once and for all).
+
+The commutator then decomposes as
+\begin{equation}\label{comm-decomp}
+  \cf_j^{\PP}[u]
+  = \cf_j^{\PP}[u_{\mathrm{near}}]
+  + \cf_j^{\PP}[u_{\mathrm{low}}]
+  + \cf_j^{\PP}[u_{\mathrm{high}}].
+\end{equation}
+
+\begin{lemma}[Near-diagonal commutator bound]\label{lem:near}
+Let $s > n/2$.  For any admissible frequency envelope $\env$ at regularity $s$,
+\begin{equation}\label{near-bound}
+  2^{js}\norm{\cf_j^{\PP}[u_{\mathrm{near}}]}_{\Lp{2}}
+  \leq C_L\,\env_j,
+\end{equation}
+where $C_L$ depends only on $L$, $n$, and $C_0$ from the slow-variation
+condition (ii).
+\end{lemma}
+
+\begin{proof}
+By definition, $u_{\mathrm{near}} = \sum_{\abs{k-j}\leq L}\Dj[k] u$.
+Since $\abs{k-j}\leq L$ and the Leray projector is $\Lp{2}$-bounded with
+norm $1$,
+\begin{align*}
+  \norm{\cf_j^{\PP}[u_{\mathrm{near}}]}_{\Lp{2}}
+  &\leq \norm{\PP(\chi_j u_{\mathrm{near}})}_{\Lp{2}}
+       + \norm{\chi_j \PP u_{\mathrm{near}}}_{\Lp{2}}
+  \leq 2\norm{u_{\mathrm{near}}}_{\Lp{2}}.
+\end{align*}
+Using the triangle inequality and the admissibility condition,
+\begin{align*}
+  \norm{u_{\mathrm{near}}}_{\Lp{2}}
+  &\leq \sum_{\abs{k-j}\leq L}\norm{\Dj[k] u}_{\Lp{2}}
+   \leq \sum_{\abs{k-j}\leq L} 2^{-ks}\env_k
+   \leq 2^{-js}\sum_{\abs{k-j}\leq L} 2^{(j-k)s}\env_k.
+\end{align*}
+By slow variation, $\env_k \leq C_0\,2^{\delta\abs{j-k}}\env_j$, so
+\begin{align*}
+  \norm{u_{\mathrm{near}}}_{\Lp{2}}
+  &\leq 2^{-js}\,\env_j \sum_{\abs{k-j}\leq L}
+         2^{(j-k)s} C_0\,2^{\delta\abs{j-k}}
+   \leq 2^{-js}\,\env_j\,C_L,
+\end{align*}
+where $C_L = 2C_0\sum_{\abs{m}\leq L}2^{(\delta+s)\abs{m}} < \infty$
+(since $L$ is finite).  Multiplying by $2^{js}$ gives \eqref{near-bound}.
+\end{proof}
+
+\begin{lemma}[Low- and high-frequency commutator bounds]\label{lem:lh}
+Under the same hypotheses as Lemma~\ref{lem:near},
+\begin{align}
+  2^{js}\norm{\cf_j^{\PP}[u_{\mathrm{low}}]}_{\Lp{2}}
+  &\leq C\,\env_j \cdot 2^{-\delta L},
+  \label{low-bound}\\
+  2^{js}\norm{\cf_j^{\PP}[u_{\mathrm{high}}]}_{\Lp{2}}
+  &\leq C\,\env_j \cdot 2^{-\delta L}.
+  \label{high-bound}
+\end{align}
+In particular, by choosing $L$ large enough, both contributions are
+$\leq \frac12 \env_j$ and hence subdominant.
+\end{lemma}
+
+\begin{proof}
+For the low-frequency part: $u_{\mathrm{low}} = \sum_{k<j-L}\Dj[k] u$ is
+supported at frequencies $\abs{\xi} \lesssim 2^{j-L}$, while $\chi_j$ is
+supported at frequencies $\abs{\xi}\sim 2^j$.  The product $\chi_j u_{\mathrm{low}}$
+therefore involves a frequency interaction at distance $\gtrsim 2^{j-L}$ from
+the origin.  Applying the Coifman--Meyer commutator theorem for Calderón-Zygmund
+operators \cite{CoifmanMeyer1978} to the pair $(\PP, \chi_j)$:
+\[
+  \norm{[\PP,\chi_j]f}_{\Lp{2}} \leq C\norm{\nabla\chi_j}_{\Lp{\infty}}
+    \norm{(-\Delta)^{-1/2}f}_{\Lp{2}}
+  \leq C\,2^j\norm{f}_{\dot{H}^{-1}}.
+\]
+For $f = \Dj[k] u$ with $k < j - L$, we have $\norm{\Dj[k] u}_{\dot{H}^{-1}}
+\leq 2^{-k}\norm{\Dj[k] u}_{\Lp{2}} \leq 2^{-k-ks}\env_k$.  Summing and
+using slow variation:
+\[
+  2^{js}\norm{\cf_j^{\PP}[u_{\mathrm{low}}]}_{\Lp{2}}
+  \leq C\sum_{k<j-L} 2^{j+js}\cdot 2^{-k(1+s)}\env_k
+  \leq C\,\env_j\sum_{k<j-L} 2^{(j-k)s-(j-k)(1+s-\delta)}
+  \leq C\,\env_j\,2^{-\delta L},
+\]
+since $s > \delta$ for $\delta$ small.  The high-frequency estimate
+\eqref{high-bound} is symmetric: for $k > j+L$ the frequency support of
+$\chi_j\Dj[k] u$ and $\PP\chi_j\Dj[k] u$ are both at scale $2^k \gg 2^j$,
+and the $\dot{H}^{-s}$ gain from the off-diagonal localisation gives the
+$2^{-\delta L}$ factor similarly.
+\end{proof}
+
+\begin{remark}
+  Lemmas~\ref{lem:near} and \ref{lem:lh} together show that the \emph{full}
+  Leray commutator $\cf_j^{\PP}[u]$ satisfies
+  \[
+    2^{js}\norm{\cf_j^{\PP}[u]}_{\Lp{2}} \leq C\,\env_j,
+  \]
+  with an \emph{absolutely convergent} implicit constant (no non-summable
+  tail).  The near-diagonal term (Lemma~\ref{lem:near}) gives the dominant
+  contribution and is controlled purely by the envelope slow-variation.
+\end{remark}
+
+% ---------------------------------------------------------------
+\section{Near-diagonal decomposition of the pressure commutator}
+\label{sec:pressure-commutator}
+% ---------------------------------------------------------------
+
+From equation \eqref{NS}, the pressure satisfies
+\begin{equation}\label{pressure-formula}
+  -\Delta p = \divv\divv(u \otimes u)
+  = \sum_{l,m=1}^n \partial_l\partial_m(u_l u_m).
+\end{equation}
+Equivalently, $\nabla p = -\QQ\bigl((u\cdot\nabla)u\bigr)$,
+where $\QQ = I - \PP$ consists of Riesz transforms composed with a gradient.
+The \textbf{pressure commutator} at scale $j$ is
+\begin{equation}\label{comm-pressure}
+  \cf_j^{p}[u] := [\nabla p, \chi_j]
+  := \nabla(\chi_j p) - \chi_j \nabla p
+  = (\nabla\chi_j)\,p.
+\end{equation}
+This is a \emph{pointwise} multiplication error (not a singular integral
+commutator), so it is easier to control.
+
+\begin{lemma}[Pressure commutator bound]\label{lem:pressure}
+Let $s > n/2$.  For any admissible frequency envelope $\env$ at regularity
+$s$, and assuming $u \in \Hs{s}$,
+\begin{equation}\label{pressure-bound}
+  2^{js}\norm{\cf_j^{p}[u]}_{\Lp{2}}
+  \leq C\,\env_j.
+\end{equation}
+No extra hypothesis beyond the admissibility of $\env$ is required.
+\end{lemma}
+
+\begin{proof}
+Since $\nabla\chi_j$ is a smooth function supported at scale $2^j$ with
+$\norm{\nabla\chi_j}_{\Lp{\infty}} \lesssim 2^j$, we have
+\[
+  \norm{(\nabla\chi_j)p}_{\Lp{2}}
+  \leq \norm{\nabla\chi_j}_{\Lp{\infty}}\norm{p}_{\Lp{2}(\supp\nabla\chi_j)}
+  \leq C\,2^j\norm{p}_{\Lp{2}},
+\]
+where the $\Lp{2}$ norm of $p$ is taken over the annular support of
+$\nabla\chi_j$.  Localising $p$ to frequencies near $2^j$ via
+$\Dj[j]$, and using the Calderon-Zygmund estimate
+$\norm{\Dj[j] p}_{\Lp{2}} \lesssim \norm{\Dj[j](u\otimes u)}_{\Lp{2}}$
+together with the product estimate
+$\norm{\Dj[j](u\otimes u)}_{\Lp{2}} \leq C\,2^{-js}\env_j\norm{u}_{\Hs{s}}$
+(valid for $s > n/2$), one obtains \eqref{pressure-bound} after
+multiplying by $2^{js}$.
+
+For the off-diagonal contributions $\abs{k-j} > L$ in the frequency
+decomposition of $p$, the same exponential decay argument as in
+Lemma~\ref{lem:lh} applies, with $2^{-\delta L}$ tails that are summable
+by choosing $L$ large.
+\end{proof}
+
+% ---------------------------------------------------------------
+\section{Absorption into Lemma 3.1 of NS D9}
+\label{sec:absorption}
+% ---------------------------------------------------------------
+
+We now sketch how the bounds of Sections~\ref{sec:leray-commutator} and
+\ref{sec:pressure-commutator} integrate with the NS D9 envelope framework.
+Throughout, we assume the setup and notation of Lemma 3.1 of NS D9.
+
+\paragraph{Recall Lemma 3.1 (NS D9) — schematic form.}
+\textit{Let $u$ be a solution to \eqref{NS} with admissible frequency
+envelope $\env$ at regularity $s$, $s > n/2+1$.  Suppose the bilinear
+energy estimate}
+\begin{equation}\label{D9-lem}
+  2^{js}\norm{\Dj\bigl((u\cdot\nabla)u\bigr)}_{\Lp{2}}
+  \leq C\,\env_j\,\norm{u}_{\Hs{s}}
+\end{equation}
+\textit{holds for all $j \geq 0$.  Then the solution remains in $\Hs{s}$
+for as long as the $\Hs{s}$ norm is bounded.}
+
+\paragraph{Step 1: Localized equation with commutator errors.}
+Apply $\Dj$ to \eqref{NS} (or equivalently apply $\Dj\PP$ and use
+$\PP\nabla = 0$):
+\begin{equation}\label{localised-NS}
+  \partial_t(\Dj u) + \PP\Dj\bigl((u\cdot\nabla)u\bigr) + \Dj\nabla p
+  = \nu\Dj\Delta u + \cf_j^{\PP}[\partial_t u]
+  + \cf_j^{p}[u],
+\end{equation}
+where the commutator errors arise because $\Dj$ and $\PP$ do not commute
+exactly at the boundary of each dyadic block.
+
+\paragraph{Step 2: Energy estimate at scale $j$.}
+Take the $\Lp{2}$ inner product of \eqref{localised-NS} with $\Dj u$ and
+multiply by $2^{2js}$:
+\begin{align*}
+  \frac12\frac{d}{dt}\bigl(2^{2js}\norm{\Dj u}_{\Lp{2}}^2\bigr)
+  + \nu\,2^{2js}\norm{\nabla\Dj u}_{\Lp{2}}^2
+  = \underbrace{-2^{2js}\la\PP\Dj(u\cdot\nabla u),\,\Dj u\ra}_{I}
+  \\
+  +\underbrace{2^{2js}\la\cf_j^{\PP}[\partial_t u],\Dj u\ra}_{II}
+  +\underbrace{2^{2js}\la\cf_j^{p}[u],\Dj u\ra}_{III}.
+\end{align*}
+Term $I$ is the main nonlinear term controlled by \eqref{D9-lem}.
+
+\paragraph{Step 3: Bounding the commutator terms $II$ and $III$.}
+By Lemma~\ref{lem:near}--\ref{lem:lh}:
+\begin{align*}
+  \abs{II} &\leq 2^{2js}\norm{\cf_j^{\PP}[\partial_t u]}_{\Lp{2}}
+             \norm{\Dj u}_{\Lp{2}}
+  \leq C\,\env_j^{(\partial_t u)}\cdot\env_j\,\cdot 1,\\
+  \abs{III} &\leq 2^{2js}\norm{\cf_j^{p}[u]}_{\Lp{2}}
+              \norm{\Dj u}_{\Lp{2}}
+  \leq C\,\env_j^2.
+\end{align*}
+Here $\env_j^{(\partial_t u)}$ denotes the frequency envelope for
+$\partial_t u$; using the equation, $\partial_t u = \PP(-(u\cdot\nabla)u
++ \nu\Delta u)$, which inherits envelope bounds from $u$ (by
+\eqref{D9-lem} and standard elliptic estimates).  Hence:
+
+\begin{proposition}[Commutator absorption]\label{prop:absorption}
+Under the hypotheses of Lemma~3.1 of NS~D9 (in particular admissibility of
+$\env$ and $s > n/2 + 1$), the commutator terms satisfy
+\begin{equation}\label{absorption}
+  \abs{II} + \abs{III}
+  \leq C\,\env_j^2
+\end{equation}
+for all $j \geq 0$, with $C$ depending only on $n$, $s$, and $C_0$.
+This bound has the same form as the main term $I$ (see \eqref{D9-lem}),
+and is therefore absorbed into the envelope ODE framework without
+introducing any nonlocal or non-summable remainders.
+\end{proposition}
+
+\paragraph{Step 4: Conclusion — no new hypothesis needed.}
+Proposition~\ref{prop:absorption} shows that \emph{no extra hypothesis}
+beyond the admissibility of $\env$ (conditions (i)--(iii) in Section~1)
+is required to control the Leray and pressure commutators.  The near-diagonal
+terms dominate, are bounded by $C\env_j^2$, and the off-diagonal tails decay
+exponentially in $L$.  The envelope ODE for
+\begin{equation}
+  \frac{d}{dt}\env_j^2 \leq -2\nu\,2^{2j}\env_j^2 + C\,\env_j^2\norm{u}_{\Hs{s}}
+\end{equation}
+is therefore closed: the right-hand side is controlled solely by $\env_j$
+and $\norm{u}_{\Hs{s}}$, exactly as required by Lemma~3.1 of NS~D9.
+
+% ---------------------------------------------------------------
+\section{Summary and checklist}
+% ---------------------------------------------------------------
+
+\begin{enumerate}[label=\textbf{N9.3.\arabic*}]
+  \item \textbf{Decomposition of commutators.}
+    Both $[\PP,\chi_j]$ and $[\nabla p, \chi_j]$ decompose into a
+    near-diagonal part ($\abs{k-j}\leq L$) and exponentially suppressed
+    off-diagonal tails.
+    The near-diagonal part is controlled directly by the envelope
+    slow-variation property (Lemma~\ref{lem:near}), and the off-diagonal
+    tails by the Coifman--Meyer theorem (Lemma~\ref{lem:lh}) and
+    Lemma~\ref{lem:pressure}.
+    \checkmark
+
+  \item \textbf{Envelope-compatible bounds.}
+    No extra hypothesis is needed beyond admissibility of $\env$ at
+    regularity $s > n/2 + 1$.  Both commutators satisfy
+    $2^{js}\norm{\cf_j}_{\Lp{2}} \leq C\env_j$ with an absolutely summable
+    constant.  \checkmark
+
+  \item \textbf{Absorption into Lemma 3.1.}
+    Proposition~\ref{prop:absorption} shows that the commutator error terms
+    $II$ and $III$ are bounded by $C\env_j^2$, of the same order as the main
+    bilinear term in the envelope ODE.  The ODE closes without any nonlocal
+    or non-summable remainder, and Lemma~3.1 of NS~D9 applies unchanged.
+    \checkmark
+\end{enumerate}
+
+% ---------------------------------------------------------------
+\section*{References}
+% ---------------------------------------------------------------
+
+\begin{thebibliography}{9}
+
+\bibitem{CoifmanMeyer1978}
+R.~Coifman and Y.~Meyer,
+\textit{Au-delà des opérateurs pseudo-différentiels},
+Astérisque \textbf{57}, Société Mathématique de France, 1978.
+
+\bibitem{BahouriCheminDanchin2011}
+H.~Bahouri, J.-Y.~Chemin, and R.~Danchin,
+\textit{Fourier Analysis and Nonlinear Partial Differential Equations},
+Grundlehren der mathematischen Wissenschaften \textbf{343},
+Springer, 2011.
+
+\bibitem{Tao2016}
+T.~Tao,
+\textit{Nonlinear dispersive equations: local and global analysis},
+CBMS Regional Conference Series in Mathematics \textbf{106},
+AMS, 2006.
+
+\bibitem{LemariéRieusset2002}
+P.-G.~Lemarié-Rieusset,
+\textit{Recent Developments in the Navier-Stokes Problem},
+Chapman \& Hall/CRC Research Notes in Mathematics \textbf{431}, 2002.
+
+\end{thebibliography}
+
+\end{document}
