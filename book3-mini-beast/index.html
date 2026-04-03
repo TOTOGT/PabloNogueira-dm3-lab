@@ -496,7 +496,7 @@
             </thead>
             <tbody>
               <tr><td>1</td><td>4</td><td>2</td><td>1</td></tr>
-              <tr><td>3</td><td>1</td><td>1</td><td>5 or 5</td></tr>
+              <tr><td>3</td><td>1</td><td>1</td><td>5</td></tr>
               <tr><td>5</td><td>7</td><td>1</td><td>8→4→… varies</td></tr>
               <tr><td>7</td><td>4</td><td>2</td><td>1</td></tr>
             </tbody>
@@ -835,7 +835,7 @@
       </p>
       <p style="margin-bottom:0">
         <em>Verified by exhaustive computation (DM3-Lab, 2026). Certificate hash:
-        <code>sha256:a3f9…c12e</code></em>
+        <code>sha256:a3f9…c12e</code> (placeholder — replace with actual verification hash)</em>
       </p>
     </div>
 
@@ -1047,20 +1047,17 @@
 
 <!-- ══════════════════════ JS ══════════════════════ -->
 <script>
-  /* Dark / light mode toggle */
+  /* Dark / light mode toggle — also persists choice to localStorage */
   function toggleTheme() {
-    const body = document.body;
-    const btn  = document.getElementById('theme-btn');
-    if (body.getAttribute('data-theme') === 'dark') {
-      body.setAttribute('data-theme', 'light');
-      btn.textContent = '🌙 Dark';
-    } else {
-      body.setAttribute('data-theme', 'dark');
-      btn.textContent = '☀️ Light';
-    }
+    const body  = document.body;
+    const btn   = document.getElementById('theme-btn');
+    const next  = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    body.setAttribute('data-theme', next);
+    btn.textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+    localStorage.setItem('dm3-theme', next);
   }
 
-  /* Persist theme across page loads */
+  /* Restore persisted theme on page load */
   (function () {
     const saved = localStorage.getItem('dm3-theme');
     if (saved) {
@@ -1069,9 +1066,6 @@
       if (btn) btn.textContent = saved === 'dark' ? '☀️ Light' : '🌙 Dark';
     }
   })();
-  document.getElementById('theme-btn').addEventListener('click', function () {
-    localStorage.setItem('dm3-theme', document.body.getAttribute('data-theme'));
-  });
 </script>
 
 </body>
