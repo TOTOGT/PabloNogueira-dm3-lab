@@ -1,0 +1,186 @@
+{
+  "exhaustive": {
+    "M_range": [
+      4,
+      24
+    ],
+    "all_negative": true,
+    "results": [
+      {
+        "M": 4,
+        "num_residues": 8,
+        "mean_drift": -0.39633421538129043,
+        "min_drift": -2.5649493574615367,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 5,
+        "num_residues": 16,
+        "mean_drift": -0.41059606693224737,
+        "min_drift": -3.044522437723423,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 6,
+        "num_residues": 32,
+        "mean_drift": -0.46076174797479497,
+        "min_drift": -3.970291913552122,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 7,
+        "num_residues": 64,
+        "mean_drift": -0.5305194888213078,
+        "min_drift": -4.727387818712341,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 8,
+        "num_residues": 128,
+        "mean_drift": -0.5551115799687945,
+        "min_drift": -5.424950017481403,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 9,
+        "num_residues": 256,
+        "mean_drift": -0.5626348627981339,
+        "min_drift": -6.115892125483034,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 10,
+        "num_residues": 512,
+        "mean_drift": -0.5666836487015187,
+        "min_drift": -6.812345094177479,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 11,
+        "num_residues": 1024,
+        "mean_drift": -0.5696209675541113,
+        "min_drift": -7.502738210754851,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 12,
+        "num_residues": 2048,
+        "mean_drift": -0.5718759702076286,
+        "min_drift": -8.19891444498699,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 13,
+        "num_residues": 4096,
+        "mean_drift": -0.5737581944367915,
+        "min_drift": -8.893023494394711,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 14,
+        "num_residues": 8192,
+        "mean_drift": -0.5745668461050654,
+        "min_drift": -9.58623934448258,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 15,
+        "num_residues": 16384,
+        "mean_drift": -0.5749107160677394,
+        "min_drift": -10.279352190868002,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 16,
+        "num_residues": 32768,
+        "mean_drift": -0.5750941928306376,
+        "min_drift": -10.97255087224768,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 17,
+        "num_residues": 65536,
+        "mean_drift": -0.575203722228878,
+        "min_drift": -11.665655135642039,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 18,
+        "num_residues": 131072,
+        "mean_drift": -0.5752725365602789,
+        "min_drift": -12.358849524982826,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 19,
+        "num_residues": 262144,
+        "mean_drift": -0.5753196177172447,
+        "min_drift": -13.05201172605113,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 20,
+        "num_residues": 524288,
+        "mean_drift": -0.5753415293082834,
+        "min_drift": -13.745159979495897,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 21,
+        "num_residues": 1048576,
+        "mean_drift": -0.5753517608303452,
+        "min_drift": -14.438306623613576,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 22,
+        "num_residues": 2097152,
+        "mean_drift": -0.5753571671054851,
+        "min_drift": -15.131454608836814,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 23,
+        "num_residues": 4194304,
+        "mean_drift": -0.5753602033143297,
+        "min_drift": -15.824601118844061,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      },
+      {
+        "M": 24,
+        "num_residues": 8388608,
+        "mean_drift": -0.575361968487513,
+        "min_drift": -16.51774903701195,
+        "max_drift": 0.8873031950009029,
+        "negative": true
+      }
+    ]
+  },
+  "sampling": {
+    "num_trials": 200000,
+    "seed": 42,
+    "mean_drift": -0.575908265439632,
+    "fraction_negative": 0.499,
+    "drift_negative": true
+  }
+}
