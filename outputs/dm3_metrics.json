@@ -1,0 +1,13 @@
+{
+  "c": 4.633430833063541,
+  "kappa_noise": 4.4245861075945125,
+  "tau": 1.023328374995534,
+  "tau_canonical": 2.0,
+  "tau_deviation": 0.488335812502233,
+  "mu_max_est": -1.5164745619088427,
+  "mu_max_canonical": -2.0,
+  "eps0_est": 0.25274576031814044,
+  "eps0_canonical": 0.3333333333333333,
+  "dm3_distance": 0.5449046504596263,
+  "in_arnold_tongue": false
+}
