@@ -1,0 +1,57 @@
+name: Autograding
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  autograding:
+    name: Run starter checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Add any pip packages your assignments need here, e.g.:
+          # pip install matplotlib numpy
+
+      - name: Check starter.py syntax
+        run: python -m py_compile scripts/starter.py
+
+      - name: Run starter self-test
+        run: python scripts/starter.py
+        continue-on-error: true  # students will get partial output until they implement functions
+
+      - name: Check assignment folders exist
+        run: |
+          for dir in assignments/A1 assignments/A2 assignments/A3 assignments/A4; do
+            if [ ! -d "$dir" ]; then
+              echo "ERROR: Missing folder $dir"
+              exit 1
+            fi
+          done
+          echo "All assignment folders present."
+
+      - name: Check glossary present
+        run: |
+          if [ ! -f "assignments/dm3-glossary.md" ]; then
+            echo "ERROR: dm3-glossary.md is missing"
+            exit 1
+          fi
+          echo "Glossary found."
