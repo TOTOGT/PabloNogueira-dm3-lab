@@ -1,1 +1,27 @@
 {"names": ["togt", "topographical-orthogenetics", "lean-proofs", "hyper-mahlo", "generative-orthogonal", "dm3", "large-cardinals", "string-theory-mappings", "planetary-life", "orthogenetics"]}
+{
+  "id": "navier-stokes-regularity",
+  "label": "3D Navier–Stokes Regularity Program",
+  "type": "research-track",
+  "description": "A structured, operator-based program aimed at bridging from Leray–Hopf solutions to unconditional regularity on T^3 via Prodi–Serrin critical criteria.",
+  "links": {
+    "sim": "sim-stormmanifold.html",
+    "proof_map": "docs/ns_proof_map_t3.tex",
+    "notes": [
+      "docs/ns_deliverable_2_attempt_lemma.tex"
+    ]
+  },
+  "views": [
+    "operator-sequence",
+    "proof-obligations",
+    "sim-behavior",
+    "frequency-analysis"
+  ],
+  "tasks": [
+    "derive-critical-or-near-critical L^p_t L^q_x bounds",
+    "quantify high-frequency energy flux",
+    "pressure-structure exploitation",
+    "vorticity-geometry analysis",
+    "construct log-improved inequalities"
+  ]
+}
