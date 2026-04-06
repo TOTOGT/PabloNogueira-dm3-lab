@@ -1,48 +1,88 @@
-# AXLE – Topographical Orthogenetics Proofs & Extensions
+# AXLE/Kakeya
 
-AXLE toy machine: fruit fly 🪰
+**Finite-directions Kakeya formalization in Lean 4 / Mathlib**
 
-Formal verification hub and extensible repository for **Topographical Orthogenetics (TO)** and **Topographical Orthogonal Generative Theory (TOGT)**.
+## What this is
 
-## Core Focus
+A honest, self-contained Lean 4 module formalizing a finite-directions
+variant of the Kakeya problem in ℝ³. It does not claim to formalize the
+full Wang–Zahl (2025) result. It proves what it can prove, labels what
+remains open, and contains no unjustified `sorry`.
 
-- Lean-verified proofs for scaling hierarchies (g⁵/g⁶ → hyper-Mahlo regenerations)
-- Operator chain implementations & mappings: **C → K → F → U** across scales
-- Nth-degree reconfiguration algorithms & community extensions
-- Bridges: plasma instabilities → biological morphogenesis → dm³ systems → Martian colony architecture → toy brain models (fly 🪰 connectome as starting point)
+## File
 
-## Repository Structure
+`AXLE/Kakeya/Finite.lean`
 
-| Path | Contents |
+## What is proved (no sorry)
+
+| Theorem | Statement |
 |---|---|
-| `/lean/` | Lean 4 proofs for large cardinal hierarchies & regeneration loops |
-| `/mappings/` | Domain mapping docs — C→K→F→U across 6 domains |
-| `/simulations/` | Python toy models (fly brain connectome + TO operators → dm³ metrics) |
-| `/scripts/` | Research scripts — Collatz D9 empirical sampler |
-| `/docs/` | Technical notes, hypothesis documents, LaTeX deliverables |
-| `/issues/` | Issue templates for open research tasks |
-| `/book3-starter/` | GitHub Classroom template for *Book 3* student assignments |
-| `*.svg` | Domain diagrams (operator sequence, Saturn hexagon, Coherence Bridge, …) |
+| `span_singleton_lt_top` | `span ℝ {u} ≠ ⊤` in E3 when `u ≠ 0` |
+| `affine_line_ne_top` | The affine line through `x` in direction `u` is a proper subspace |
+| `segment_measure_zero` | A unit segment in ℝ³ has 3D Lebesgue measure zero |
+| `finite_segments_measure_zero` | A finite union of unit segments has measure zero |
+| `thickened_segment_pos_measure` | An ε-thickened segment has positive measure for ε > 0 |
+| `finite_kakeya_thickened_positive_measure` | If K contains an ε-tube in some direction, volume K > 0 |
 
-## Key Files
+## What is not proved (honest sorry)
 
-- 📄 [Collatz Paper (Grossi 2026)](Collatz_Paper_Grossi2026.pdf) — *The Collatz Conjecture as a Canonical dm³-System*
-- 📐 [Domain Mappings](mappings/domain_mappings.md) — C→K→F→U across biology, plasma, connectome, string theory
-- 📚 [AXLE Documentation](docs/index.md) — Full framework overview and simulation guide
-- 🎓 [Book 3 Student Starter](book3-starter/README.md) — GitHub Classroom assignments for Book 3
+| Theorem | Status |
+|---|---|
+| `thickened_segment_volume_lower_bound` | `volume(tube) ≥ π ε²`; true, proof requires Fubini over cross-sections; tracked |
 
-## Publications & Links
+## Key definitions
 
-- **Book:** *Applications of Generative Orthogonal Matrix Compression Science* (Principia Orthogona, G6 LLC)
-- **Zenodo:** [10.5281/zenodo.19117400](https://doi.org/10.5281/zenodo.19117400)
-- **HAL preprints:** [hal-05555216](https://hal.science/hal-05555216), [hal-05559997](https://hal.science/hal-05559997)
-- **X:** [@unitedWeStreamU](https://x.com/unitedWeStreamU) (search "AXLE" for threads)
+```lean
+-- A unit segment from x in direction u
+def unitSegment (u x : E3) : Set E3 :=
+  { p | ∃ t ∈ Icc 0 1, p = x + t • u }
 
-## Contributing
+-- An ε-thickened tube around the unit segment
+def thickenedSegment (u x : E3) (ε : ℝ) : Set E3 :=
+  { p | ∃ t ∈ Icc 0 1, dist p (x + t • u) < ε }
+```
 
-Want to add files — including from your phone? See [CONTRIBUTING.md](CONTRIBUTING.md) for a step-by-step guide to uploading files via the GitHub mobile app.
+## Why the naive theorem is false
 
-For D9 (Collatz) contributions specifically, see [docs/CONTRIBUTING_D9.md](docs/CONTRIBUTING_D9.md).
+The original formulation `containsSegments K dirs → volume K > 0` is **false**:
+unit segments in ℝ³ have 3D Lebesgue measure zero, so a finite union of
+them has measure zero regardless of K. The correct statement requires
+ε-thickened tubes.
 
-**Contact:** Pablo Grossi | PabloGrossi@hotmail.com | G6 LLC · Newark, NJ · 2026  
-**License:** MIT
+## Build verification
+
+Before building, run these `#check` calls in a scratch file with the same
+imports to verify Mathlib spelling:
+
+```lean
+#check @addHaar_affineSubspace
+#check @AffineSubspace.direction_mk'
+#check @AffineSubspace.direction_top
+#check @finrank_span_singleton
+#check @EuclideanSpace.finrank_eq
+#check @Submodule.finrank_top
+```
+
+Then:
+
+```bash
+lake build AXLE.Kakeya.Finite
+```
+
+## What this is not
+
+- This is not a formalization of Wang–Zahl (2025). That proof is 127 pages
+  and has not been formalized in Mathlib.
+- This is not part of a proof of the Collatz conjecture.
+- The `sorry` in `thickened_segment_volume_lower_bound` is real and tracked.
+
+## What comes next
+
+1. Close `thickened_segment_volume_lower_bound` via Fubini / change of variables
+2. Add a disjointness lemma for tubes in sufficiently separated directions
+3. State a quantitative multi-tube lower bound: if dirs has n elements with
+   pairwise angle ≥ δ, then `volume K ≥ n · c(δ) · ε²`
+
+## Author
+
+Pablo Nogueira Grossi, G6 LLC, 2026
