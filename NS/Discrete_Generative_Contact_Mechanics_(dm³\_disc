@@ -1,0 +1,70 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\lstset{
+  language=Lean,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue},
+  commentstyle=\color{green!50!black},
+  stringstyle=\color{red},
+  breaklines=true,
+  frame=single,
+  numbers=left
+}
+
+\title{\textbf{Discrete Generative Contact Mechanics (dm³\_disc)}\\
+A Lean-First Language Specification}
+\author{Pablo Nogueira Grossi \\ G6 LLC / AXLE Project}
+\date{v1.0 — April 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This document presents dm³\_disc as a formally defined higher-order category that unifies the continuous dm³ framework (GCM Manifesto §2.2) with the Topographical Orthogonal Generative Theory (TOGT) operator algebra. The Collatz map is exhibited as a concrete object. Two axioms are proved; the remaining three are localized as precise analytic targets.
+\end{abstract}
+
+\section{The Discrete dm³ Grammar (Lean-first)}
+
+\subsection{Syntax}
+\begin{lstlisting}
+structure TOGTGrammar where
+  C : ℕ → ℕ
+  K : ℕ → Bool
+  F : ℕ → ℕ
+  U : ℕ → ℕ
+\end{lstlisting}
+C = compression, K = constraint (curvature), F = folding, U = unfolding.
+
+\subsection{Composition}
+The generative operator is the composite \(G = U \circ F \circ K \circ C\).
+
+\section{The Discrete dm³ Category}
+
+\subsection{Objects}
+\begin{lstlisting}
+structure DiscreteDm3System where
+  X        : Type
+  T        : X → X
+  V        : X → ℝ
+  Phi      : X → ℝ
+  Gamma    : Finset X
+  grammar  : TOGTGrammar
+  -- eight axioms as fields (see v1.6)
+\end{lstlisting}
+An object is a countable discrete state space equipped with a generative map \(T\), contact structure, Lyapunov function, and the TOGT grammar.
+
+\subsection{Morphisms}
+\begin{lstlisting}
+structure DiscreteDm3Hom (A B : DiscreteDm3System) where
+  f        : A.X → B.X
+  map_T    : ∀ x, f (A.T x) = B.T (f x)
+  map_Phi  : ∀ x, |B.Phi (f x) - A.Phi x| ≤ 1
+  map_V    : ∀ x, B.V (f x) ≤ A.V x + 1
+\end{lstlisting}
+Morphisms are
