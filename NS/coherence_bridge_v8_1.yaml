@@ -149,7 +149,7 @@ domains:
       The g=33 identification is not supported by phyllotaxis data.
       Included as empirical anchor for the broader spiral-packing motif.
 
-  - id: collatz
+- id: collatz
     name: "Collatz conjecture via dm³/GQM bridge"
     claim_level: formally_stated
     source: "AXLE v8.2 Main.lean — collatz_conjecture_via_dm3_gqm (ADMIT-D)"
@@ -176,6 +176,7 @@ domains:
       The intertwining lemma (applyG ∘ ι = ι ∘ Collatz_step) is the key
       unproven claim. This is an open problem; the claim level is formally_stated
       because the theorem is precisely stated in Lean 4, not because it is proven.
+
 
   - id: bsd
     name: "Birch and Swinnerton-Dyer conjecture"
