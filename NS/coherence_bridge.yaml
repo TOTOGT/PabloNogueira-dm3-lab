@@ -1,0 +1,79 @@
+# AXLE/Lexicon/coherence_bridge.yaml
+# Coherence Bridge — structured vocabulary for dm³/TOGT cross-domain claims
+# Version 8.1 — Pablo Nogueira Grossi, April 2026
+
+lexicon_version: "8.1"
+last_updated: "2026-04-06"
+
+schema:
+  claim_levels:
+    empirical: "bracketed by independent physical measurement; explicit falsifiability condition"
+    analogical: "structural parallel to TOGT operators; parameters not calibrated from domain"
+    formally_stated: "encoded in Lean 4 / AXLE; compiles; proof is honest admit"
+    formally_verified: "Lean 4 proof complete; zero sorrys"
+  fields:
+    - domain
+    - μmax
+    - ω
+    - β
+    - κ_star
+    - togt_C
+    - togt_K
+    - togt_F
+    - togt_U
+    - g_threshold
+    - falsifiability_condition
+    - claim_level
+    - axle_status
+    - parameter_status
+    - notes
+
+rows:
+
+  - domain: "Wigner crystal (electron gas)"
+    μmax: -0.31
+    ω: 0.19
+    β: 1.7
+    κ_star: "rs* ≈ 30–40 (brackets 33)"
+    togt_C: "progressive reduction of kinetically accessible states as rs increases"
+    togt_K: "curvature of free-energy landscape; compressibility diverges near rs*"
+    togt_F: "Whitney A fold singularity in free-energy surface; first-order transition"
+    togt_U: "body-centred cubic Wigner lattice; unique stable attractor"
+    g_threshold: 33
+    falsifiability_condition: >
+      Density modulation amplitude grows as (rs − rs*)^β with β ≈ 1.7.
+      High-resolution QMC near rs* must yield critical exponent in 1.5–1.9.
+      2D GaAs crystallisation must be first-order (Whitney A class).
+    claim_level: empirical
+    axle_status: "GenerativeManifold instance — not yet in AXLE v8.1"
+    parameter_status: "calibrated against Ceperley-Alder QMC and GaAs/AlGaAs data"
+    notes: "Strongest empirical grounding."
+
+  - domain: "Neural microtubule (tubulin)"
+    μmax: -0.55
+    ω: 0.45
+    β: 2.1
+    κ_star: "κ* = 0.25–0.35 rad/s"
+    togt_C: "GTP hydrolysis; removes conformational degrees of freedom one dimer at a time"
+    togt_K: "lateral coupling between adjacent dimer conformations; builds curvature in free-energy landscape"
+    togt_F: "onset of coherent conformational wave propagation; Whitney A fold at κ*"
+    togt_U: "helical wave propagating plus-end to axonal base; couples to synaptic vesicle transport"
+    g_threshold: 33
+    falsifiability_condition: >
+      Coherent conformational wave propagation in 13-protofilament microtubules at 37°C
+      with coherence length 240–280 nm and frequency 0.3–0.6 rad/s.
+      FRET-labelled tubulin must yield coherence lengths in this range.
+      Taxol disruption of lateral coupling must suppress delta-band synchrony.
+    claim_level: empirical
+    axle_status: "V_10 microtubule paper (Navrátil 2026); partial structural overlap with AXLE operators"
+    parameter_status: "calibrated against EM and FRET data"
+    notes: "33 × 8 nm = 264 nm minimum stable segment."
+
+  - domain: "glycolytic_oscillations"
+    status: empirical
+    g_threshold: 1.3
+    g_threshold_source: "Sel'kov model Hopf condition a*b > 1; typical calibrated values a≈1.0, b≈1.3 (dimensionless)."
+    mu_max: 0.42
+    mu_max_source: "Goldbeter (1996), maximal normalized NADH amplitude in sustained oscillatory regime."
+    omega: 0.06
+    omega_source: "Goldbeter (1996), oscillation frequency ~0.
