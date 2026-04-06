@@ -1,0 +1,302 @@
+# AXLE/Lexicon/coherence_bridge.yaml
+# Version: 8.1
+# Author: G6 LLC / Pablo Nogueira Grossi — Newark NJ
+# Purpose: Machine-readable cross-domain lexicon mapping physical/mathematical
+#          domains to TOGT operator slots (C, K, F, U) with explicit claim levels.
+#
+# Claim level definitions:
+#   empirical         — domain has measured parameters calibrated to physical data;
+#                       all five TOGT questions (C,K,F,U,E) answered from the
+#                       domain's own mathematics; g_threshold derived from observation.
+#   analogical        — structural similarity identified; 3–4 TOGT questions answered;
+#                       g_threshold represents a TOGT identification, not a domain result.
+#   formally_stated   — theorem is stated in Lean 4 with honest sorry; no physical
+#                       calibration needed (pure mathematics); claim is precise and
+#                       falsifiable; no zero-sorry proofs exist yet.
+#   formally_verified — theorem proven in Lean 4 with zero sorry; currently no rows
+#                       qualify (all AXLE v8.2 theorems carry at least one admit).
+#
+# Schema note: null means "not calibrated / not applicable / not derived from this domain".
+# parameter_status explains why a parameter is null.
+
+schema_version: "1.0"
+created: "2026-04-06"
+axle_version: "8.2"
+
+claim_level_rules:
+  empirical:
+    description: >
+      Domain is a physical system with experimentally measured parameters.
+      All five TOGT questions (C compression, K curvature, F fold/transition,
+      U attractor, E stability criterion) are answerable from the domain's own
+      mathematics or experimental record. g_threshold is derived from observation,
+      not imposed by TOGT.
+    required_togt_questions_answered: 5
+    parameters_required: true
+
+  analogical:
+    description: >
+      Structural similarity between domain mathematics and TOGT operator chain
+      has been identified. Three to four TOGT questions are answered from the
+      domain's own results. g_threshold, if present, is a TOGT identification
+      (the framework's stability constant mapped onto the domain) rather than
+      a domain-internal result. Uncalibrated parameters are null.
+    required_togt_questions_answered: "3-4"
+    parameters_required: false
+
+  formally_stated:
+    description: >
+      The claim is stated as a Lean 4 theorem with honest sorry markers.
+      The mathematical content is precise and falsifiable. No physical
+      calibration is required or claimed. g_threshold is not applicable.
+    required_togt_questions_answered: "N/A (pure mathematics)"
+    parameters_required: false
+
+  formally_verified:
+    description: >
+      The claim is proven in Lean 4 with zero sorry. Currently no rows
+      in this lexicon qualify; this row documents the target state.
+    required_togt_questions_answered: "N/A (pure mathematics)"
+    parameters_required: false
+
+translation_engine:
+  five_questions:
+    C: "What is being compressed or reduced in this domain? (information, energy, phase, curvature)"
+    K: "What curvature or metric deformation encodes the compressed structure?"
+    F: "What fold/transition/bifurcation marks the stability boundary?"
+    U: "What is the unique attractor or fixed point of the forward dynamics?"
+    E: "What stability criterion or threshold separates ordered from disordered regimes?"
+
+  claim_level_diagnostic:
+    description: >
+      To assign a claim level: count how many of the five TOGT questions (C,K,F,U,E)
+      are answerable directly from the domain's own mathematics (not by TOGT analogy).
+      5 answered → empirical candidate; 3-4 → analogical; fewer → metaphorical (not listed).
+
+domains:
+
+  - id: wigner_crystal
+    name: "Wigner crystallization"
+    claim_level: empirical
+    source: "Ceperley & Alder (1980); Drummond et al. (2004)"
+    g_threshold: 33
+    g_threshold_source: "rs* ≈ 30–40 (experimental/QMC bracket); centre value 33 ± 5"
+    togt_C: "Coulomb compression of electron fluid into lattice"
+    togt_K: "Curvature of Wigner-Seitz cell boundary (rs parameterization)"
+    togt_F: "First-order crystallization transition at rs*"
+    togt_U: "BCC/FCC Wigner lattice (unique low-T attractor)"
+    togt_E: "rs* ≈ 30–40 (empirical stability criterion)"
+    parameters:
+      mu_max: -0.31
+      omega:   0.19
+      beta:    1.7
+    parameter_status: calibrated
+    parameter_source: "Drummond et al. 2004 QMC fits"
+    notes: >
+      The bracket rs* ∈ [30,40] is the strongest empirical anchor for g=33.
+      The specific value 33 is the TOGT identification of the centre of this range.
+      Whitney A (fold) singularity class confirmed for the transition.
+
+  - id: neural_microtubule
+    name: "Neural microtubule coherence"
+    claim_level: empirical
+    source: "Penrose & Hameroff (1996); Craddock et al. (2017)"
+    g_threshold: 33
+    g_threshold_source: "13 protofilaments × 8 nm tubulin dimer = 104 nm period;
+                          33 × 8 nm = 264 nm minimum coherent segment (geometric)"
+    togt_C: "Tubulin dimer conformational compression (GTP→GDP hydrolysis)"
+    togt_K: "Helical pitch curvature of 13-protofilament microtubule lattice"
+    togt_F: "Quantum decoherence transition (Orch-OR threshold)"
+    togt_U: "Phase-locked tubulin oscillation (coherent segment attractor)"
+    togt_E: "33 × 8 nm = 264 nm minimum coherent length (geometric criterion)"
+    parameters:
+      mu_max: null
+      omega:   null
+      beta:    null
+    parameter_status: >
+      Geometric g_threshold is calibrated; dynamical parameters (mu_max, omega, beta)
+      are not established for this domain. Orch-OR quantitative predictions remain
+      experimentally contested.
+    notes: >
+      The 33-unit criterion is geometric (protofilament × dimer length), not dynamical.
+      Claim level is empirical for the geometry; the quantum coherence mechanism
+      (Orch-OR) is a hypothesis, not an established result.
+
+  - id: phyllotaxis
+    name: "Plant phyllotaxis (Fibonacci spirals)"
+    claim_level: empirical
+    source: "Douady & Couder (1992); Mitchison (1977)"
+    g_threshold: null
+    g_threshold_source: >
+      Phyllotactic indices are 8 and 13 (consecutive Fibonacci numbers), not 33.
+      No g_threshold = 33 is derived from phyllotaxis. TOGT stability range g=8–13
+      is a softer identification; this field is left null to avoid false precision.
+    togt_C: "Primordium inhibition field (compression of growth signal)"
+    togt_K: "Cylindrical curvature of stem meristem"
+    togt_F: "Bifurcation at golden angle 137.507° (transition to spiral packing)"
+    togt_U: "Fibonacci spiral lattice (unique stable packing attractor)"
+    togt_E: "Golden angle criterion; Fibonacci indices 8,13 (not 33)"
+    parameters:
+      mu_max: null
+      omega:   null
+      beta:    null
+    parameter_status: >
+      Phyllotaxis does not calibrate to the (mu_max, omega, beta) parameterization.
+      Dynamical parameters are null. Golden angle and Fibonacci structure are
+      well-established but map to g ∈ {8,13}, not 33.
+    notes: >
+      Strongest evidence for TOGT's Fibonacci/golden-ratio thread.
+      The g=33 identification is not supported by phyllotaxis data.
+      Included as empirical anchor for the broader spiral-packing motif.
+
+  - id: collatz
+    name: "Collatz conjecture via dm³/GQM bridge"
+    claim_level: formally_stated
+    source: "AXLE v8.2 Main.lean — collatz_conjecture_via_dm3_gqm (ADMIT-D)"
+    g_threshold: null
+    g_threshold_source: "Not applicable: pure combinatorial problem; no stability threshold."
+    togt_C: "Halving map n → n/2 (compression of even integers)"
+    togt_K: "GQM metric deformation: weight(k) = η^{-k} on PhaseVector"
+    togt_F: "3n+1 step (fold: odd branch creates curvature in orbit)"
+    togt_U: "4 → 2 → 1 cycle (conjectured unique global attractor)"
+    togt_E: "Conjecture: every orbit reaches 1; no finite g threshold known"
+    parameters:
+      mu_max: null
+      omega:   null
+      beta:    null
+    parameter_status: >
+      Pure mathematical conjecture. Physical parameterization not applicable.
+      The (mu_max, omega, beta) slots are structural parameters for physical
+      domains; they have no meaning here.
+    lean4_theorem: "collatz_conjecture_via_dm3_gqm"
+    lean4_sorry_label: "ADMIT-D"
+    lean4_sorry_count: 1
+    notes: >
+      The dm³/GQM bridge embeds ℕ → PhaseVector via the GQM η-weighting.
+      The intertwining lemma (applyG ∘ ι = ι ∘ Collatz_step) is the key
+      unproven claim. This is an open problem; the claim level is formally_stated
+      because the theorem is precisely stated in Lean 4, not because it is proven.
+
+  - id: bsd
+    name: "Birch and Swinnerton-Dyer conjecture"
+    claim_level: analogical
+    source: "Birch & Swinnerton-Dyer (1965); Wiles et al. (partial results)"
+    g_threshold: null
+    g_threshold_source: >
+      No g_threshold is derived from BSD. The conjecture concerns the rank of
+      elliptic curves over ℚ; the TOGT stability constant 33 has no analogue
+      in BSD's known mathematics. Field left null.
+    togt_C: "L-function compression of arithmetic data (Euler product)"
+    togt_K: "Curvature of elliptic curve E over ℚ (Néron model geometry)"
+    togt_F: "Analytic rank = algebraic rank transition (BSD equality)"
+    togt_U: "Rational point structure (Mordell-Weil group as attractor)"
+    togt_E: "Rank-0 vs rank≥1 boundary (no quantitative g_threshold from BSD)"
+    parameters:
+      mu_max: null
+      omega:   null
+      beta:    null
+    parameter_status: >
+      No calibration to (mu_max, omega, beta) is available or claimed.
+      BSD is an analogy for the TOGT C→K→F→U chain, not a physical domain
+      with measured dynamical parameters.
+    notes: >
+      4 of 5 TOGT questions answered from BSD's own mathematics (C,K,F,U).
+      The E-slot (stability criterion) is weak: BSD does not produce a numerical
+      threshold analogous to g=33. Claim level is analogical, not empirical.
+
+  - id: navier_stokes
+    name: "Navier-Stokes regularity (Millennium Problem)"
+    claim_level: analogical
+    source: "Leray (1934); Fefferman (2006 Millennium statement)"
+    g_threshold: null
+    g_threshold_source: >
+      No g_threshold is derived from NS regularity theory. The Reynolds number
+      Re governs turbulence onset but is not identified with g=33 in any
+      established result. Field left null.
+    togt_C: "Viscous dissipation (compression of kinetic energy to heat)"
+    togt_K: "Vorticity curvature (curl u as local geometry of flow)"
+    togt_F: "Turbulence onset / Leray blow-up transition (if it exists)"
+    togt_U: "Laminar flow attractor (global regularity conjecture)"
+    togt_E: "Critical Reynolds number Re_c (domain-specific, not g=33)"
+    parameters:
+      mu_max: null
+      omega:   null
+      beta:    null
+    parameter_status: >
+      No calibration to (mu_max, omega, beta). Physical viscosity and Reynolds
+      number are NS parameters; they do not map to the TOGT (mu_max, omega, beta)
+      parameterization without further theoretical work.
+    notes: >
+      4 of 5 TOGT questions answered. E-slot (stability criterion) maps to
+      Re_c, not g=33. The g=33 TOGT constant is not a result of NS theory.
+      Analogy is structural (dissipation-curvature-blow-up-attractor chain).
+
+  - id: anantharaman_monk_2025
+    name: "Anantharaman-Monk 2025: Spectral gaps on hyperbolic surfaces"
+    claim_level: analogical
+    source: "Anantharaman & Monk (2025); Friedman-Ramanujan conjecture context"
+    g_threshold: null
+    g_threshold_source: >
+      Anantharaman-Monk is an asymptotic result (almost all surfaces of genus g→∞
+      have a spectral gap approaching the Ramanujan bound). There is no finite
+      g_threshold; the result holds in the large-genus limit, not at g=33.
+    togt_C: "Spectral compression: Laplacian eigenvalue gap measures information
+              bottleneck of hyperbolic surface"
+    togt_K: "Hyperbolic curvature κ = −1 (constant; rigidity of the geometry)"
+    togt_F: "Ramanujan bound 1/4: transition between expander-like and non-expander
+              spectral behavior"
+    togt_U: "Plancherel measure: asymptotic equidistribution of eigenvalues
+              (conjectured attractor for random surfaces)"
+    togt_E: "Spectral gap → 1/4 as g → ∞ (asymptotic, no finite threshold)"
+    parameters:
+      mu_max: null
+      omega:   null
+      beta:    null
+    parameter_status: >
+      Asymptotic result only. No calibration to (mu_max, omega, beta) is available.
+      The Friedman-Ramanujan functions depend on genus g in a limit sense;
+      extracting finite-g parameters would require a separate quantitative analysis.
+    notes: >
+      4 of 5 TOGT questions answered (C,K,F,U answered from the paper's own
+      mathematics; E-slot is asymptotic, not a finite threshold). This is the
+      strongest analogical match among the 2025 results. The spectral gap
+      framework mirrors the TOGT stability analysis but operates in a different
+      limit regime (g → ∞ vs. g = 33).
+
+  - id: wang_zahl_2025
+    name: "Wang-Zahl 2025: 3D Kakeya conjecture (Hausdorff dimension)"
+    claim_level: analogical
+    source: "Wang & Zahl (2025); Kakeya set conjecture in ℝ³"
+    g_threshold: null
+    g_threshold_source: >
+      Wang-Zahl is a one-shot dimension result (Kakeya sets in ℝ³ have full
+      Hausdorff dimension 3). There is no stability threshold; the result is
+      a clean geometric equality, not a parametric family.
+    togt_C: "Needle compression: Kakeya set packs all needle orientations into
+              minimum measure"
+    togt_K: "Curvature of needle sweep path (Besicovitch construction geometry)"
+    togt_F: "Dimension transition: sets below Hausdorff dimension 3 cannot contain
+              needles in all directions (the fold is the dimensional boundary)"
+    togt_U: "Full-dimension Kakeya set (dimension = 3 is the unique stable value)"
+    togt_E: "Hausdorff dimension = 3 (no numerical threshold; binary result)"
+    parameters:
+      mu_max: null
+      omega:   null
+      beta:    null
+    parameter_status: >
+      Binary result (dim = 3 or not). No parametric family; no calibration to
+      (mu_max, omega, beta). The TOGT analogy is structural (compression →
+      curvature → fold → full-dimension attractor) but no quantitative TOGT
+      parameters are extracted.
+    notes: >
+      3 of 5 TOGT questions answered cleanly (C,F,U). K and E are softer:
+      K = Besicovitch sweep curvature (geometric, not metric); E = binary
+      (full dimension or not), not a threshold parameter. Claim level is
+      analogical; the one-shot nature of the theorem means there is no
+      parametric stability story analogous to g=33.
+
+formally_verified_rows: []
+# No rows have claim_level: formally_verified.
+# This is correct: AXLE v8.2 contains 5 labeled admits (ADMIT-A1 through ADMIT-D).
+# The formally_verified row will be populated when the first zero-sorry theorem
+# is established in AXLE. Candidate: d6_lockin (ADMIT-C) — pure Fin 12 arithmetic.
