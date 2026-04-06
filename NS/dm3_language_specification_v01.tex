@@ -1,0 +1,254 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathrsfs}
+\usepackage{fullpage}
+\usepackage{hyperref}
+
+\title{\textbf{Language Specification: The Unified Generative Framework}\\
+\large TOGT + GCM + dm$^3_{\mathrm{disc}}$\
+
+\[4pt]
+\large \emph{Discrete Generative Contact Mechanics (dm$^3_{\mathrm{disc}}$)}\\
+\large A Formal Lift of the dm$^3$ Category to Arithmetic Dynamical Systems}
+\author{Pablo Nogueira Grossi (Independent Researcher)}
+\date{v1.0 --- April 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This note provides the precise ``language-first'' specification requested by the
+Collatz supplement (TOGT Report, pp.~108--109). It synthesizes:
+\begin{itemize}
+  \item the continuous dm$^3$ framework of the GCM Manifesto (\S2.2),
+  \item the Topographical Orthogonal Generative Theory (TOGT) operator algebra
+        $G = U \circ F \circ K \circ C$,
+  \item the discrete lift dm$^3_{\mathrm{disc}}$ formalized in Lean~4
+        (\texttt{DiscreteDm3.lean} v1.5).
+\end{itemize}
+The result is a single higher-order category in which both smooth contact flows
+and piecewise-linear arithmetic maps (such as the Collatz map) are objects.
+The Collatz conjecture is thereby reduced to a pure membership problem inside
+this category.
+\end{abstract}
+
+\section{Continuous dm$^3$ (GCM Recap)}
+
+A continuous dm$^3$-system is a tuple
+
+
+\[
+(M, X, \alpha, V, \Phi, \Gamma)
+\]
+
+
+where:
+\begin{itemize}
+  \item $M$ is a Riemannian manifold,
+  \item $X$ is a $C^2$ vector field generating a flow,
+  \item $\alpha$ is a contact form (maximally non-integrable hyperplane field),
+  \item $V$ is a Lyapunov function with average descent outside the limit cycle,
+  \item $\Phi$ is the contact Hamiltonian,
+  \item $\Gamma$ is a hyperbolic structured limit cycle.
+\end{itemize}
+
+Morphisms are contactomorphisms $f : M \to M'$ such that:
+
+
+\[
+f \circ \varphi^t = \varphi'^t \circ f,\qquad
+|\Phi'(f(x)) - \Phi(x)| \le C_\Phi,\qquad
+V'(f(x)) \le V(x) + C_V.
+\]
+
+
+
+The GCM Manifesto (\S2.2) establishes four main theorems:
+\begin{enumerate}
+  \item existence and stability of $\Gamma$,
+  \item categorical closure of the generative pipeline,
+  \item contact normal form,
+  \item structural stability under contact-preserving perturbations.
+\end{enumerate}
+
+\section{Discrete Lift: dm$^3_{\mathrm{disc}}$}
+
+A discrete dm$^3$-system is a tuple
+
+
+\[
+(X, T, V, \Phi, \Gamma, \mathcal{G})
+\]
+
+
+exactly as in \texttt{DiscreteDm3System} (Lean v1.5), satisfying the axioms below.
+
+\subsection{State Space}
+
+
+
+\[
+X = \mathbb{N}_{\ge 1}
+\]
+
+
+(or any countable discrete space) equipped with the 2-adic metric
+
+
+\[
+d_2(m,n) = 2^{-v_2(m-n)}.
+\]
+
+
+
+\subsection{Generative Map}
+
+A piecewise-linear map $T : X \to X$.
+
+\subsection{Discrete Contact Form}
+
+\textbf{Axiom (contactForm).}  
+For all odd $n$,
+
+
+\[
+v_2(3n+1) \ge 1.
+\]
+
+
+This is \emph{proved} for the Collatz map in Lean v1.5.
+
+\subsection{Discrete Contact Hamiltonian}
+
+A function $\Phi : X \to \mathbb{R}_{\ge 0}$.
+
+\subsection{Lyapunov Function}
+
+A function $V : X \to \mathbb{R}_{\ge 0}$.
+
+\subsection{Structured Limit Cycle}
+
+A finite attracting cycle $\Gamma$.
+
+\subsection{Mean Contraction}
+
+\textbf{Axiom (meanContraction).}  
+There exist $\kappa < 1$ and $N_0 \in \mathbb{N}$ (the TOGT monster threshold $g_6 = 33$) such that
+
+
+\[
+\forall n \ge N_0,\qquad
+\log(T^2(n)) - \log n \le \log \kappa.
+\]
+
+
+This encodes the classical $3/4$ macro-step contraction heuristic.
+
+\subsection{Operator Grammar (TOGT)}
+
+\textbf{Axiom (operatorDecomposition).}  
+
+
+\[
+T = G = U \circ F \circ K \circ C.
+\]
+
+
+This is \emph{proved} for the Collatz map in Lean v1.5.
+
+\subsection{Categorical Closure}
+
+The system belongs to the category dm$^3_{\mathrm{disc}}$.
+
+\subsection{Morphisms}
+
+Morphisms $f : A.X \to B.X$ satisfy:
+
+
+\[
+f \circ T_A = T_B \circ f,
+\qquad
+|\Phi_B(f(x)) - \Phi_A(x)| \le C_\Phi,
+\qquad
+V_B(f(x)) \le V_A(x) + C_V.
+\]
+
+
+Identities and composition are defined and verified in Lean v1.5.
+
+\section{Collatz as a Canonical Object}
+
+The normalized Collatz macro-step is
+
+
+\[
+T(n) =
+\begin{cases}
+n/2, & n \text{ even},\
+
+\[4pt]
+(3n+1)/2^{v_2(3n+1)}, & n \text{ odd}.
+\end{cases}
+\]
+
+
+
+It defines the concrete discrete dm$^3$-system \texttt{CollatzDm3Candidate} with:
+
+
+\[
+X = \mathbb{N},\quad
+T = \texttt{collatz},\quad
+\Phi(n) = v_2(n),\quad
+V(n) = \log_2(n+1),\quad
+\Gamma = \{1,2,4\}.
+\]
+
+
+
+\subsection{Proved Axioms}
+
+\begin{itemize}
+  \item \textbf{operatorDecomposition} (TOGT grammar) --- proved.
+  \item \textbf{contactForm} (2-adic dissipation on odd branch) --- proved.
+\end{itemize}
+
+\subsection{Analytic Targets (Open)}
+
+\begin{itemize}
+  \item \textbf{meanContraction} (3/4 factor above $g_6 = 33$),
+  \item \textbf{lyapunovDescent} (average $\Delta V < 0$),
+  \item \textbf{hasStructuredCycle} (every orbit reaches $\Gamma$).
+\end{itemize}
+
+\section{AXLE Target 5 = Membership Problem}
+
+The Collatz conjecture is equivalent to:
+
+
+
+\[
+\text{The Collatz map } T \text{ is an object of dm}^3_{\mathrm{disc}}.
+\]
+
+
+
+In Lean, this is literally the statement:
+
+\begin{verbatim}
+theorem collatz_converges (n : ℕ) :
+  ∃ k, (Function.iterate collatz k n) ∈ collatzCycle
+\end{verbatim}
+
+which reduces to filling the three open fields of
+\texttt{CollatzDm3Candidate}.
+
+\section{References}
+
+\begin{itemize}
+  \item GCM Manifesto \S2.2 (continuous dm$^3$).
+  \item TOGT Report, pp.~108--109 (Collatz as corollary of crystal geometry).
+  \item \texttt{DiscreteDm3.lean} v1.5 (formal companion, AXLE repository).
+\end{itemize}
+
+\end{document}
