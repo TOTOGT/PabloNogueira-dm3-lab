@@ -1,0 +1,63 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{xcolor}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{\textbf{Global Atlas of the Unified dm³ Framework}\\
+Seven Clay Millennium Pillars + Goldbach}
+\author{Pablo Nogueira Grossi \\ G6 LLC / AXLE Project}
+\date{v1.0 — April 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This atlas provides a single overview of the seven Clay Millennium Problems (plus Goldbach) as canonical objects in the unified dm³ framework. All pillars share the identical TOGT grammar \(G = U \circ F \circ K \circ C\) and contact geometry. Each has two structural axioms proved/stated and three analytic admits remaining.
+\end{abstract}
+
+\section{Overview Table}
+
+\begin{longtable}{l l l l l}
+\toprule
+\textbf{Pillar} & \textbf{Domain} & \textbf{State Space} & \textbf{Contact Form} & \textbf{TOGT Operators (C/K/F/U)} \\
+\midrule
+dm³\_disc & Collatz & \(\mathbb{N}^+\) & 2-adic valuation & Halving / parity / 3n+1 / cycle \\
+dm³\_cont & Navier–Stokes & divergence-free fields on \(\mathbb{R}^3\) & GCM contact on vorticity & Dissipation / vorticity curvature / mode-coupling / laminar attractor \\
+dm³\_BSD & Birch–Swinnerton-Dyer & Elliptic curves \(E/\mathbb{Q}\) & Arithmetic contact on L(E,s) & Local reduction / L-curvature / rank folding / Mordell–Weil \\
+dm³\_comp & P vs NP & Decision instances & Certificate complexity flow & Compression / reduction blow-up / nondet branching / solution structure \\
+dm³\_rh & Riemann Hypothesis & L-functions & Zero-distribution flow & Prime compression / critical-line curvature / zero folding / prime distribution \\
+dm³\_poincare & Poincaré (N=3) & 3-manifolds & Ricci-flow contact & Volume decrease / scalar curvature / surgery / S³ convergence \\
+dm³\_hodge & Hodge (classical) & Smooth projective varieties over \(\mathbb{C}\) & Variation of Hodge structure & Cohomological compression / Hodge-bundle curvature / degeneration folding / algebraic cycles \\
+dm³\_yangmills & Yang–Mills / Mass Gap & Gauge connections on 4-manifolds & Instanton / curvature flow & Energy minimization / connection curvature / instanton bubbling / mass-gap vacuum \\
+dm³\_goldbach & Goldbach & Even integers > 2 & Prime-density flow & Even-number compression / prime-density curvature / partition folding / Goldbach representation \\
+\bottomrule
+\end{longtable}
+
+\section{Unified Structure Across All Pillars}
+
+\begin{itemize}
+\item \textbf{Grammar}: \(G = U \circ F \circ K \circ C\) (identical in every Lean file)
+\item \textbf{Contact Form}: Domain-specific (2-adic, GCM, arithmetic, certificate, zero-distribution, Ricci, Hodge VHS, gauge curvature, prime-density)
+\item \textbf{Proved Axioms}: operatorDecomposition + contact preservation (or contactForm)
+\item \textbf{Open Axioms (3 per pillar)}: meanContraction, lyapunovDescent, hasStructuredCycle (with domain-specific names)
+\item \textbf{Category}: Each pillar has its own Dm3XXXObject + Dm3XXXMorph with identical preservation conditions
+\end{itemize}
+
+\section{Coherence Bridge Status (v8.7)}
+
+All pillars are registered in \texttt{coherence\_bridge\_v8\_7.yaml} with:
+- \texttt{claim\_level: formally\_stated}
+- \texttt{lean4\_sorry\_count: 3}
+- Explicit \texttt{lean4\_file} and \texttt{lean4\_theorem} references
+
+The framework is now a single higher-order category in which every major conjecture is a concrete object.
+
+\section{Next Steps}
+
+The language-first phase is complete. The remaining work is closing the three analytic admits per pillar (or proving one pillar fully, e.g. Collatz or Goldbach).
+
+\end{document}
