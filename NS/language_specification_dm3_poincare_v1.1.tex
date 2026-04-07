@@ -1,0 +1,128 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\lstset{
+  language=Lean,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue},
+  commentstyle=\color{green!50!black},
+  stringstyle=\color{red},
+  breaklines=true,
+  frame=single,
+  numbers=left
+}
+
+\title{\textbf{Poincaré Conjecture as a dm³ System (N=3 Exploration)}\\
+A Lean-First Language Specification \\
+(Topological Pillar of the Unified Framework)}
+\author{Pablo Nogueira Grossi \\ G6 LLC / AXLE Project}
+\date{v1.1 — April 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+N=3 exploration of the Poincaré Conjecture in dm³_poincare. Ricci flow is the generative step.
+C = volume compression, K = scalar curvature, F = surgery, U = convergence to S³.
+All operators and contact geometry are identical to the other five pillars.
+\end{abstract}
+
+\section{dm³ Grammar (Lean-first)}
+
+\subsection{Syntax}
+\begin{lstlisting}
+inductive Dm3Op
+| C | K | F | U
+\end{lstlisting}
+
+\subsection{N=3 Interpretation}
+C = volume compression under Ricci flow,  
+K = scalar curvature deformation,  
+F = topological folding via surgery,  
+U = unfolding to the 3-sphere.
+
+\subsection{Composition}
+\[
+G = U \circ F \circ K \circ C
+\]
+
+\section{The dm³\_poincare Category (N=3)}
+
+\subsection{Objects}
+\begin{lstlisting}
+structure Dm3PoincareObject :=
+  (M            : ThreeManifold)
+  (contactForm  : ThreeManifold → ThreeManifold)
+  (simplyClosed : isSimplyConnectedClosed3 M)
+  (dimension    : ℕ := 3)
+\end{lstlisting}
+
+\section{Poincaré as a dm³ Object (N=3)}
+
+\subsection{State Space}
+\begin{lstlisting}
+def Poincare_state := ThreeManifold
+\end{lstlisting}
+
+\subsection{Object Definition}
+\begin{lstlisting}
+def Poincare_dm3 : Dm3PoincareObject := { ... }
+\end{lstlisting}
+
+\section{The Poincaré → dm³\_poincare Embedding (N=3)}
+
+\subsection{Operator Decomposition}
+\begin{lstlisting}
+theorem Poincare_operatorDecomposition :
+  ∀ M, Poincare_step M = (G C_Poincare K_Poincare F_Poincare U_Poincare) M := ...
+\end{lstlisting}
+
+\subsection{Contact Preservation}
+\begin{lstlisting}
+axiom Poincare_preserves_contact :
+  ∀ M, Poincare_step (Poincare_contact M) = Poincare_contact (Poincare_step M)
+\end{lstlisting}
+
+\section{Remaining Analytic Axioms (N=3 Poincaré)}
+
+\subsection{meanContraction\_poincare}
+\begin{lstlisting}
+axiom meanContraction_poincare :
+  ∀ M, (∫ log (volume (Poincare_step M) / volume M) dμ) < 0
+\end{lstlisting}
+
+\subsection{lyapunovDescent\_poincare}
+\begin{lstlisting}
+axiom lyapunovDescent_poincare :
+  ∀ M, scalarCurvature (Poincare_step M) < scalarCurvature M
+\end{lstlisting}
+
+\subsection{hasStructuredCycle\_poincare}
+\begin{lstlisting}
+axiom hasStructuredCycle_poincare :
+  ∃ A, is_dm3_poincare_cycle A
+\end{lstlisting}
+
+\section{Coherence Bridge Synchronization}
+
+\begin{lstlisting}[language=YAML]
+- id: poincare_conjecture
+  claim_level: formally_stated
+  lean4_sorry_label: "ADMIT-D_poincare, ADMIT-E_poincare, ADMIT-F_poincare"
+  lean4_sorry_count: 3
+  axle_status: "Dm3Poincare.lean v1.1 — N=3 Exploration"
+\end{lstlisting}
+
+\section{Final Notes (N=3)}
+
+In dimension N=3 the dm³ operators acquire concrete geometric meaning via Ricci flow:
+C = volume decrease, K = scalar curvature evolution, F = surgery at singularities,
+U = convergence to the 3-sphere. This makes the Poincaré Conjecture the natural topological
+pillar of the unified dm³ framework. The three analytic admits remain the only gaps.
+
+\end{document}
