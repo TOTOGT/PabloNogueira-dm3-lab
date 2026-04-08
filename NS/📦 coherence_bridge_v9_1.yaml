@@ -1,0 +1,129 @@
+# coherence_bridge_v9_1.yaml
+# dm³ / TOGT / GTCT unified coherence bridge
+# Pillar: poincare_toy_model (formally_verified)
+
+- id: poincare_toy_model
+  name: "Toy Poincaré via discrete Ricci flow"
+  version: "v1.0"
+  pillar_type: "dm3"
+  claim_level: "formally_verified"
+  description: >
+    A finite-state, Kakeya-style dm³ pillar modeling Ricci-flow-like collapse.
+    Complexity strictly decreases until the canonical attractor (sphereComplex).
+    Provides the first fully formalized entropy chain M → E → E_toy.
+
+  # -----------------------------
+  # Core state + operators
+  # -----------------------------
+  state_type: "Toy3Complex"
+  state_fields:
+    - name: "complexity"
+      type: "ℕ"
+      role: "Ricci-flow-like size parameter; decreases monotonically"
+
+  operators:
+    C:
+      id: "C_toy"
+      role: "compression"
+      description: "Decrease complexity by 1 (Nat.pred)."
+    K:
+      id: "K_toy"
+      role: "curvature"
+      description: "Identity in this toy model (curvature-neutral)."
+    F:
+      id: "F_toy"
+      role: "folding"
+      description: "Identity in this toy model (no folding)."
+    U:
+      id: "U_toy"
+      role: "unfolding"
+      description: "Identity in this toy model (no unfolding)."
+    composite:
+      id: "G"
+      definition: "U ∘ F ∘ K ∘ C"
+      decomposition_verified: true
+
+  # -----------------------------
+  # Entropy layer (M/E chain)
+  # -----------------------------
+  entropy:
+    M:
+      id: "M_toy"
+      role: "entropic_boundary"
+      definition: "X.complexity = 0"
+      meaning: "Flow has nowhere left to go; generativity closed."
+    E:
+      id: "E_toy"
+      role: "stability_detector"
+      definition: "X = sphereComplex"
+      meaning: "Canonical attractor reached."
+    theorems:
+      - id: "E_toy_iff_sphere"
+        statement: "E_toy X ↔ X = sphereComplex"
+        status: "proved"
+      - id: "M_toy_iff_E_toy"
+        statement: "M_toy X ↔ E_toy X"
+        status: "proved"
+      - id: "entropy_monotone"
+        statement: "¬ M_toy X → (toyRicciStep X).complexity < X.complexity"
+        status: "proved"
+
+  # -----------------------------
+  # dm³ structural theorems
+  # -----------------------------
+  theorems:
+    - id: "toyPoincare_operatorDecomposition"
+      statement: "toyRicciStep = G C_toy K_toy F_toy U_toy"
+      status: "proved"
+    - id: "iterate_toyRicciStep_complexity"
+      statement: "(step^[n] X).complexity = X.complexity - n"
+      status: "proved"
+    - id: "iterate_to_sphere"
+      statement: "step^[X.complexity] X = sphereComplex"
+      status: "proved"
+    - id: "toyPoincare_converges"
+      statement: "∃ n, step^[n] X = sphereComplex"
+      status: "proved"
+
+  # -----------------------------
+  # Lean integration
+  # -----------------------------
+  lean:
+    file: "Dm3PoincareToy.lean"
+    version: "v1.0"
+    sorry_count: 0
+    verified_objects:
+      - "Toy3Complex"
+      - "sphereComplex"
+      - "toyRicciStep"
+      - "M_toy"
+      - "E_toy"
+      - "entropy_monotone"
+      - "toyPoincare_converges"
+
+  # -----------------------------
+  # Contact / TOGT alignment
+  # -----------------------------
+  togt_alignment:
+    C: "compression (complexity.pred)"
+    K: "curvature-neutral"
+    F: "folding-neutral"
+    U: "unfolding-neutral"
+    E: "E_toy (attractor detection)"
+    M: "M_toy (boundary of generativity)"
+    arc_closed: true
+
+  # -----------------------------
+  # GTCT alignment
+  # -----------------------------
+  gtct_alignment:
+    M_operator: "M_toy"
+    interpretation: "Finite-state realization of GTCT M (entropic boundary)."
+
+  # -----------------------------
+  # Notes
+  # -----------------------------
+  notes: >
+    This pillar is the first fully formalized entropy chain in dm³.
+    It serves as the finite-state analogue of Perelman's Ricci flow entropy
+    and provides the structural template for the real Poincaré pillar.
