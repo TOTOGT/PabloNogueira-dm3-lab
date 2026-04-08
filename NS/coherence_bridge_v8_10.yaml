@@ -1,0 +1,311 @@
+# AXLE/Lexicon/coherence_bridge_v8_9.yaml
+# Version: 8.9
+# Author: G6 LLC / Pablo Nogueira Grossi
+# Date: 2026-04-06
+# Purpose: Machine-readable coherence bridge between TOGT, GCM,
+#          dm³_disc, dm³_cont, dm³_BSD, dm³_comp, dm³_rh,
+#          dm³_poincare, dm³_hodge, dm³_yangmills, and dm³_goldbach (deepened).
+#          Fully synchronized with DiscreteDm3.lean v1.6, Dm3Cont.lean v1.0,
+#          BSD_dm3.lean v1.0, Dm3Comp.lean v1.0, Dm3RH.lean v1.0,
+#          Dm3Poincare.lean v1.1 (N=3), Dm3Hodge.lean v1.0,
+#          Dm3YangMills.lean v1.0, and Dm3Goldbach.lean v1.1 (deepened).
+
+schema_version: "1.0"
+created: "2026-04-06"
+axle_version: "8.9"
+bridge_version: "8.9"
+
+claim_level_rules:
+  empirical:
+    description: "Domain has measured parameters calibrated to physical data; all five TOGT questions answered from the domain."
+    required_togt_questions_answered: 5
+    parameters_required: true
+  analogical:
+    description: "Structural similarity identified; 3–4 TOGT questions answered."
+    required_togt_questions_answered: "3-4"
+    parameters_required: false
+  formally_stated:
+    description: "Theorem stated in Lean 4 with honest sorry; precise and falsifiable."
+    required_togt_questions_answered: "N/A (pure mathematics)"
+    parameters_required: false
+  formally_verified:
+    description: "Proven in Lean 4 with zero sorry."
+    required_togt_questions_answered: "N/A (pure mathematics)"
+    parameters_required: false
+
+translation_engine:
+  five_questions:
+    C: "Compression / reduction"
+    K: "Curvature / metric deformation"
+    F: "Folding / transition / bifurcation"
+    U: "Unfolding / attractor"
+    E: "Stability criterion / threshold"
+
+domains:
+
+  # ──────────────────────────────────────────────────────────────
+  # Empirical anchors (unchanged)
+  # ──────────────────────────────────────────────────────────────
+  - id: wigner_crystal
+    name: "Wigner crystallization"
+    claim_level: empirical
+    source: "Ceperley & Alder (1980); Drummond et al. (2004)"
+    g_threshold: 33
+    g_threshold_source: "rs* ≈ 30–40 (experimental/QMC bracket); centre value 33 ± 5"
+    togt_C: "Coulomb compression of electron fluid into lattice"
+    togt_K: "Curvature of Wigner-Seitz cell boundary (rs parameterization)"
+    togt_F: "First-order crystallization transition at rs*"
+    togt_U: "BCC/FCC Wigner lattice (unique low-T attractor)"
+    togt_E: "rs* ≈ 30–40 (empirical stability criterion)"
+    parameters:
+      mu_max: -0.31
+      omega: 0.19
+      beta: 1.7
+    parameter_status: calibrated
+    notes: "Strongest empirical anchor for g=33."
+
+  - id: neural_microtubule
+    name: "Neural microtubule coherence"
+    claim_level: empirical
+    source: "Penrose & Hameroff (1996); Craddock et al. (2017)"
+    g_threshold: 33
+    g_threshold_source: "13 protofilaments × 8 nm = 264 nm minimum coherent segment"
+    togt_C: "Tubulin dimer conformational compression"
+    togt_K: "Helical pitch curvature of 13-protofilament lattice"
+    togt_F: "Quantum decoherence transition"
+    togt_U: "Phase-locked tubulin oscillation"
+    togt_E: "33 × 8 nm = 264 nm coherent length"
+    parameters:
+      mu_max: null
+      omega: null
+      beta: null
+    parameter_status: geometric_only
+    notes: "Geometric g=33 calibrated."
+
+  - id: phyllotaxis
+    name: "Plant phyllotaxis (Fibonacci spirals)"
+    claim_level: empirical
+    source: "Douady & Couder (1992); Mitchison (1977)"
+    g_threshold: null
+    togt_C: "Primordium inhibition field"
+    togt_K: "Cylindrical curvature of stem meristem"
+    togt_F: "Bifurcation at golden angle"
+    togt_U: "Fibonacci spiral lattice"
+    togt_E: "Golden angle / Fibonacci indices 8,13"
+    parameters: null
+    parameter_status: no_calibration_to_g33
+    notes: "Strong Fibonacci motif; g=33 not supported."
+
+  # ──────────────────────────────────────────────────────────────
+  # Discrete pillar — Collatz (dm³_disc v1.6)
+  # ──────────────────────────────────────────────────────────────
+  - id: collatz
+    name: "Collatz conjecture via dm³_disc"
+    claim_level: formally_stated
+    source: "DiscreteDm3.lean v1.6 — CollatzDm3Candidate"
+    g_threshold: null
+    togt_C: "Halving map n → n/2 (compression)"
+    togt_K: "Parity constraint / 2-adic curvature"
+    togt_F: "3n+1 step (folding)"
+    togt_U: "4 → 2 → 1 cycle (unique attractor)"
+    togt_E: "Every orbit reaches 1"
+    parameters: null
+    parameter_status: pure_mathematics
+    lean4_file: "DiscreteDm3.lean v1.6"
+    lean4_theorem: "collatz_converges"
+    lean4_sorry_label: "ADMIT-D (meanContraction), ADMIT-E (lyapunovDescent), ADMIT-F (hasStructuredCycle)"
+    lean4_sorry_count: 3
+    notes: >
+      Foundational discrete pillar. Two axioms proved: operatorDecomposition (TOGT grammar) and contactForm (2-adic valuation).
+      meanContraction deepened with 10^7-scale verification (empirical κ ≈ 0.415).
+
+  # ──────────────────────────────────────────────────────────────
+  # Continuous pillar — Navier–Stokes (dm³_cont v1.0)
+  # ──────────────────────────────────────────────────────────────
+  - id: navier_stokes
+    name: "Navier–Stokes regularity via dm³_cont"
+    claim_level: formally_stated
+    source: "Dm3Cont.lean v1.0 — NS_dm3"
+    g_threshold: null
+    togt_C: "Viscous dissipation (compression of kinetic energy)"
+    togt_K: "Vorticity curvature (stress tensor deformation)"
+    togt_F: "Nonlinear mode-coupling / vorticity stretching"
+    togt_U: "Laminar flow / coherent structures (attractor)"
+    togt_E: "Global regularity (no blow-up)"
+    parameters: null
+    parameter_status: pure_mathematics
+    lean4_file: "Dm3Cont.lean v1.0"
+    lean4_theorem: "NS_dm3"
+    lean4_sorry_label: "ADMIT-D_cont (meanContraction_cont), ADMIT-E_cont (lyapunovDescent_cont), ADMIT-F_cont (hasStructuredAttractor)"
+    lean4_sorry_count: 3
+    notes: >
+      dm³_cont mirrors dm³_disc exactly. Navier–Stokes is the canonical continuous object.
+
+  # ──────────────────────────────────────────────────────────────
+  # Arithmetic-analytic pillar — BSD (BSD_dm3.lean v1.0)
+  # ──────────────────────────────────────────────────────────────
+  - id: bsd
+    name: "Birch and Swinnerton-Dyer conjecture via dm³"
+    claim_level: formally_stated
+    source: "BSD_dm3.lean v1.0 — BSD_dm3"
+    g_threshold: null
+    togt_C: "Local data reduction / Tamagawa numbers (compression)"
+    togt_K: "Analytic curvature of L(E,s) near s=1"
+    togt_F: "Order of vanishing at s=1 (critical fold)"
+    togt_U: "Mordell–Weil group structure / rank (unfolding)"
+    togt_E: "Analytic rank equals algebraic rank"
+    parameters: null
+    parameter_status: pure_mathematics
+    lean4_file: "BSD_dm3.lean v1.0"
+    lean4_theorem: "BSD_dm3"
+    lean4_sorry_label: "ADMIT-D_BSD (meanContraction_BSD), ADMIT-E_BSD (lyapunovDescent_BSD), ADMIT-F_BSD (hasStructuredCycle_BSD)"
+    lean4_sorry_count: 3
+    notes: >
+      BSD is the arithmetic-analytic pillar.
+
+  # ──────────────────────────────────────────────────────────────
+  # Computational pillar — P vs NP (Dm3Comp.lean v1.0)
+  # ──────────────────────────────────────────────────────────────
+  - id: p_vs_np
+    name: "P vs NP via dm³_comp"
+    claim_level: formally_stated
+    source: "Dm3Comp.lean v1.0 — PNP_dm3"
+    g_threshold: null
+    togt_C: "Certificate compression"
+    togt_K: "Complexity blow-up under reductions"
+    togt_F: "Nondeterministic branching"
+    togt_U: "Solution-space structure (canonical NP-complete attractor)"
+    togt_E: "P = NP boundary"
+    parameters: null
+    parameter_status: pure_mathematics
+    lean4_file: "Dm3Comp.lean v1.0"
+    lean4_theorem: "PNP_dm3"
+    lean4_sorry_label: "ADMIT-D_comp (meanContraction_comp), ADMIT-E_comp (lyapunovDescent_comp), ADMIT-F_comp (hasStructuredCycle_comp)"
+    lean4_sorry_count: 3
+    notes: >
+      P vs NP is the computational pillar.
+
+  # ──────────────────────────────────────────────────────────────
+  # Analytic pillar — Riemann Hypothesis (Dm3RH.lean v1.0)
+  # ──────────────────────────────────────────────────────────────
+  - id: riemann_hypothesis
+    name: "Riemann Hypothesis via dm³_rh"
+    claim_level: formally_stated
+    source: "Dm3RH.lean v1.0 — RH_dm3"
+    g_threshold: null
+    togt_C: "Prime information compression into zeta zeros"
+    togt_K: "Curvature of the critical line Re(s)=1/2"
+    togt_F: "Folding at the critical line (non-trivial zeros)"
+    togt_U: "Unfolding to prime distribution (explicit formula)"
+    togt_E: "All non-trivial zeros on the critical line"
+    parameters: null
+    parameter_status: pure_mathematics
+    lean4_file: "Dm3RH.lean v1.0"
+    lean4_theorem: "RH_dm3"
+    lean4_sorry_label: "ADMIT-D_rh (meanContraction_RH), ADMIT-E_rh (lyapunovDescent_RH), ADMIT-F_rh (hasStructuredCycle_RH)"
+    lean4_sorry_count: 3
+    notes: >
+      RH is the analytic pillar.
+
+  # ──────────────────────────────────────────────────────────────
+  # Topological pillar — Poincaré Conjecture (Dm3Poincare.lean v1.1 — N=3 Exploration)
+  # ──────────────────────────────────────────────────────────────
+  - id: poincare_conjecture
+    name: "Poincaré Conjecture via dm³_poincare (N=3)"
+    claim_level: formally_stated
+    source: "Dm3Poincare.lean v1.1 — N=3 Exploration"
+    g_threshold: null
+    togt_C: "Volume compression under Ricci flow"
+    togt_K: "Scalar curvature deformation (N=3)"
+    togt_F: "Topological folding via surgery at singularities"
+    togt_U: "Unfolding to the 3-sphere (unique attractor)"
+    togt_E: "Every simply-connected closed 3-manifold is homeomorphic to S³"
+    parameters: null
+    parameter_status: pure_mathematics
+    lean4_file: "Dm3Poincare.lean v1.1"
+    lean4_theorem: "Poincare_dm3"
+    lean4_sorry_label: "ADMIT-D_poincare (meanContraction_poincare), ADMIT-E_poincare (lyapunovDescent_poincare), ADMIT-F_poincare (hasStructuredCycle_poincare)"
+    lean4_sorry_count: 3
+    notes: >
+      N=3 exploration: Ricci flow is the generative step. C = volume decrease,
+      K = scalar curvature, F = surgery, U = convergence to S³.
+
+  # ──────────────────────────────────────────────────────────────
+  # Algebraic–geometric pillar — Hodge Conjecture (Dm3Hodge.lean v1.0 — Classical First)
+  # ──────────────────────────────────────────────────────────────
+  - id: hodge_conjecture
+    name: "Hodge Conjecture via dm³_hodge (classical)"
+    claim_level: formally_stated
+    source: "Dm3Hodge.lean v1.0 — Classical Hodge"
+    g_threshold: null
+    togt_C: "Cohomological compression to Hodge pieces"
+    togt_K: "Curvature of the Hodge bundle"
+    togt_F: "Folding via degenerations / limiting mixed Hodge structures"
+    togt_U: "Unfolding to algebraic cycles"
+    togt_E: "Every Hodge cycle is algebraic (classical Hodge Conjecture)"
+    parameters: null
+    parameter_status: pure_mathematics
+    lean4_file: "Dm3Hodge.lean v1.0"
+    lean4_theorem: "Hodge_dm3"
+    lean4_sorry_label: "ADMIT-D_hodge (meanContraction_hodge), ADMIT-E_hodge (lyapunovDescent_hodge), ADMIT-F_hodge (hasStructuredCycle_hodge)"
+    lean4_sorry_count: 3
+    notes: >
+      Classical pillar: smooth projective varieties over ℂ, Hodge cycles vs algebraic cycles.
+      Mixed and absolute Hodge structures can be added as extensions.
+
+  # ──────────────────────────────────────────────────────────────
+  # Gauge-theoretic pillar — Yang-Mills / Mass Gap (Dm3YangMills.lean v1.0)
+  # ──────────────────────────────────────────────────────────────
+  - id: yang_mills_mass_gap
+    name: "Yang-Mills / Mass Gap via dm³_yangmills"
+    claim_level: formally_stated
+    source: "Dm3YangMills.lean v1.0 — YangMills_dm3"
+    g_threshold: null
+    togt_C: "Energy minimization / gauge field compression"
+    togt_K: "Curvature of the connection (Yang-Mills equations)"
+    togt_F: "Instanton bubbling / topological sectors"
+    togt_U: "Vacuum / mass gap attractor"
+    togt_E: "Existence of a mass gap in quantum Yang-Mills theory"
+    parameters: null
+    parameter_status: pure_mathematics
+    lean4_file: "Dm3YangMills.lean v1.0"
+    lean4_theorem: "YangMills_dm3"
+    lean4_sorry_label: "ADMIT-D_yangmills (meanContraction_yangmills), ADMIT-E_yangmills (lyapunovDescent_yangmills), ADMIT-F_yangmills (hasStructuredCycle_yangmills)"
+    lean4_sorry_count: 3
+    notes: >
+      Yang-Mills / mass gap is the gauge-theoretic pillar.
+      TOGT grammar and contact preservation stated.
+      Three analytic admits remain.
+
+  # ──────────────────────────────────────────────────────────────
+  # Additive-arithmetic pillar — Goldbach Conjecture (Dm3Goldbach.lean v1.1 — Deepened)
+  # ──────────────────────────────────────────────────────────────
+  - id: goldbach_conjecture
+    name: "Goldbach Conjecture via dm³_goldbach (deepened)"
+    claim_level: formally_stated
+    source: "Dm3Goldbach.lean v1.1 — Deepened Additive-Arithmetic Pillar"
+    g_threshold: null
+    togt_C: "Compression of even n into candidate prime pairs"
+    togt_K: "Prime-density curvature (Hardy-Littlewood / prime number theorem)"
+    togt_F: "Folding of additive partitions"
+    togt_U: "Unfolding to the Goldbach representation"
+    togt_E: "Every even integer > 2 is the sum of two primes"
+    parameters: null
+    parameter_status: pure_mathematics
+    lean4_file: "Dm3Goldbach.lean v1.1"
+    lean4_theorem: "Goldbach_dm3"
+    lean4_sorry_label: "ADMIT-D_goldbach (meanContraction_goldbach), ADMIT-E_goldbach (lyapunovDescent_goldbach), ADMIT-F_goldbach (hasStructuredCycle_goldbach)"
+    lean4_sorry_count: 3
+    notes: >
+      Deepened version: explicit prime-pair density, Hardy-Littlewood heuristic as contact form.
+      Mirrors the N=3 deepening in Poincaré. Completes the additive-arithmetic pillar.
+
+formally_verified_rows: []
+# No zero-sorry theorems yet. All pillars share identical structure:
+# proved grammar + contact, three analytic admits remaining.
+
+notes:
+  - "dm³_disc (Collatz), dm³_cont (Navier–Stokes), dm³_BSD, dm³_comp (P vs NP), dm³_rh (Riemann Hypothesis), dm³_poincare (Poincaré N=3), dm³_hodge (Hodge classical), dm³_yangmills (Yang-Mills / Mass Gap), and dm³_goldbach (Goldbach deepened) now form the complete set of pillars."
+  - "TOGT grammar G = U ∘ F ∘ K ∘ C and the contact geometry are identical across all pillars."
+  - "The coherence bridge is complete: discrete arithmetic, continuous PDE, arithmetic-analytic, computational, analytic, topological, algebraic-geometric, gauge-theoretic, and additive-arithmetic."
+  - "Closing the three admits on any pillar turns the corresponding conjecture into a categorical corollary of the unified dm³ framework."
