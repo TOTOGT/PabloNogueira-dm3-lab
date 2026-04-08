@@ -1,0 +1,53 @@
+
+---
+
+### 1. NS pillar YAML with rank‑3 invariant
+
+```yaml
+pillar: navier_stokes
+version: 1.0
+title: "Navier–Stokes as the continuous rank‑3 dm³ pillar"
+
+invariants:
+  rank: 3
+  expression:
+    ricci_flow: "N = 3 (dimension of the manifold)"
+    collatz: "c = 3 (3-adic valuation / ternary regeneration)"
+    navier_stokes: "3D incompressible NS as unique continuous fixed point"
+
+operators:
+  chain:
+    - C  # compression
+    - K  # curvature redistribution
+    - F  # flux alignment
+    - U  # uniformization
+    - T  # transport / time-advance
+  closure_dimension: 3
+  normal_form: "∂_t u + (u · ∇)u = -∇p + ν Δu"
+
+bridges:
+  discrete:
+    collatz:
+      invariant: "c = 3"
+      interpretation: "3-adic Ricci flow on integers; same rank-3 regeneration"
+  geometric:
+    ricci_flow:
+      invariant: "N = 3"
+      interpretation: "only in 3D does C→K→F→U→T close on a manifold"
+  planetary:
+    saturn_hexagon:
+      role: "macroscopic empirical certificate of rank-3 NS"
+      mechanism: "1:6 Arnold tongue between rotation and Rossby wave period"
+      prediction: "wavenumber selection shifts if stratification depth changes"
+
+falsifiability:
+  F1: "If 3D NS were generically singular, Saturn’s hexagon would not persist for decades."
+  F2: "If rank-3 were not universal, Ricci N=3 and Collatz c=3 would not align with 3D NS."
+  F3: "If stratification changes measurably, dominant wavenumber should shift from 6; JWST can test."
+
+anchors:
+  operator_chain: "C → K → F → U → T"
+  g_series_bridge: "g⁶ = 33 ↔ wavenumber-6 hexagon"
+  zenodo:
+    count: 11
+    role: "timestamped dm³ artefacts; NS pillar cites Saturn and rank-3 unification deposits"
