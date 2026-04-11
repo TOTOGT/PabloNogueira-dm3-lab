@@ -1,0 +1,41 @@
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[scale=1.1]
+
+% Reeb axis
+\draw[->, thick] (0,0) -- (0,6) node[above] {$R_\alpha$ (Reeb flow)};
+
+% ker alpha plane
+\draw[thick] (-3,0) -- (3,0);
+\draw[thick] (-3,0) -- (-3,0.15);
+\draw[thick] (3,0) -- (3,0.15);
+\node at (0,-0.4) {$\ker\alpha$ (curvature plane)};
+
+% Spiral (Tribonacci scaling)
+\foreach \k in {0,1,2,3,4} {
+    \pgfmathsetmacro{\r}{0.4*1.839286755^\k}
+    \pgfmathsetmacro{\h}{0.8*\k}
+    \draw[thick, blue!60] plot[domain=0:360, samples=100]
+        ({\r*cos(\x)}, {\h + 0.15*\r*sin(\x)});
+}
+
+% Labels for scaling
+\node[blue!70] at (2.7,0.8) {$\eta$};
+\node[blue!70] at (3.3,1.7) {$\eta^2$};
+\node[blue!70] at (4.0,2.6) {$\eta^3$};
+
+% dm3 operator cycle
+\node at (-2.2,3.5) {$C \rightarrow K \rightarrow F \rightarrow U$};
+\draw[->, thick] (-2.2,3.2) -- (-2.2,2.4);
+
+% Time crystal annotation
+\node[align=center] at (2.2,4.5)
+    {Fractal time crystal\\(self-similar oscillations)};
+
+\end{tikzpicture}
+\caption{Reeb-flow spine with Tribonacci scaling.  
+Each orbit is scaled by $\eta\approx1.839$, producing a fractal time-crystal structure.  
+The curvature plane $\ker\alpha$ hosts microscopic anyonic modes; the Reeb vector field
+$R_\alpha$ supplies orthogenetic time.}
+\label{fig:reeb-tribonacci}
+\end{figure}
