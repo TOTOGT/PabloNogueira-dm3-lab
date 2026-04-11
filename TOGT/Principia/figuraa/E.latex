@@ -1,0 +1,21 @@
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[node distance=2cm, every node/.style={font=\small}]
+
+\node[draw, rounded corners, thick] (C) {Compression \\ $C$};
+\node[draw, rounded corners, thick, right of=C] (K) {Curvature \\ $K$};
+\node[draw, rounded corners, thick, right of=K] (F) {Fold \\ $F$};
+\node[draw, rounded corners, thick, right of=F] (U) {Unfolding \\ $U$};
+\node[draw, rounded corners, thick, right of=U] (E) {Entropy \\ $E$};
+
+\draw[->, thick] (C) -- (K);
+\draw[->, thick] (K) -- (F);
+\draw[->, thick] (F) -- (U);
+\draw[->, thick] (U) -- (E);
+
+\end{tikzpicture}
+
+\caption{dm$^3$ operator chain.  
+The generative cycle $C\to K\to F\to U$ is closed by the entropic boundary $E$.}
+\label{fig:dm3-chain}
+\end{figure}
