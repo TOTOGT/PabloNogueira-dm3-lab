@@ -1,0 +1,11 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+
+# Script outputs (attach to issues instead of committing)
+scripts/out/
+
+# Lean / Lake build artifacts
+.lake/
