@@ -1,6 +1,6 @@
 # Contributing to DM3-lab / AXLE
 
-Thank you for your interest in contributing to the AXLE community! This guide explains how to add files to the repository — including from your **phone or tablet** using the GitHub mobile app.
+Thank you for your interest in contributing to the AXLE community! This guide covers both the GitHub file-upload workflow (including from mobile) and the specific conventions for **D9 micro-tasks** — numerical scripts, analytic notes, and reproducible pull requests.
 
 ---
 
@@ -58,6 +58,80 @@ You can upload files directly to this repository from your phone without needing
 | Root | Diagrams (`.svg`, `.png`) and top-level docs |
 
 **Please avoid** uploading large binary files (videos, uncompressed audio) or files unrelated to TOGT / AXLE research.
+
+---
+
+## D9 Micro-Task Contributions
+
+D9 tasks are small, self-contained work items (numerical experiments, analytic notes, Lean proofs) tied to the DM3 scoreboard. Anyone can self-assign a task by commenting on the relevant issue.
+
+### Running Numerical Scripts
+
+All scripts live in `/scripts/` and `/simulations/`. Use Python 3.10+.
+
+**1. Install dependencies**
+
+```bash
+pip install numpy networkx matplotlib
+```
+
+**2. Run a script**
+
+```bash
+# Example — C9.2 conditional sampling
+python scripts/collatz_c9_2_sampling.py \
+  --N 1000 --M 50 \
+  --window-type dyadic --start 1 --end 1024 \
+  --sample-rate 0.1 --seed 42 \
+  --output scripts/out/my_run
+```
+
+Output files (`.csv` and `_summary.json`) are written to `scripts/out/`. Create that directory first if it does not exist:
+
+```bash
+mkdir -p scripts/out
+```
+
+**3. Reproduce a prior result**
+
+Always pass `--seed <integer>` to lock the random state. The seed used in any published result must be recorded in the PR description and the corresponding JSON summary file.
+
+**4. Connectome simulations**
+
+```bash
+python simulations/connectome_loader.py   # synthetic fallback, no extra data needed
+python simulations/simple_to_operator.py
+```
+
+Plots are saved to `outputs/` (created automatically).
+
+---
+
+### LaTeX / Formatting Guidelines for Analytic Notes
+
+Place analytic write-ups in `/docs/` as `.md` files (preferred for version control) or `.pdf` (compiled separately).
+
+**Markdown with inline math (`.md`)**
+
+- Use standard GitHub-flavored Markdown.
+- Inline math: `` $f(n) = \lfloor n/2 \rfloor$ ``
+- Display math: fenced with `$$` on its own line.
+- Label every key equation with a bold tag, e.g. `**(Eq. C9.2)**`.
+
+**LaTeX source (`.tex`)**
+
+- Keep one `.tex` file per note; compile with `pdflatex` or `lualatex`.
+- Use `\label{eq:name}` and `\ref{eq:name}` — never bare equation numbers.
+- Preferred packages: `amsmath`, `amssymb`, `hyperref`.
+- Avoid custom macros that are not defined in the same file.
+- Include a `\bibliographystyle{plain}` entry and a `.bib` file when citing external work.
+
+**Naming convention**
+
+```
+docs/<topic>_<author-initials>_<YYYY-MM>.md
+# e.g. docs/collatz_c9_sampling_PG_2026-04.md
+```
 
 ---
 
